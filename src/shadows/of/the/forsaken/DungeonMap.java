@@ -4,23 +4,29 @@
  */
 package shadows.of.the.forsaken;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import static java.util.Collections.emptyList;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
 
 /**
- *
+ * The main component that draws the dungeon map. There is a temporary slider here
+ * so that I can play with different map generating algorithms. 
  * @author Nathan Ainslie
  */
 public class DungeonMap extends JPanel {
     Player player;
-    private final int RADIUS = 30; // Radius of the circle/sprite
+    private final int RADIUS = 15; // Radius of the circle/sprite
+    private final int GRIDSIZE = 30;
     private final SceneSwitcher switcher;
     private DungeonTile[][] Tiles;
+    private DungeonTile[][][] multiMap;
+    private JSlider iterationSlider;
 
     
     /**
@@ -33,8 +39,20 @@ public class DungeonMap extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        // For now, let's just draw a simple rectangle to represent the dungeon area.
-        g2d.drawRect(50, 50, 300, 200);
+        // Draw a simple grid of rectangles
+        for (int i = 0; i < Tiles.length; i++)
+        {
+            for (int j = 0; j < Tiles[i].length; j++)
+            {
+                if (Tiles[i][j] != null)
+                {
+                    g2d.setColor(Color.RED);
+                    g2d.fillRect(GRIDSIZE*i, GRIDSIZE*j, GRIDSIZE, GRIDSIZE);
+                    g2d.setColor(Color.BLACK);
+                }
+                g2d.drawRect(GRIDSIZE*i, GRIDSIZE*j, GRIDSIZE, GRIDSIZE);
+            }
+        }
         //TODO: Draw a rectangle for each element of Tiles. Later, use an image.
         drawPlayer(g2d);
     }
@@ -46,21 +64,32 @@ public class DungeonMap extends JPanel {
     
     public DungeonMap(SceneSwitcher parent)
     {
+        super(new BorderLayout());
         switcher = parent;
-        Tiles = new DungeonTile[10][10];
+        GameState gameState = GameState.getInstance();
+        Tiles = gameState.getMap();
+        multiMap = gameState.getMultiMap();
         
+        iterationSlider = new JSlider(JSlider.VERTICAL, 0, multiMap.length - 1, 0);
+        iterationSlider.setMajorTickSpacing(1);
+        iterationSlider.setSnapToTicks(true);
+        iterationSlider.addChangeListener((ChangeEvent e) -> {
+            Tiles = multiMap[(int) Math.floor(iterationSlider.getValue())];
+            repaint();
+        });
+        this.add(iterationSlider, BorderLayout.EAST);
         setFocusable(true);
         
-        player = new Player("Dummy/file/path", 69, emptyList(), false, emptyList());
+        player = gameState.getPlayer();
         
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
-                    case KeyEvent.VK_UP -> player.move(0, -5);
-                    case KeyEvent.VK_DOWN -> player.move(0, 5);
-                    case KeyEvent.VK_LEFT -> player.move(-5, 0);
-                    case KeyEvent.VK_RIGHT -> player.move(5, 0);
+                    case KeyEvent.VK_UP -> player.move(0, -RADIUS);
+                    case KeyEvent.VK_DOWN -> player.move(0, RADIUS);
+                    case KeyEvent.VK_LEFT -> player.move(-RADIUS, 0);
+                    case KeyEvent.VK_RIGHT -> player.move(RADIUS, 0);
                 }
                 repaint(); // Ask the panel to redraw itself
             }
