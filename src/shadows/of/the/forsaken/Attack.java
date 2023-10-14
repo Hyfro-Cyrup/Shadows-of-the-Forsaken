@@ -22,6 +22,14 @@ public class Attack {
         name = _name;
     }
     
+    public Attack()
+    {
+        min_damage = 1;
+        max_damage = 3;
+        hit_chance = 0.75;
+        name = "club";
+    }
+    
     public int calculateDamage()
     {
         // return -1 if the attack misses
