@@ -29,7 +29,6 @@ public class StartScreen extends JPanel {
         try {
             URL imageUrl = new URL("https://cdna.artstation.com/p/assets/images/images/006/315/366/large/taryn-meixner-dungeon-interior.jpg?1497628693");
             BufferedImage originalImage = ImageIO.read(imageUrl);
-
             int newWidth = 800;  // Set the width of the panel
             int newHeight = 600; // Set the height of the panel
 
