@@ -12,9 +12,7 @@ import javax.imageio.ImageIO; //allows the program to read and write images
 import java.awt.image.BufferedImage; //allows the program to use image processing
 
 /**
- * [[insert description of start screen component]]
- * @author Nathan Ainslie
- * @author Gabe Carpenter
+ * Main menu for the game. Has buttons for navigating to the game or load screen.
  */
 public class StartScreen extends JPanel {
     private SceneSwitcher switcher;
@@ -22,6 +20,11 @@ public class StartScreen extends JPanel {
     private final JButton loadButton;
     private ImageIcon backgroundImage;
 
+    /**
+     * Initialize the images and buttons for the start screen
+     * 
+     * @param parent The component that facilitates switching screens
+     */
     public StartScreen(SceneSwitcher parent) {
         switcher = parent;
 
@@ -53,7 +56,11 @@ public class StartScreen extends JPanel {
         add(loadButton);
     }
 
-    // Use an override to allow the image to be in the background as well as changing button positions
+    /**
+     * Use an override to allow the image to be in the background as well as changing button positions
+     * 
+     * @param g The graphics object.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

@@ -12,16 +12,18 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
 /**
- * [[insert description of load screen]]
- * @author Nathan Ainslie
- * @author Gabe Carpenter
+ * GUI for selecting and loading previously saved games
  */
 public class LoadScreen extends JPanel {
     private SceneSwitcher switcher;
     private final JButton backButton;
     private ImageIcon backgroundImage;
     
-    
+    /**
+     * Initialize the images and buttons for the load screen
+     * 
+     * @param parent The component that facilitates switching screens
+     */
     public LoadScreen(SceneSwitcher parent)
     {
         switcher = parent;
@@ -52,7 +54,11 @@ public class LoadScreen extends JPanel {
         this.add(backButton);
     }
     
-    // Override to allow image to be placed in background and to change positioning of the button(s)
+    /**
+     * Override to allow image to be placed in background and to change positioning of the button(s)
+     *
+     * @param g The graphics object.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

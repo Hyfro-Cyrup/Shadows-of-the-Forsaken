@@ -15,14 +15,18 @@ import java.util.List;
  * 
  */
 public class GameState {
-    // define single instance
+    /**
+     * A common GameState instance to be shared by all objects who need it.
+     */
     private static GameState instance;
     
     private Player player;
     private DungeonTile[][] map;
     private DungeonTile[][][] multiMap;
     
-    // default constructor
+    /**
+     * Default constructor. Initializes player and map.
+     */
     public GameState()
     {
         player = new Player("Dummy/file/path", 69, emptyList(), false, emptyList());
@@ -30,6 +34,10 @@ public class GameState {
         map = multiMap[multiMap.length - 1];
     }
     
+    /**
+     * Returns the common instance for all objects to observe and manipulate.
+     * @return a GameState object
+     */
     public static GameState getInstance()
     {
         if (instance == null)
@@ -40,6 +48,14 @@ public class GameState {
         return instance;
     }
     
+    /**
+     * Populates a grid of DungeonTile objects via an infection-like simulation.
+     * @param w Width of the array
+     * @param h Height of the array
+     * @param iterations Number of times to run the simulation
+     * @param probability The chance a given tile can "infect" its neighbors
+     * @return a w x h array of DungeonTiles
+     */
     private static DungeonTile[][][] coolMapGenerator(int w, int h, int iterations, double probability)
     {       
         ArrayList<Entity> entities = new ArrayList<>();
@@ -138,9 +154,22 @@ public class GameState {
         return multimap;
     }
     
+    /**
+     * Returns the map
+     * @return 2D array of DungeonTile objects. Some will be null. 
+     */
     public DungeonTile[][] getMap() { return map; }
     
+    /**
+     * Returns array of maps to step through for help understanding the generation algorithm.
+     * Get rid of this soon. 
+     * @return 3D array of DungeonTile objects. Dimension 1 is iteration.
+     */
     public DungeonTile[][][] getMultiMap() { return multiMap; }
     
+    /**
+     * Returns the player.
+     * @return the player
+     */
     public Player getPlayer() { return player; }
 }

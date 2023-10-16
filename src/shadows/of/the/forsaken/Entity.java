@@ -5,15 +5,20 @@
 package shadows.of.the.forsaken;
 
 /**
- * [[insert description of entity class]]
- * 
- * @author Nathan Ainslie
+ * An object that can be found in the dungeon.
  */
 public class Entity {
     private String name;
     private String description;
     private String spritePath;
     
+    /**
+     * Construct an Entity with specified parameters
+     * 
+     * @param _name The name of the entity
+     * @param _description A short description to be shown
+     * @param _spritePath String filepath to the image of the entity
+     */
     public Entity(String _name, String _description, String _spritePath)
     {
         name = _name;

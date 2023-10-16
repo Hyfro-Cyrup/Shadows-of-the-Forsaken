@@ -7,8 +7,11 @@ package shadows.of.the.forsaken;
 /**
  * Hides everything about the main program class except its ability to switch scenes.
  * This makes for better encapsulation when it's passed to the scenes
- * @author Nathan Ainslie
  */
 public interface SceneSwitcher {
+    /**
+     * Switches from the current scene to the one specified by `sceneName`.
+     * @param sceneName Unique String associated with destination
+     */
     public void changeScene(String sceneName);
 }

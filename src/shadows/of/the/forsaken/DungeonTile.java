@@ -8,19 +8,27 @@ import static java.util.Collections.emptyList;
 import java.util.List;
 
 /**
- * [[add description of dungeon tile class]]
- * @author Nathan Ainslie
+ * Location the player can go to, and container for the objects found there.
  */
 public class DungeonTile {
     private List<Entity> Contents;
     private Boolean hasBeenSeen;
     
+    /**
+     * Default constructor. Initializes as unseen with no contents.
+     */
     public DungeonTile()
     {
         Contents = emptyList();
         hasBeenSeen = false;
     }
     
+    /**
+     * Constructs a dungeon tile with specified parameters.
+     * 
+     * @param contents A list of entity objects to be found within the room
+     * @param seen Whether or not the player has seen this room yet.
+     */
     public DungeonTile(List<Entity> contents, Boolean seen)
     {
         Contents = contents;

@@ -18,10 +18,9 @@ import javax.swing.event.ChangeEvent;
 /**
  * The main component that draws the dungeon map. There is a temporary slider here
  * so that I can play with different map generating algorithms. 
- * @author Nathan Ainslie
  */
 public class DungeonMap extends JPanel {
-    Player player;
+    private Player player;
     private final int RADIUS = 15; // Radius of the circle/sprite
     private final int GRIDSIZE = 30;
     private final SceneSwitcher switcher;
@@ -63,6 +62,10 @@ public class DungeonMap extends JPanel {
         g.fillOval(player.x - RADIUS, player.y - RADIUS, 2 * RADIUS, 2 * RADIUS);
     }
     
+    /**
+     * Initialize visualization from GameState data
+     * @param parent The component that facilitates switching screens
+     */
     public DungeonMap(SceneSwitcher parent)
     {
         super(new BorderLayout());

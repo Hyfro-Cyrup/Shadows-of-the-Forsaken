@@ -10,8 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
- *
- * @author Nathan Ainslie
+ * Main entry point to the game. Holds and switches between all views. 
  */
 public class ShadowsOfTheForsaken implements SceneSwitcher{
     private final JFrame frame;

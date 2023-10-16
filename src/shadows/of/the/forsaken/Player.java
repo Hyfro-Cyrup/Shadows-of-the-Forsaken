@@ -7,14 +7,25 @@ package shadows.of.the.forsaken;
 import java.util.List;
 
 /**
- * [[insert description of player class]]
- * @author Nathan Ainslie
+ * A creature that the player controls and has an inventory.
  */
 public class Player extends Creature {
     private Boolean hasExitKey;
     private List<Entity> Inventory;
+    /**
+     * Location of the Player in the grid
+     */
     public int x, y;
     
+    /**
+     * Construct a Player with specified parameters
+     * 
+     * @param _spritePath String filepath to the image of the entity
+     * @param hp The health of the creature
+     * @param attacks A list of Attack objects
+     * @param key Bool whether or not the exit key is in the player's inventory
+     * @param inventory List of entities that the player has with them. Currently unused.
+     */
     public Player(String _spritePath, int hp, List<Attack> attacks, Boolean key, List<Entity> inventory)
     {
         super("The Player", "Description of the player???", _spritePath, hp, attacks);
