@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import static java.util.Collections.emptyList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A common root for all of our data. 
@@ -27,7 +26,7 @@ public class GameState {
     public GameState()
     {
         player = new Player("Dummy/file/path", 69, emptyList(), false, emptyList());
-        multiMap = coolMapGenerator(20, 16, 20, 0.25);
+        multiMap = coolMapGenerator(20, 16, 20, 0.6);
         map = multiMap[multiMap.length - 1];
     }
     
@@ -52,24 +51,32 @@ public class GameState {
 
         
         DungeonTile[][][] multimap = new DungeonTile[iterations][w][h];
-        ArrayList<int[]> cursor = new ArrayList<>();
-        cursor.add(new int[]{w/2, h/2});
+        ArrayList<List<Integer>> cursor = new ArrayList<>();
+        cursor.add(Arrays.asList(w/2, h/2));
+        
+        // track which cells are filled
+        ArrayList<List<Integer>> visited = new ArrayList<>();
         
         // fill the first tile
-        multimap[0][cursor.get(0)[0]][cursor.get(0)[1]] = new DungeonTile(Arrays.asList(), false);
+        multimap[0][cursor.get(0).get(0)][cursor.get(0).get(1)] = new DungeonTile(Arrays.asList(), false);
         
         // modeled after influence diffusion in a network. 
         // each tile has a chance to infect its neighbors.
         for (int i = 0; i < iterations; i++)
         {
-            ArrayList<int[]> nextCursor = new ArrayList<>();
-            ArrayList<int[]> visited = new ArrayList<>();
+            ArrayList<List<Integer>> nextCursor = new ArrayList<>();
             ArrayList<Entity> contents = new ArrayList<>();
-            for (int[] tile : cursor) 
+            
+            // mark tiles beforehand to avoid conflict
+            for (List<Integer> tile : cursor)
+            {
+                visited.add(tile);
+            }
+            
+            for (List<Integer> tile : cursor) 
             {
                 contents.clear();
                 // fill in dungeon tile
-                visited.add(tile);
                 if (Math.random() < probability)
                 {
                     Entity entity = entities.get((int) Math.floor(Math.random()*entities.size()));
@@ -77,27 +84,53 @@ public class GameState {
                 }
                 for (int j = i; j < iterations; j++)
                 {
-                    multimap[j][tile[0]][tile[1]] = new DungeonTile(contents, false);
+                    multimap[j][tile.get(0)][tile.get(1)] = new DungeonTile(contents, false);
                 }
                 
                 
                 // propagate the next generation
                 int[][] points = {
-                {tile[0] -1, tile[1]},
-                {tile[0] + 1, tile[1]},
-                {tile[0], tile[1] -1},
-                {tile[0], tile[1] + 1}};
+                {tile.get(0) + 1, tile.get(1)}, // East
+                {tile.get(0), tile.get(1) -1},  // North
+                {tile.get(0) -1, tile.get(1)},  // West
+                {tile.get(0), tile.get(1) + 1}, // South
+                };
                 
-                for(int[] p : points)
+                int[][] corners = {
+                    {tile.get(0) + 1, tile.get(1) - 1}, // NE
+                    {tile.get(0) - 1, tile.get(1) - 1}, // NW
+                    {tile.get(0) - 1, tile.get(1) + 1}, // SW
+                    {tile.get(0) + 1, tile.get(1) + 1}, // SE
+                };
+                
+                
+                for(int j = 0; j < 4; j++)
                 {
+                    int[] p = points[j];
                     if ((p[0] >= 0) && (p[0] < w) && (p[1] >= 0) && (p[1] < h) &&
-                            !(visited.contains(p)) && (Math.random() < probability))
+                            !(visited.contains(Arrays.asList(p[0], p[1]))))
                     {
-                        nextCursor.add(p);
+                        // reduce certain probabilities to make more linear
+                        var prob = probability;
+                        var ccw = corners[j];   // counter-clockwise neighbor
+                        if (visited.contains(Arrays.asList(ccw[0], ccw[1])))
+                        {
+                            prob *= 0;
+                        }
+                        var cw = corners[j > 0 ? j - 1 : j + 3]; // clockwise neighbor
+                        if (visited.contains(Arrays.asList(cw[0], cw[1])))
+                        {
+                            prob *= 0;
+                        }
+                        
+                        
+                        // infect next cell with some chance
+                        if (Math.random() < prob)
+                        {
+                            nextCursor.add(Arrays.asList(p[0], p[1]));
+                        }
                     }
                 }
-                
-                
             }
             
             cursor = nextCursor;
