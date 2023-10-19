@@ -5,19 +5,28 @@
 package shadows.of.the.forsaken;
 
 /**
- * [[insert description of entity class]]
- * 
- * @author Nathan Ainslie
+ *
+ * @author Son Nguyen
+ * Probably make more stuff 'final' in general. 
  */
-public class Entity {
-    private String name;
-    private String description;
-    private String spritePath;
+abstract class Entity {
+    private String Name; // name for UI
     
-    public Entity(String _name, String _description, String _spritePath)
-    {
-        name = _name;
-        description = _description;
-        spritePath = _spritePath;
+    // referene to name of sprite/image file to give to UI classes.
+    private String spriteReference; 
+    
+    
+    Entity(String name, String spriteFileName){
+        this.Name = name;
+        this.spriteReference = spriteFileName;
     }
+      
+    public String getName(){
+        return Name;
+    }
+
+    public String getSpriteReference(){
+        return spriteReference;
+    }
+    
 }
