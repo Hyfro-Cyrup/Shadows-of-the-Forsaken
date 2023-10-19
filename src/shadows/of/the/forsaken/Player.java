@@ -12,6 +12,8 @@ import java.util.List;
  * Sonny's Note: Should probably discuss declouping Player's responsiblities with managing it's posistion in the map, with it's responisiblities in 
  * a combat Encounter. Having two seperate classes is better for that I think. Have all objects dealing with Encounters be in their own 'bubble' and same 
  * for Map-adjcent classes
+ * 
+ * Please comment on this Professor
  */
 public class Player extends Creature {
     private Boolean hasExitKey;
@@ -20,7 +22,7 @@ public class Player extends Creature {
     
     public Player(String _spritePath, int hp, List<Attack> attacks, Boolean key, List<Entity> inventory)
     {
-        super("The Player", "Description of the player???", _spritePath, hp, attacks);
+        super("The Player", _spritePath);
         hasExitKey = key;
         Inventory = inventory;
         x = 0;
