@@ -9,7 +9,7 @@ package shadows.of.the.forsaken;
  * @author Son Nguyen - Thanks Nathan for starting the stuff
  * Probably make more stuff 'final' in general. 
  */
-abstract class Entity {
+public class Entity {
     private String Name; // name for UI
     private String description; // Entity Description
     
