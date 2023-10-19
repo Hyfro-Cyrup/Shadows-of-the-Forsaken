@@ -12,7 +12,7 @@ package shadows.of.the.forsaken;
  * Class name is somewhat self explaintory in its role.
  */
 
-public abstract class Creature extends Entity {
+public class Creature extends Entity {
     // Self evident 
     private int maxHP;
     private int currentHP;
@@ -110,9 +110,11 @@ public abstract class Creature extends Entity {
     // 'combined magic/physical attack'. Enimies attack
     // is simplier, but need some from of AI to determine 
     // which move to use. All future Sonny's probelms. 
-    public abstract String attack(Creature target);
+    public void attack(Creature target){
+        continue; 
+    }
     
-    // May return text for the UI. Or int. Figure that out later. 
+    // Override Later. Yes I know this is trash.
     
     
     
