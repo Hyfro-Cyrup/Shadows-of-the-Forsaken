@@ -6,7 +6,7 @@ package shadows.of.the.forsaken;
 
 /**
  *
- * @author Son Nguyen
+ * @author Son Nguyen - Thanks Nathan for starting the stuff
  * Probably make more stuff 'final' in general. 
  */
 abstract class Entity {
