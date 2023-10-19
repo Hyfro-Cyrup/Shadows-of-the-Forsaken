@@ -9,6 +9,8 @@ import java.util.List;
 /**
  * [[insert description of player class]]
  * @author Nathan Ainslie
+ * Sonny's Note: Should probably discuss declouping Player's responsiblities with managing it's posistion in the map, with it's responisiblities in 
+ * a combat Encounter. Having two seperate classes is better for that I think.
  */
 public class Player extends Creature {
     private Boolean hasExitKey;
