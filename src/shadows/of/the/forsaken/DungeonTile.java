@@ -34,4 +34,18 @@ public class DungeonTile {
         Contents = contents;
         hasBeenSeen = seen;
     }
+    
+    /**
+     * Returns true if the key is inside the tile, false if not.
+     * @return a Boolean
+     */
+    public Boolean containsKey()
+    {
+        return Contents.stream().anyMatch(e -> "Key".equals(e.getName()));
+    }
+    
+    public Boolean containsEnemy()
+    {
+        return Contents.stream().anyMatch(e -> e instanceof Creature);
+    }
 }

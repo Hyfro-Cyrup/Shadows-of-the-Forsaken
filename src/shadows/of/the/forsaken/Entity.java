@@ -8,9 +8,9 @@ package shadows.of.the.forsaken;
  * An object that can be found in the dungeon.
  */
 public class Entity {
-    private String name;
-    private String description;
-    private String spritePath;
+    private final String name;
+    private final String description;
+    private final String spritePath;
     
     /**
      * Construct an Entity with specified parameters
@@ -25,4 +25,10 @@ public class Entity {
         description = _description;
         spritePath = _spritePath;
     }
+    
+    /**
+     * Returns the entity's name as a String
+     * @return the name
+     */
+    public String getName() { return name; }
 }

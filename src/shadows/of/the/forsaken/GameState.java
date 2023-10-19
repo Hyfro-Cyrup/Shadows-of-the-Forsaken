@@ -30,8 +30,9 @@ public class GameState {
     public GameState()
     {
         player = new Player("Dummy/file/path", 69, emptyList(), false, emptyList());
-        multiMap = coolMapGenerator(20, 16, 20, 0.6);
+        multiMap = newMap();
         map = multiMap[multiMap.length - 1];
+        
     }
     
     /**
@@ -54,16 +55,17 @@ public class GameState {
      * @param h Height of the array
      * @param iterations Number of times to run the simulation
      * @param probability The chance a given tile can "infect" its neighbors
-     * @return a w x h array of DungeonTiles
+     * @return a (`w` x `h`) array of DungeonTiles
      */
     private static DungeonTile[][][] coolMapGenerator(int w, int h, int iterations, double probability)
     {       
-        ArrayList<Entity> entities = new ArrayList<>();
-        entities.add(new Entity("Key", "It shines with hope.", "dummy/path"));
-        entities.add(new Entity("Ladder", "The exit beckons", "dummy/path"));
-        entities.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path", 20, new ArrayList<>(1)));
-        entities.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path", 20, new ArrayList<>(1)));
-        entities.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path", 20, new ArrayList<>(1)));
+        List<Entity> Creatures = new ArrayList<>();
+        Creatures.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path", 20, new ArrayList<>(1)));
+        Creatures.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path", 20, new ArrayList<>(1)));
+        
+        List<Entity> Objects = new ArrayList<>();
+        //Objects.add(new Entity("Ladder", "The exit beckons.", "dummy/path"));
+        Objects.add(new Entity("Key", "It shines with hope.", "dummy/path"));
 
         
         DungeonTile[][][] multimap = new DungeonTile[iterations][w][h];
@@ -93,11 +95,20 @@ public class GameState {
             {
                 contents.clear();
                 // fill in dungeon tile
-                if (Math.random() < probability)
+                if ((i > 3) && (!Objects.isEmpty()) )
                 {
-                    Entity entity = entities.get((int) Math.floor(Math.random()*entities.size()));
+                    // add an object
+                    int index = (int) Math.floor(Math.random()*Objects.size());
+                    contents.add(Objects.get(index));
+                    Objects.remove(index);
+                    
+                }
+                else if ((i > 1) && (Math.random() < 0.2))
+                {
+                    Entity entity = Creatures.get((int) Math.floor(Math.random()*Creatures.size()));
                     contents.add(entity);
                 }
+                
                 for (int j = i; j < iterations; j++)
                 {
                     multimap[j][tile.get(0)][tile.get(1)] = new DungeonTile(contents, false);
@@ -152,6 +163,47 @@ public class GameState {
             cursor = nextCursor;
         }
         return multimap;
+    }
+    
+    private static DungeonTile[][][] newMap()
+    {
+        DungeonTile[][][] multiMap = coolMapGenerator(20, 16, 20, 0.6);
+        while (!mapIsValid(multiMap[multiMap.length - 1]))
+        {
+            multiMap = coolMapGenerator(20, 16, 20, 0.6);
+        }
+        return multiMap;
+    }
+    
+    private static Boolean mapIsValid(DungeonTile[][] map)
+    {
+        int count = 0;
+        for (DungeonTile[] col : map){
+            for (DungeonTile tile : col){
+                if (tile != null){
+                    count += 1;
+                }
+            }
+        }
+        if (count < 15)
+        {
+            return false;
+        }
+        
+        // Check for key placement
+        for (DungeonTile[] col : map){
+            for (DungeonTile tile : col) {
+                if ((tile != null) && (tile.containsKey())){
+                    System.out.println("Key found!");
+                    if (tile.containsEnemy()){
+                        System.out.println("Enemy also found. ");
+                        return false;
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     /**

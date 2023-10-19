@@ -46,14 +46,24 @@ public class DungeonMap extends JPanel {
             {
                 if (Tiles[i][j] != null)
                 {
-                    g2d.setColor(Color.RED);
+                    if (Tiles[i][j].containsKey())
+                    {
+                        g2d.setColor(Color.YELLOW);
+                    }
+                    else if (Tiles[i][j].containsEnemy())
+                    {
+                        g2d.setColor(Color.RED);
+                    }
+                    else
+                    {
+                        g2d.setColor(Color.GRAY);
+                    }
                     g2d.fillRect(GRIDSIZE*i, GRIDSIZE*j, GRIDSIZE, GRIDSIZE);
                     g2d.setColor(Color.BLACK);
                 }
                 g2d.drawRect(GRIDSIZE*i, GRIDSIZE*j, GRIDSIZE, GRIDSIZE);
             }
         }
-        //TODO: Draw a rectangle for each element of Tiles. Later, use an image.
         drawPlayer(g2d);
     }
     
