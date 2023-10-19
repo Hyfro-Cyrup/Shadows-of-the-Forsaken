@@ -60,8 +60,8 @@ public class GameState {
     private static DungeonTile[][][] coolMapGenerator(int w, int h, int iterations, double probability)
     {       
         List<Entity> Creatures = new ArrayList<>();
-        Creatures.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path", 20, new ArrayList<>(1)));
-        Creatures.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path", 20, new ArrayList<>(1)));
+        Creatures.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path"));
+        Creatures.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path"));
         
         List<Entity> Objects = new ArrayList<>();
         //Objects.add(new Entity("Ladder", "The exit beckons.", "dummy/path"));
