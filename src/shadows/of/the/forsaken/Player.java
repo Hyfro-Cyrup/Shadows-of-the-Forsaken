@@ -28,7 +28,7 @@ public class Player extends Creature {
      */
     public Player(String _spritePath, int hp, List<Attack> attacks, Boolean key, List<Entity> inventory)
     {
-        super("The Player", "Description of the player???", _spritePath, hp, attacks);
+        super("The Player", "The FOOOLISH KNIGHT", _spritePath);
         hasExitKey = key;
         Inventory = inventory;
         x = 0;
