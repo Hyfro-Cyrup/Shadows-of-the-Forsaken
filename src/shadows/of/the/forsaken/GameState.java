@@ -46,9 +46,9 @@ public class GameState {
         ArrayList<Entity> entities = new ArrayList<>();
         entities.add(new Entity("Key", "It shines with hope.", "dummy/path"));
         entities.add(new Entity("Ladder", "The exit beckons", "dummy/path"));
-        entities.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path", 20, new ArrayList<>(1)));
-        entities.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path", 20, new ArrayList<>(1)));
-        entities.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path", 20, new ArrayList<>(1)));
+        entities.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path", 20));
+        entities.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path", 20));
+        entities.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path", 20));
 
         
         DungeonTile[][][] multimap = new DungeonTile[iterations][w][h];
