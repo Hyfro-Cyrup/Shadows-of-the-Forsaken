@@ -48,6 +48,11 @@ public abstract class Creature extends Entity {
         attackArray = moveset; 
         resist = resistences; 
     }
+
+    // Stopgap constructor so that current Player Implementation doesn't explode
+    Creature(String name, String spriteFileName){
+        super(name,spriteFileName);
+     }
     
  
     public void defend(){
