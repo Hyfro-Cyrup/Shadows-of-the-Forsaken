@@ -37,9 +37,9 @@ public abstract class Creature extends Entity {
     private int isDefending = 0; 
     
     
-    Creature(String name, String spriteFileName,int hp, int str, int soul, 
+    Creature(String name, String desc, String spriteFileName,int hp, int str, int soul, 
             int regen, Attack[] moveset, float[] resistences){
-        super(name,spriteFileName);
+        super(name, desc, spriteFileName);
         
         currentHP = maxHP = hp;
         Strength = str;
