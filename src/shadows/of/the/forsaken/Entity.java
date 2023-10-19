@@ -11,13 +11,14 @@ package shadows.of.the.forsaken;
  */
 abstract class Entity {
     private String Name; // name for UI
+    private String description; // Entity Description
     
     // referene to name of sprite/image file to give to UI classes.
     private String spriteReference; 
     
-    
-    Entity(String name, String spriteFileName){
+    Entity(String name, String desc, String spriteFileName){
         this.Name = name;
+        this.description = desc; 
         this.spriteReference = spriteFileName;
     }
       
