@@ -22,7 +22,7 @@ public class Player extends Creature {
     
     public Player(String _spritePath, int hp, List<Attack> attacks, Boolean key, List<Entity> inventory)
     {
-        super("The Player", _spritePath);
+        super("The Player", "The FOOOLISH KNIGHT", _spritePath);
         hasExitKey = key;
         Inventory = inventory;
         x = 0;
