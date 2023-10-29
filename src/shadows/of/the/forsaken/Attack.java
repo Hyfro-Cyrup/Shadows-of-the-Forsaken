@@ -4,48 +4,34 @@
  */
 package shadows.of.the.forsaken;
 
-/** 
- * Attack is a class. Handles info on it's own specs. Figures
- * out how much damage it deals. Having attacks as objects
- * allows us to interchange them for monsters and allows 
- * players to 'gain' new moves. 
+/**
+ * Construct a Attack Class to act as a 'move' in the moveset of creatures. Allows for interchangeable movesets 
  * 
- * For details on how this is intended to translate into mechanics 
- * see the Game Manuel I posted in the discord. 
- * 
- * Note To Self: Get around to making constructor
+ * @param Name - name of the attack 
+ * @param infoText - description of the attack 
+ * @param spriteReference - String filepath of the object 
+ * @param mightOrmagic - whether or not the attack is magical of physical. 0 is physical. 1 is magical
+ * @param damageArrayMin - Minimum damage range of the attack - An array because multiple damage types 
+ * @param damageArrayMax - Maxinumum damage range of the attack [Physical, Fire, Toxic, Cold, Lightning, Necrotic, Radiant] 
+ * @param afflictionArray - Array which repersents the afflictions the attack imposes on a target on hit.
+ * @param accuracy - base chance that the attack hits
+ * @param critChance - base chance that the attack crits, doing double damage 
+ * @param hits - how many times the attack can make a strike 
+ * @param massAttack - if the attack hits all enimies in field 
  */
-
-// May need to be private class - Only exists contained within 
-// Creature objects. Look more into that.
 public class Attack {
-    private String Name; // Name is needed to appear in eventlog
-    private String infoText; // description text
-    private String spriteReference; // In case we 
-    private int mightOrmagic; // Magical or Physical Attack
-
-    // Range of damage and what type of damage it deals
-    // [Physical, Fire, Toxic, Cold, Lightning, Necrotic, Radiant] 
+    private String Name; 
+    private String infoText; 
+    private String spriteReference; 
+    private int mightOrmagic; 
     private int[] damageArrayMin; 
     private int[] damageArrayMax; 
-    
-    // Afflictions/Conditions the attacks imposes 
-    // [Bleed, Burn, Poisoned, Frozened, Stunned, Doomed, Condemned]
     private int[] afflictionArray;
-    
-    // Self explainatory 
     private int accuracy; 
     private int critChance; 
-    
-    // Hits is how many time the strikes the attack makes
-    // May or may not be feature in final, but putting it here in case
     private int hits; 
-    
-    // Another 'maybe' feature. Mass Attacks hit all enimies on field 
     private Boolean massAttack; 
     
-    // constructor may change, depending on how we chooose to encode the info
-    // yeah I know I could use this.variable but I don't want to. 
     Attack(String name, String info, String spriteFile, int isMagic,
             int[] minDmg, int[] maxDmg, int[] effects, int hitChance, int crit, 
             int hitNum, Boolean hitAll){
@@ -64,11 +50,10 @@ public class Attack {
 
     }
     
-    // Getter methods. Don't need much explaination. 
+// Getter Methods 
     public String getName(){
         return Name;
     }
-    
 
     public String getSpriteReference(){
         return spriteReference;
@@ -94,10 +79,8 @@ public class Attack {
         return afflictionArray;
     }
     
-    // determines if attack is magical or physical
-    // probably better way to do it but this works for now. 
     public int IsMagic(){
-    return mightOrmagic; 
+        return mightOrmagic; 
     }
     
 }
