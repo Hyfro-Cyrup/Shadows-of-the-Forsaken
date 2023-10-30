@@ -50,8 +50,8 @@ public class Creature extends Entity {
         super(name, desc, spriteFileName);
         
         currentHP = maxHP = hp;
-        Strength = str;
-        Soul = soul;
+        strength = str;
+        this.soul = soul;
         hpRegen = regen; 
         attackArray = moveset; 
         resist = resistences; 

@@ -37,11 +37,19 @@ public class Player extends Creature {
     
     /**
      * Mutator to move the player by some `dx` tiles in the x direction and `dy` tiles in the y direction
-     * @param dx
-     * @param dy 
+     * @param dx Number of tiles to move in x direction
+     * @param dy Number of tiles to move in y direction
+     * @param map Collection of tiles used for movement bounds
      */
-    public void move(int dx, int dy){
-        x += dx;
-        y += dy;
+    public void move(int dx, int dy, DungeonTile[][] map){
+        int nx = x + dx;
+        int ny = y + dy;
+        if (-1 < nx && nx < map.length && 
+            -1 < ny && ny < map[0].length &&
+            map[nx][ny] != null)
+        {
+            x = nx;
+            y = ny;
+        }
     }
 }

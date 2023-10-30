@@ -12,6 +12,9 @@
             </test-roots>
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>dx</word>
+            <word>dy</word>
+            <word>killable</word>
             <word>Mutator</word>
         </spellchecker-wordlist>
     </configuration>

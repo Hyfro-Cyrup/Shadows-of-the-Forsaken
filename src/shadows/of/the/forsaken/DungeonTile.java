@@ -48,4 +48,19 @@ public class DungeonTile {
     {
         return Contents.stream().anyMatch(e -> e instanceof Creature);
     }
+    
+    public Boolean containsLadder()
+    {
+        return Contents.stream().anyMatch(e -> "Ladder".equals(e.getName()));
+    }
+    
+    public Boolean hasBeenSeen()
+    {
+        return this.hasBeenSeen;
+    }
+    
+    public void markSeen()
+    {
+        hasBeenSeen = true;
+    }
 }
