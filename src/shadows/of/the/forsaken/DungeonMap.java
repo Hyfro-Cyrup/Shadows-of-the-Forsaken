@@ -169,6 +169,7 @@ public class DungeonMap extends JPanel {
                     case KeyEvent.VK_DOWN -> player.move(0, 1, Tiles);
                     case KeyEvent.VK_LEFT -> player.move(-1, 0, Tiles);
                     case KeyEvent.VK_RIGHT -> player.move(1, 0, Tiles);
+                    case KeyEvent.VK_SPACE -> System.out.println(MapMaker.test(Tiles));
                 }
                 markAdjacentSeen();
                 repaint(); // Ask the panel to redraw itself

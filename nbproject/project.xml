@@ -16,6 +16,7 @@
             <word>dy</word>
             <word>killable</word>
             <word>Mutator</word>
+            <word>pathfinding</word>
         </spellchecker-wordlist>
     </configuration>
 </project>

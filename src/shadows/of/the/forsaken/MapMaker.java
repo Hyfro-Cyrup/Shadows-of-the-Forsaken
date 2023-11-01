@@ -6,7 +6,12 @@ package shadows.of.the.forsaken;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Stack;
+import java.util.function.Function;
 
 /**
  *
@@ -17,12 +22,46 @@ public final class MapMaker {
     // everything's up here for easy tweaking and so there's no magic numbers
     private static final int WIDTH = 20;
     private static final int HEIGHT = 16;
-    private static final int ITERATIONS = 20; // vaguely how large the map can branch out to be
-    private static final double ENTITY_PROB = 0.3;  // higher makes the ladder and key appear earlier
-    private static final double CREATURE_PROB = 0.2; // higher makes more creatures
-    private static final double NEIGHBOR_PROB = 0.05; // at 0, no 2x2 rooms appear. Higher makes more clusters like that
-    private static final int ENTITY_START = 5; // how many iterations must be done before non-creature entities appear
-    private static final int CREATURE_START = 1; // how many iterations must be done before creatures can appear
+    /**
+     * vaguely how large the map can branch out to be
+     */
+    private static final int ITERATIONS = 20; 
+    /**
+     * The probability a given node contains a non-creature entity.
+     * Higher makes the ladder and key appear earlier
+     */
+    private static final double ENTITY_PROB = 0.3;
+    /**
+     * The probability a given node contains a creature.
+     * Higher makes more densely-packed creatures.
+     */
+    private static final double CREATURE_PROB = 0.2;
+    /**
+     * Clustering coefficient. At 0, no 2x2 rooms appear. 
+     * Higher makes more clusters like that.
+     * Keep lower than you think. 
+     */
+    private static final double NEIGHBOR_PROB = 0.05; 
+    /**
+     * How many iterations must be done before non-creature entities appear.
+     */
+    private static final int ENTITY_START = 5; 
+    /**
+     * How many iterations must be done before creatures can appear.
+     */
+    private static final int CREATURE_START = 1; 
+    /**
+     * Minimum count of tiles in the final map.
+     */
+    private static final int MIN_TILES = 40; 
+    /**
+     * Minimum allowable distance between the key and door, in tiles.
+     */
+    private static final int MIN_DISTANCE = 15;
+    /**
+     * Minimum number of combats between key and ladder
+     */
+    private static final int MIN_COMBATS = 2;
     
     
     /**
@@ -42,7 +81,6 @@ public final class MapMaker {
         List<Entity> Objects = new ArrayList<>();
         Objects.add(new Entity("Ladder", "The exit beckons.", "dummy/path"));
         Objects.add(new Entity("Key", "It shines with hope.", "dummy/path"));
-        System.out.println("Starting new map");
         
         DungeonTile[][] map = new DungeonTile[w][h];
         ArrayList<List<Integer>> cursor = new ArrayList<>();
@@ -70,17 +108,13 @@ public final class MapMaker {
             for (List<Integer> tile : cursor) 
             {
                 contents.clear();
-                System.out.print("Starting contents = ");
-                System.out.println(contents);
                 // fill in dungeon tile
                 if ((i > ENTITY_START) && (!Objects.isEmpty()) && (Math.random() < ENTITY_PROB))
                 {
-                    System.out.println(Objects.isEmpty());
                     // add an object
                     int index = (int) Math.floor(Math.random()*Objects.size());
                     contents.add(Objects.get(index));
                     Objects.remove(index);
-                    System.out.println(Objects.isEmpty());
                     
                 }
                 else if ((i > CREATURE_START) && (Math.random() < CREATURE_PROB))
@@ -166,25 +200,238 @@ public final class MapMaker {
                 }
             }
         }
-        if (count < 15)
+        if (count < MIN_TILES)
         {
             return false;
         }
         
-        // Check for key placement
-        for (DungeonTile[] col : map){
-            for (DungeonTile tile : col) {
-                if ((tile != null) && (tile.containsKey())){
-                    System.out.println("Key found!");
-                    if (tile.containsEnemy()){
-                        System.out.println("Enemy also found. ");
-                        return false;
+        // Check for key and ladder placement
+        int[] keyPos = null, ladderPos = null;
+        for (int i = 0; i < map.length; i++)
+        {
+            for (int j = 0; j < map[i].length; j++) 
+            {
+                if ((map[i][j] != null))
+                {
+                    if (map[i][j].containsKey())
+                    {
+                        keyPos = new int[]{i, j};
                     }
-                    return true;
+                    else if (map[i][j].containsLadder())
+                    {
+                        ladderPos = new int[]{i, j};
+                    }
                 }
             }
         }
-        return false;
+        if ((keyPos == null) || (ladderPos == null))
+        {
+            return false;
+        }
+        
+        // check distance between key and ladder
+        if (AStar(map, keyPos, ladderPos) < MIN_DISTANCE)
+        {
+            return false;
+        }
+        
+        // check number of combats between key and ladder
+        if (combatsRequired(map, keyPos, ladderPos) < MIN_COMBATS)
+        {
+            return false;
+        }
+        
+        
+        return true;
+    }
+    
+    public static int test(DungeonTile[][] map)
+    {
+        int[] keyPos = null, ladderPos = null;
+        for (int i = 0; i < map.length; i++)
+        {
+            for (int j = 0; j < map[i].length; j++) 
+            {
+                if ((map[i][j] != null))
+                {
+                    if (map[i][j].containsKey())
+                    {
+                        keyPos = new int[]{i, j};
+                    }
+                    else if (map[i][j].containsLadder())
+                    {
+                        ladderPos = new int[]{i, j};
+                    }
+                }
+            }
+        }
+        
+        return AStar(map, keyPos, ladderPos);
+    }
+    
+    private static class AStarNode
+    {
+        private enum Status
+        {
+            UNVISITED, 
+            CLOSED, 
+            OPEN
+        }
+        public int[] position;
+        public AStarNode prevNode;
+        public int costSoFar;
+        public double heuristic;
+        public double estimatedTotalCost;
+        public Status status = Status.UNVISITED;
+        
+        public AStarNode(int[] position)
+        {
+            this.position = position;
+        }
+    }
+    
+    private static class AStarComp implements Comparator<AStarNode>
+    {
+        @Override
+        public int compare(AStarNode node1, AStarNode node2) 
+        {
+            // Compare nodes based on their estimated total cost.
+            // A lower cost should have a higher priority.
+            return Double.compare(node1.costSoFar, node2.costSoFar);
+        }
+    }
+    
+    /**
+     * Implements the A* pathfinding algorithm to find the length of the shortest path between two DungeonTiles
+     * @param map The DungeonTile array to search through
+     * @param start The coordinates of the first DungeonTile
+     * @param end The coordinates of the second DungeonTile
+     * @return an int representing the length of the path. -1 signifies no path exists, but one always should under the MapMaker construction
+     */
+    private static int AStar(DungeonTile[][] map, int[] start, int[] end)
+    {
+        Function<int[], Integer> cost = position -> 1;
+        
+        return AStar(map, start, end, cost);
+    }
+    
+    
+    private static int AStar(DungeonTile[][] map, int[] start, int[] end, Function<int[], Integer> costToEnter)
+    {
+        PriorityQueue<AStarNode> openNodes = new PriorityQueue<>(new AStarComp());
+        AStarNode startNode = new AStarNode(start);
+        openNodes.add(startNode);
+        List<AStarNode> closedNodes = new LinkedList<>();
+        AStarNode current;
+        
+        while (!openNodes.isEmpty())
+        {
+            current = openNodes.poll();
+            
+            // exit as soon as the goal node is found
+            if (Arrays.equals(current.position, end))
+            {
+                int cost = 0;
+                while (!Arrays.equals(current.position, start))
+                {
+                    cost += 1;
+                    current = current.prevNode;
+                }
+                return cost;
+            }
+            
+            // loop through the neighbors
+            int[][] neighbors = {
+                {current.position[0] + 1, current.position[1]},
+                {current.position[0], current.position[1] + 1},
+                {current.position[0], current.position[1] - 1},
+                {current.position[0] - 1, current.position[1]},
+            };
+            for (int[] n : neighbors)
+            {
+                // ensure position is valid on the map
+                if (-1 < n[0] && n[0] < map.length &&
+                    -1 < n[1] && n[1] < map[0].length &&
+                    map[n[0]][n[1]] != null)
+                {
+                    int csf = current.costSoFar + costToEnter.apply(n); // cost-so-far of this neighbor
+                    double est;    // heuristic of this neighbor
+                    
+                    // if neighbor is in openNodes or closedNodes, don't recalculate heuristic
+                    AStarNode next;
+                    next = closedNodes.stream().filter(e -> Arrays.equals(e.position, n)).findFirst().orElse(null);
+                    if (next != null) // node is in closedNodes
+                    {
+                        // if the new route is longer than a previously found route, ignore it
+                        if (next.costSoFar <= csf)
+                        {
+                            continue;
+                        }
+                        
+                        // if new route is the new shortest route, we'll have to recalculate any subsequent nodes
+                        closedNodes.remove(next);
+                        
+                        // reuse previously calculated heuristic
+                        est = next.heuristic;
+                    }
+                    else
+                    {
+                        next = openNodes.stream().filter(e -> Arrays.equals(e.position, n)).findFirst().orElse(null);
+                        if (next != null) // node is in openNodes
+                        {
+                            // if the new route is longer than a previously found route, ignore it
+                            if (next.costSoFar <= csf)
+                            {
+                                continue;
+                            }
+                            
+                            // reuse previously calculated heuristic
+                            est = next.heuristic;
+                        }
+                        else // node is not in openNodes or closedNodes
+                        {
+                            // there's no previously calculated heuristic to use, so calculate one
+                            est = Math.pow(n[0] - end[0], 2) + Math.pow(n[1] - end[1], 2);
+                            next = new AStarNode(n);
+                            next.heuristic = est;
+                        }
+                    }
+                    // if node was not ignored, overwrite data
+                    next.costSoFar = csf;
+                    next.estimatedTotalCost = csf + est;
+                    next.prevNode = current;
+
+                    // add to open list if it's not there already
+                    if (!openNodes.stream().anyMatch(e -> Arrays.equals(e.position, n)))
+                    {
+                        openNodes.add(next);
+                    }
+                }
+            }
+            // outside for loop
+            // we're done with the current node's neighbors, so close it
+            closedNodes.add(current);
+        }
+        // outside while loop
+        // if we got here, we exhausted A* without finding the goal node, so no such 
+        // path exists. This should never happen if the map was made by MapMaker
+        
+        return -1;
+    }
+    
+    /**
+     * Determines whether the player can traverse from one node to another without having a combat encounter.
+     * Implementation is A* with a different function determining edge weights
+     * @param map The DungeonTile array to traverse
+     * @param start indices of the start node
+     * @param end indices of the end node
+     * @return the minimum number of combats between the start and end
+     */
+    private static int combatsRequired(DungeonTile[][] map, int[] start, int[] end)
+    {
+        Function<int[], Integer> cost = position -> map[position[0]][position[1]].containsEnemy() ? 1 : 0;
+        
+        return AStar(map, start, end, cost);
     }
     
     /**
