@@ -4,6 +4,8 @@
  */
 package shadows.of.the.forsaken;
 
+import java.io.Serializable;
+
 /**
 <<<<<<< HEAD
  * An object that can be found in the dungeon.
@@ -13,7 +15,7 @@ package shadows.of.the.forsaken;
  * Probably make more stuff 'final' in general. 
 >>>>>>> origin/master
  */
-public class Entity {
+public class Entity implements Serializable{
     /**
      * The name for the GUI
      */

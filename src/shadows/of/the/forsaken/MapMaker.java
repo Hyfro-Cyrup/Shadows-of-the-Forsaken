@@ -62,6 +62,13 @@ public final class MapMaker {
      * Minimum number of combats between key and ladder
      */
     private static final int MIN_COMBATS = 2;
+    /**
+     * List of creature entities from which to populate the grid
+     */
+    private static final List<Creature> CREATURES = new ArrayList<>(Arrays.asList(
+            new Creature("Gerblin", "Nasty-looking fellow", "dummy/path"),
+            new Creature("Ogre", "A little bigger than you", "dummy/path")
+    ));
     
     
     /**
@@ -74,10 +81,6 @@ public final class MapMaker {
      */
     private static DungeonTile[][] coolMapGenerator(int w, int h, int iterations, double probability)
     {       
-        List<Entity> Creatures = new ArrayList<>();
-        Creatures.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path"));
-        Creatures.add(new Creature("Gerblin", "Nasty-looking fellow", "dummy/path"));
-        
         List<Entity> Objects = new ArrayList<>();
         Objects.add(new Entity("Ladder", "The exit beckons.", "dummy/path"));
         Objects.add(new Entity("Key", "It shines with hope.", "dummy/path"));
@@ -119,7 +122,7 @@ public final class MapMaker {
                 }
                 else if ((i > CREATURE_START) && (Math.random() < CREATURE_PROB))
                 {
-                    Entity entity = Creatures.get((int) Math.floor(Math.random()*Creatures.size()));
+                    Entity entity = CREATURES.get((int) Math.floor(Math.random()*CREATURES.size()));
                     contents.add(entity);
                 }
                 

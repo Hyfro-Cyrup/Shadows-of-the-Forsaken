@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 public class ShadowsOfTheForsaken implements SceneSwitcher{
     private final JFrame frame;
     private JPanel panel;
-    private Map<String, JPanel> Scenes;
+    private final Map<String, JPanel> Scenes;
     /**
      * Initializes the main game window.
      */

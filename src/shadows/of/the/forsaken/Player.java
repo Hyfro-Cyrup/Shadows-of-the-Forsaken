@@ -4,12 +4,13 @@
  */
 package shadows.of.the.forsaken;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * A creature that the player controls and has an inventory.
  */
-public class Player extends Creature {
+public class Player extends Creature implements Serializable{
     private Boolean hasExitKey;
     private List<Entity> Inventory;
     /**

@@ -4,14 +4,15 @@
  */
 package shadows.of.the.forsaken;
 
+import java.io.Serializable;
 import static java.util.Collections.emptyList;
 import java.util.List;
 
 /**
  * Location the player can go to, and container for the objects found there.
  */
-public class DungeonTile {
-    private List<Entity> Contents;
+public class DungeonTile implements Serializable {
+    private final List<Entity> Contents;
     private Boolean hasBeenSeen;
     
     /**

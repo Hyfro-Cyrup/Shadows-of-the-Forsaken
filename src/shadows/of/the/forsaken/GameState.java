@@ -4,24 +4,30 @@
  */
 package shadows.of.the.forsaken;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import static java.util.Collections.emptyList;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A common root for all of our data. 
  * GameState operates as a singleton service via its `getInstance` method.
  * 
  */
-public class GameState {
+public class GameState implements Serializable {
     /**
      * A common GameState instance to be shared by all objects who need it.
      */
     private static GameState instance;
     
-    private final Player player;
-    private final DungeonTile[][] map;
+    private Player player;
+    private DungeonTile[][] map;
     
     /**
      * Default constructor. Initializes player and map.
@@ -31,6 +37,16 @@ public class GameState {
         player = new Player("Dummy/file/path", 69, emptyList(), false, emptyList());
         map = MapMaker.newMap();
         
+    }
+    
+    /**
+     * Copy another GameState object
+     * @param gs The GameState from which to copy
+     */
+    private void copy(GameState gs)
+    {
+        this.player = gs.player;
+        this.map = gs.map;
     }
     
     /**
@@ -47,6 +63,61 @@ public class GameState {
         return instance;
     }
     
+    /**
+     * Serializes the current GameState and write it to a save file
+     * @param filename The name of the file to save to, without extension
+     */
+    public static void saveGame(String filename)
+    {
+        FileOutputStream file = null;
+        try {
+            file = new FileOutputStream("saves/" + filename + ".ser");
+            ObjectOutputStream obStream = new ObjectOutputStream(file);
+            obStream.writeObject(instance);
+            obStream.flush();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (file != null) { file.close(); }
+            } catch (IOException ex) {
+                Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }
+    
+    /**
+     * Deserializes and loads a GameState from file
+     * @param filename The name of the file to read from, without extension
+     */
+    public static void loadGame(String filename)
+    {
+        FileInputStream file = null;
+        try {
+            file = new FileInputStream("saves/" + filename + ".ser");
+            ObjectInputStream obStream = new ObjectInputStream(file);
+            GameState gs = (GameState) obStream.readObject();
+            System.out.println(instance.getPlayer().x); // current value
+            System.out.println(gs.getPlayer().x);       // saved value
+            instance.copy(gs);
+            System.out.println(instance.getPlayer().x); // saved value
+            System.out.println();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        finally {
+            try {
+                if (file != null) { file.close(); } 
+            } catch (IOException ex) {
+                Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }    
+    }
     
     /**
      * Returns the map

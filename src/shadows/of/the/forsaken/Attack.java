@@ -4,6 +4,8 @@
  */
 package shadows.of.the.forsaken;
 
+import java.io.Serializable;
+
 /**
  * Construct a Attack Class to act as a 'move' in the moveset of creatures. Allows for interchangeable movesets 
  * 
@@ -19,7 +21,7 @@ package shadows.of.the.forsaken;
  * @param hits - how many times the attack can make a strike 
  * @param massAttack - if the attack hits all enimies in field 
  */
-public class Attack {
+public class Attack implements Serializable{
     private String Name; 
     private String infoText; 
     private String spriteReference; 

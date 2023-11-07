@@ -6,14 +6,25 @@ package shadows.of.the.forsaken;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
 
 /**
  * The main component that draws the dungeon map. There is a temporary slider here
@@ -25,8 +36,13 @@ public class DungeonMap extends JPanel {
     private final int MAX_GRIDSIZE = 60;
     private final int MARGINS = 50;
     private final SceneSwitcher switcher;
-    private final DungeonTile[][] Tiles;
+    private DungeonTile[][] Tiles;
     private int[] origin;
+    private boolean paused = false;
+    private JButton pauseButton;
+    private JPanel centeredPanel;
+    private JPanel rightPanel;
+    private GameState gameState;
 
     
     /**
@@ -70,9 +86,28 @@ public class DungeonMap extends JPanel {
             }
         }
         drawPlayer(g2d);
+        if (paused)
+        {
+            g2d.setColor(new Color(50, 50, 50, 150));
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+            System.out.println(getWidth());
+        }
+        var size = centeredPanel.getPreferredSize();
+        int swidth = getWidth();
+        int sheight = getHeight();
+        centeredPanel.setBounds((swidth - size.width) / 2, (sheight - size.height) / 2, size.width, size.height);
+        size = rightPanel.getPreferredSize();
+        rightPanel.setBounds((7*swidth / 10) + ((3*swidth / 10) - size.width) / 2, (sheight - size.height) / 2, 3 * swidth/ 10, size.height);
+        centeredPanel.revalidate();
+        centeredPanel.repaint();
+        rightPanel.revalidate();
+        rightPanel.repaint();
+        
+        
     }
     
-    private void drawPlayer(Graphics2D g) {
+    private void drawPlayer(Graphics2D g) 
+    {
         g.setColor(Color.BLUE);
         int x = (int) (GRIDSIZE*(player.x + 0.5) + origin[0]);
         int y = (int) (GRIDSIZE*(player.y + 0.5) + origin[1]);
@@ -102,7 +137,7 @@ public class DungeonMap extends JPanel {
                     xmax = Math.max(xmax, i);
                     ymin = Math.min(ymin, j);
                     ymax = Math.max(ymax, j);
-                }
+                }   
             }
         }
         int bbox_w = xmax - xmin + 1;
@@ -115,7 +150,7 @@ public class DungeonMap extends JPanel {
         GRIDSIZE = Math.min(MAX_GRIDSIZE, g);
         
         // step 3 is to find the coordinates of the (0, 0) tile so we can draw all others relative to it.
-        int[] o = {(X_MAX - GRIDSIZE*(bbox_w + 2*xmin - 1)) / 2, (Y_MAX - (bbox_h + 2*ymin - 1)*GRIDSIZE) / 2};
+        int[] o = {(X_MAX - GRIDSIZE*(bbox_w + 2*xmin)) / 2, (Y_MAX - (bbox_h + 2*ymin)*GRIDSIZE) / 2};
         origin = o;
     }
     
@@ -148,34 +183,134 @@ public class DungeonMap extends JPanel {
      */
     public DungeonMap(SceneSwitcher parent)
     {
-        super(new BorderLayout());
+        super();
         switcher = parent;
-        GameState gameState = GameState.getInstance();
+        gameState = GameState.getInstance();
         Tiles = gameState.getMap();
-        Tiles[Tiles.length / 2][Tiles[0].length / 2].markSeen();
-        
-        setFocusable(true);
+        Tiles[Tiles.length / 2][Tiles[0].length / 2].markSeen(); 
         
         player = gameState.getPlayer();
         player.x = Tiles.length / 2;
         player.y = Tiles[0].length / 2;
         markAdjacentSeen();
         
+        // make all the buttons
+        this.setLayout(null);
+        makePauseButton();
+        makePauseScreen();
+
+        setFocusable(true);
+        
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_UP -> player.move(0, -1, Tiles);
-                    case KeyEvent.VK_DOWN -> player.move(0, 1, Tiles);
-                    case KeyEvent.VK_LEFT -> player.move(-1, 0, Tiles);
-                    case KeyEvent.VK_RIGHT -> player.move(1, 0, Tiles);
-                    case KeyEvent.VK_SPACE -> System.out.println(MapMaker.test(Tiles));
+                if (!paused)
+                {
+                   switch (e.getKeyCode()) 
+                   {
+                        case KeyEvent.VK_UP -> player.move(0, -1, Tiles);
+                        case KeyEvent.VK_DOWN -> player.move(0, 1, Tiles);
+                        case KeyEvent.VK_LEFT -> player.move(-1, 0, Tiles);
+                        case KeyEvent.VK_RIGHT -> player.move(1, 0, Tiles);
+                        case KeyEvent.VK_ESCAPE -> paused = !paused;
+                    } 
                 }
+                
                 markAdjacentSeen();
                 repaint(); // Ask the panel to redraw itself
+                System.out.println(player.x + " " + gameState.getPlayer().x);
+                System.out.println(gameState== GameState.getInstance());
             }
         });
         this.setBackground(Color.BLACK);
 
     }
+    
+    private void pause()
+    {
+        paused = !paused;
+        centeredPanel.setVisible(paused);
+        rightPanel.setVisible(paused);
+        repaint();
+    }
+    
+    private void makePauseButton()
+    {
+        
+        pauseButton = new JButton("");
+        pauseButton.setIcon(new ImageIcon(new ImageIcon(DungeonMap.class.getResource("/resources/pause_icon.png")).getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH)));      
+        pauseButton.setBorderPainted(false);
+        pauseButton.setContentAreaFilled(false); 
+       
+        pauseButton.setBounds(20, 20, 60, 60);
+        
+        pauseButton.addActionListener((ActionEvent e)  -> pause());
+        
+        pauseButton.setFocusable(false);
+        
+        this.add(pauseButton);
+    }
+    
+    private void makePauseScreen()
+    {
+        
+        centeredPanel = new JPanel(new GridLayout(0, 1));
+        
+        rightPanel = new JPanel(new GridLayout(0, 1));
+        
+        
+        JButton goToStart = new JButton("Main Menu");
+        JButton backToGame = new JButton("Back to Game");
+        
+        goToStart.addActionListener((ActionEvent e) -> {
+            switcher.changeScene("START_SCREEN");
+            pause();
+        });
+        backToGame.addActionListener((ActionEvent e) -> pause());
+        
+        for (JButton btn : new JButton[] {goToStart, backToGame})
+        {
+            JPanel bp = new JPanel();
+            bp.add(btn);
+            bp.setOpaque(false);
+            centeredPanel.add(bp);
+        }
+        
+        JButton slot1 = new JButton("Slot 1");
+        JButton slot2 = new JButton("Slot 2");
+        JButton slot3 = new JButton("Slot 3");
+        
+        
+        JLabel label = new JLabel("Save Game");
+        label.setForeground(Color.WHITE);
+        rightPanel.add(label);
+        
+        int i = 1;
+        for (JButton btn : new JButton[]{ slot1, slot2, slot3})
+        {
+            final int j = i;
+            JPanel bp = new JPanel();
+            bp.add(btn);
+            bp.setOpaque(false);
+            rightPanel.add(bp);
+            btn.addActionListener((ActionEvent e) -> GameState.saveGame("save" + String.valueOf(j)));
+            i++;
+        }
+        
+
+        
+        centeredPanel.setOpaque(false);
+        rightPanel.setOpaque(false);
+        
+        centeredPanel.add(Box.createGlue());
+        rightPanel.add(Box.createGlue());
+        
+        centeredPanel.setVisible(false);
+        rightPanel.setVisible(false);
+        
+        this.add(centeredPanel);
+        this.add(rightPanel);
+        
+    }
+    
 }

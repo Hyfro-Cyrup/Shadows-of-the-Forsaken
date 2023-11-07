@@ -4,6 +4,8 @@
  */
 package shadows.of.the.forsaken;
 
+import java.io.Serializable;
+
 /**
 <<<<<<< HEAD
  * A type of entity that has hp and attacks. Used in combat encounters.
@@ -33,7 +35,7 @@ package shadows.of.the.forsaken;
  * @param isDefending - int that represents if a creature is Defending. 0 if not, 1 if it is. 
  */
 
-public class Creature extends Entity {
+public class Creature extends Entity implements Serializable {
     private int maxHP;
     private int currentHP;
     private int hpRegen; 
