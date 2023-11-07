@@ -36,15 +36,15 @@ import java.io.Serializable;
  */
 
 public class Creature extends Entity implements Serializable {
-    private int maxHP;
-    private int currentHP;
-    private int hpRegen; 
-    private int strength;
-    private int soul;
-    private Attack[] attackArray; 
-    private float[] resist;
-    private int[] conditions = new int[7]; 
-    private int isDefending = 0; 
+    protected int maxHP;
+    protected int currentHP;
+    protected int hpRegen; 
+    protected int strength;
+    protected int soul;
+    protected Attack[] attackArray; 
+    protected float[] resist;
+    protected int[] conditions = new int[7]; 
+    protected int isDefending = 0; 
     
     
     public Creature(String name, String desc, String spriteFileName,int hp, int str, int soul, 
