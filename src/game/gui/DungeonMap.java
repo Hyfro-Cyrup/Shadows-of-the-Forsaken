@@ -2,29 +2,25 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package shadows.of.the.forsaken;
+package game.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import game.model.Player;
+import game.model.DungeonTile;
+import game.model.GameState;
 
 /**
  * The main component that draws the dungeon map. There is a temporary slider here
@@ -90,14 +86,13 @@ public class DungeonMap extends JPanel {
         {
             g2d.setColor(new Color(50, 50, 50, 150));
             g2d.fillRect(0, 0, getWidth(), getHeight());
-            System.out.println(getWidth());
         }
         var size = centeredPanel.getPreferredSize();
         int swidth = getWidth();
         int sheight = getHeight();
         centeredPanel.setBounds((swidth - size.width) / 2, (sheight - size.height) / 2, size.width, size.height);
         size = rightPanel.getPreferredSize();
-        rightPanel.setBounds((7*swidth / 10) + ((3*swidth / 10) - size.width) / 2, (sheight - size.height) / 2, 3 * swidth/ 10, size.height);
+        rightPanel.setBounds((7*swidth / 10) + ((3*swidth / 10) - 2*size.width) / 2, (sheight - size.height) / 2, 3 * swidth/ 10, size.height);
         centeredPanel.revalidate();
         centeredPanel.repaint();
         rightPanel.revalidate();
@@ -204,6 +199,11 @@ public class DungeonMap extends JPanel {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+                {
+                    pause();
+                    return;
+                }
                 if (!paused)
                 {
                    switch (e.getKeyCode()) 
@@ -212,14 +212,11 @@ public class DungeonMap extends JPanel {
                         case KeyEvent.VK_DOWN -> player.move(0, 1, Tiles);
                         case KeyEvent.VK_LEFT -> player.move(-1, 0, Tiles);
                         case KeyEvent.VK_RIGHT -> player.move(1, 0, Tiles);
-                        case KeyEvent.VK_ESCAPE -> paused = !paused;
                     } 
                 }
                 
                 markAdjacentSeen();
                 repaint(); // Ask the panel to redraw itself
-                System.out.println(player.x + " " + gameState.getPlayer().x);
-                System.out.println(gameState== GameState.getInstance());
             }
         });
         this.setBackground(Color.BLACK);
@@ -238,6 +235,7 @@ public class DungeonMap extends JPanel {
     {
         
         pauseButton = new JButton("");
+        
         pauseButton.setIcon(new ImageIcon(new ImageIcon(DungeonMap.class.getResource("/resources/pause_icon.png")).getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH)));      
         pauseButton.setBorderPainted(false);
         pauseButton.setContentAreaFilled(false); 

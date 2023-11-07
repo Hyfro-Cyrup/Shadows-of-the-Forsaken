@@ -2,12 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
-package shadows.of.the.forsaken;
+package game.gui;
 
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
 
 /**
  * Main entry point to the game. Holds and switches between all views. 
@@ -46,7 +47,6 @@ public class ShadowsOfTheForsaken implements SceneSwitcher{
      */
     @Override
     public void changeScene(String sceneName) {
-        System.out.println("Starting the game!");
         
         // Remove all components from the main frame (i.e., main menu)
         frame.getContentPane().removeAll();

@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package shadows.of.the.forsaken;
+package game.model;
 
+import game.util.MapMaker;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -99,12 +100,7 @@ public class GameState implements Serializable {
         try {
             file = new FileInputStream("saves/" + filename + ".ser");
             ObjectInputStream obStream = new ObjectInputStream(file);
-            GameState gs = (GameState) obStream.readObject();
-            System.out.println(instance.getPlayer().x); // current value
-            System.out.println(gs.getPlayer().x);       // saved value
-            instance.copy(gs);
-            System.out.println(instance.getPlayer().x); // saved value
-            System.out.println();
+            instance.copy((GameState) obStream.readObject());
         } catch (FileNotFoundException ex) {
             Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException | ClassNotFoundException ex) {
