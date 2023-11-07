@@ -89,7 +89,7 @@ public class Attack implements Serializable{
     }
  
     public int getCost(){
-        return cost; 
+        return Cost; 
     }
     
     
