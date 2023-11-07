@@ -26,6 +26,7 @@ public class Attack implements Serializable{
     private String infoText; 
     private String spriteReference; 
     private int mightOrmagic; 
+    private int Cost; 
     private int[] damageArrayMin; 
     private int[] damageArrayMax; 
     private int[] afflictionArray;
@@ -34,7 +35,7 @@ public class Attack implements Serializable{
     private int hits; 
     private Boolean massAttack; 
     
-    Attack(String name, String info, String spriteFile, int isMagic,
+    Attack(String name, String info, String spriteFile, int isMagic, int price,
             int[] minDmg, int[] maxDmg, int[] effects, int hitChance, int crit, 
             int hitNum, Boolean hitAll){
         
@@ -42,6 +43,7 @@ public class Attack implements Serializable{
         infoText = info;
         spriteReference = spriteFile;
         mightOrmagic = isMagic;
+        Cost = price;
         damageArrayMin = minDmg;
         damageArrayMax = maxDmg;
         afflictionArray = effects;
@@ -51,6 +53,7 @@ public class Attack implements Serializable{
         massAttack = hitAll; 
 
     }
+    
     
 // Getter Methods 
     public String getName(){
@@ -83,6 +86,17 @@ public class Attack implements Serializable{
     
     public int IsMagic(){
         return mightOrmagic; 
+    }
+ 
+    public int getCost(){
+        return cost; 
+    }
+    
+    
+    public int getDamage(int type){
+        int range = damageArrayMax[type]-damageArrayMin[type];
+        int damage = (int) (Math.random() * range)+damageArrayMin[type];
+        return damage; 
     }
     
 }
