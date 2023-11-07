@@ -2,3 +2,4 @@
 *.properties
 /build/
 /dist/
+/nbproject/private/
