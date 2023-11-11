@@ -13,14 +13,14 @@ import javax.swing.JPanel;
 /**
  * Main entry point to the game. Holds and switches between all views. 
  */
-public class ShadowsOfTheForsaken implements SceneSwitcher{
+public class MainGUI implements SceneSwitcher{
     private final JFrame frame;
     private JPanel panel;
     private final Map<String, JPanel> Scenes;
     /**
      * Initializes the main game window.
      */
-    public ShadowsOfTheForsaken() {
+    public MainGUI() {
         // Initialize values for each scene
         Scenes = new HashMap();
         Scenes.put("START_SCREEN", new StartScreen(this));
@@ -41,9 +41,9 @@ public class ShadowsOfTheForsaken implements SceneSwitcher{
     }
     
     /**
-     * Change out SoTF's main panel for the requested scene.
+     * Change out MainGUI's main panel for the requested scene.
      *
-     * @param sceneName The name of the scene to switch to. Defined by `Scenes` Map of SoTF
+     * @param sceneName The name of the scene to switch to, defined by `Scenes` Map of MainGUI
      */
     @Override
     public void changeScene(String sceneName) {
@@ -60,16 +60,30 @@ public class ShadowsOfTheForsaken implements SceneSwitcher{
         frame.revalidate();
         frame.repaint();
     }
-
+    
     /**
-     * The main method of the game.
-     * 
-     * @param args the command line arguments
+     * Change out MainGUI's main panel for the requested scene.
+     * This version takes in a JPanel, allowing for dynamic scene switching without 
+     * storing the new JPanel in MainGUI.Scenes.
+     * Useful for EncounterScene objects.
+     *
+     * @param newScene The JPanel to display. 
      */
-    public static void main(String[] args) {
-        // Initialize the game object
-        ShadowsOfTheForsaken SoTF = new ShadowsOfTheForsaken();
+    public void changeScene(JPanel newScene) {
+        
+        // Remove all components from the main frame (i.e., main menu)
+        frame.getContentPane().removeAll();
+
+        // Add the panel for the relevant scene
+        panel = newScene; 
+        frame.add(panel);
+        panel.requestFocusInWindow();
+
+        // Refresh the frame to reflect the changes
+        frame.revalidate();
+        frame.repaint();
     }
+
     
     
 }
