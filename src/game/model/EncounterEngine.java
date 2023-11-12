@@ -11,15 +11,15 @@ import java.util.List;
  * @author Son Nguyen
  */
 public class EncounterEngine {
-    Enemy field[] = new Enemy[3]; 
-    int selectionLayer;
-    Player player;
-    String eventLog; 
+    private Enemy field[] = new Enemy[3]; 
+    private int selectionLayer;
+    private final Player player;
+    private String eventLog; 
     
-    public EncounterEngine(Player player)
+    public EncounterEngine()
     {
-    this.player = player;
-    int selectionLayer = 0; 
+    this.player = GameState.getInstance().getPlayer();
+    selectionLayer = 0; 
     }
     
     
@@ -27,10 +27,11 @@ public class EncounterEngine {
     //promptPlayerInput is a placeholder for a therotical method in a GUI class
     // that will take user input. 
     
-    public void combatEncounter(Enemy enemy1, Enemy enemy2, Enemy enemy3){
-        field[0] = enemy1;
-        field[1] = enemy2; 
-        field[2] = enemy3; 
+    public void combatEncounter(Enemy[] enemies){
+        if (enemies.length != 3) {
+            throw new IllegalArgumentException("Array 'enemies' must have length 3.");
+        }
+        field = enemies;
         
         
         while (!(this.combatOver())){

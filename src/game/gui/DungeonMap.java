@@ -21,6 +21,9 @@ import javax.swing.JPanel;
 import game.model.Player;
 import game.model.DungeonTile;
 import game.model.GameState;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 
 /**
  * The main component that draws the dungeon map. There is a temporary slider here
@@ -216,7 +219,18 @@ public class DungeonMap extends JPanel {
                 }
                 
                 markAdjacentSeen();
-                repaint(); // Ask the panel to redraw itself
+                repaint();
+                SwingUtilities.invokeLater(() -> { // ensure the scene is repainted first
+                    if (Tiles[player.x][player.y].inCombat()) {
+                        try {
+                            Thread.sleep(500); // add a small delay (Make animation later if time)
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(DungeonMap.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        // Move to the EncounterScreen
+                        switcher.changeScene(new EncounterScreen(switcher, Tiles[player.x][player.y]));
+                    }
+                });
             }
         });
         this.setBackground(Color.BLACK);

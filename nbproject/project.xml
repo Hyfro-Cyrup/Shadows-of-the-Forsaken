@@ -12,12 +12,19 @@
             </test-roots>
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>crits</word>
             <word>Deserializes</word>
             <word>dx</word>
             <word>dy</word>
+            <word>filepath</word>
+            <word>Hotbar</word>
+            <word>hotbar's</word>
             <word>killable</word>
+            <word>moveset</word>
+            <word>movesets</word>
             <word>Mutator</word>
             <word>pathfinding</word>
+            <word>Regen</word>
         </spellchecker-wordlist>
     </configuration>
 </project>

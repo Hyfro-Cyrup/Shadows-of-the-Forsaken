@@ -7,46 +7,63 @@ package game.model;
 import java.io.Serializable;
 
 /**
-<<<<<<< HEAD
- * A type of entity that has hp and attacks. Used in combat encounters.
-=======
  *
  * @author Son Nguyen
  * 
  * Creature class which is a superclass that encompasses Enemy and Player within the Encounter Framework. 
- * Class name is somewhat self explaintory in its role.
->>>>>>> origin/master
+ * Class name is somewhat self explanatory in its role.
  */
-
-
-
-/**
- * Construct a creature superclass to repersent an killable entity in the game. Subclasses will be players, and the enimies 
- * Note: Need to make this an abstract class. Should not need to be referenced directly. 
- * 
- * @param maxHP - max health of the creature
- * @param currentHP - current health of hte creature
- * @param hpRegen - how much health a creature regains at the start of its turns 
- * @param strength - integer that amplifies the damage of a physical attaack 
- * @param soul - integer that amplifies damage of a magical attack 
- * @param attackArray - Array which repersents the movesets of the a creature 
- * @param resist - array that repersents the damage resistences of a creature 
- * @param conditions - array that represents the value of a creature's conditions (bleeding, burning, etc.) 
- * @param isDefending - int that represents if a creature is Defending. 0 if not, 1 if it is. 
- */
-
 public class Creature extends Entity implements Serializable {
+    /**
+     *  max health of the creature
+     */
     protected int maxHP;
+    /**
+     * current health of the creature
+     */
     protected int currentHP;
+    /**
+     * how much health a creature regains at the start of its turns 
+     */
     protected int hpRegen; 
+    /**
+     * integer that amplifies the damage of a physical attack 
+     */
     protected int strength;
+    /**
+     * integer that amplifies damage of a magical attack 
+     */
     protected int soul;
+    /**
+     * Array which represents the attacks of the the creature 
+     */
     protected Attack[] attackArray; 
+    /**
+     * array that represents the damage resistances of a creature 
+     */
     protected float[] resist;
+    /**
+     * array that represents the value of a creature's conditions (bleeding, burning, etc.) 
+     */
     protected int[] conditions = new int[7]; 
+    /**
+     * int that represents if a creature is Defending. 0 if not, 1 if it is. 
+     */
     protected int isDefending = 0; 
     
-    
+    /**
+     * Construct a creature superclass to represent a killable entity in the game. Subclasses will be players, and the enemies 
+     * Note: Need to make this an abstract class. Should not need to be referenced directly. 
+     * @param name The name of the entity
+     * @param desc A short description to be shown
+     * @param spriteFileName String filepath to the image of the entity
+     * @param hp Max health points to initialize the creature with
+     * @param str The creature's strength stat
+     * @param soul The creature's soul stat
+     * @param regen The creature's hpRegen stat
+     * @param moveset Array of Attacks the creature can take
+     * @param resistences  Array of damage resistances for each damage type
+     */
     public Creature(String name, String desc, String spriteFileName,int hp, int str, int soul, 
             int regen, Attack[] moveset, float[] resistences){
         super(name, desc, spriteFileName);

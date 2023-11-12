@@ -4,10 +4,6 @@
  */
 package game.model;
 
-import game.model.DungeonTile;
-import game.model.Entity;
-import game.model.Creature;
-import game.model.Attack;
 import java.util.List;
 
 /**
@@ -41,7 +37,7 @@ public class Player extends Creature {
      * @param _spritePath String filepath to the image of the entity
      * @param hp The health of the creature
      * @param attacks A list of Attack objects
-     * @param key Bool whether or not the exit key is in the player's inventory
+     * @param key Boolean whether or not the exit key is in the player's inventory
      * @param inventory List of entities that the player has with them. Currently unused.
      */
     public Player(String _spritePath, int hp, List<Attack> attacks, Boolean key, List<Entity> inventory)
@@ -57,17 +53,22 @@ public class Player extends Creature {
      * Mutator to move the player by some `dx` tiles in the x direction and `dy` tiles in the y direction
      * @param dx Number of tiles to move in x direction
      * @param dy Number of tiles to move in y direction
-     * @param map Collection of tiles used for movement bounds
+     * @param map Collection of DungeonTiles used for movement bounds
      */
     public void move(int dx, int dy, DungeonTile[][] map){
         int nx = x + dx;
         int ny = y + dy;
+        DungeonTile tile = map[nx][ny];
         if (-1 < nx && nx < map.length && 
             -1 < ny && ny < map[0].length &&
-            map[nx][ny] != null)
+            tile != null)
         {
             x = nx;
             y = ny;
+            if (tile.containsEnemy())
+            {
+                tile.startCombat();
+            }
         }
     }
     
@@ -103,7 +104,7 @@ public class Player extends Creature {
     * Switch the current 'selected' Technique and make sure the selection is valid
     * If the selection is not, return -1 
     * @param slot - which Technique you are attempting to switch to 
-    * @return - value which determines if the selection is valid
+    * @return - true if the selection is valid
     */
     public boolean selectAttack(int slot){
         if ((attackArray[slot].getCost()<currentStamina) && (attackArray[slot]!=null)){
@@ -119,7 +120,7 @@ public class Player extends Creature {
     * Switch the current 'selected' Arcana and make sure the selection is valid
     * If the selection is not, return false
     * @param slot - which Arcana you are attempting to switch to
-    * @return - value which determines if the selection is valid
+    * @return - true if the selection is valid
     */
     public boolean selectArcana(int slot){
         if ((arcanaArray[slot].getCost()<currentMana) && (arcanaArray[slot]!=null)){

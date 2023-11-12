@@ -69,6 +69,7 @@ public class MainGUI implements SceneSwitcher{
      *
      * @param newScene The JPanel to display. 
      */
+    @Override
     public void changeScene(JPanel newScene) {
         
         // Remove all components from the main frame (i.e., main menu)

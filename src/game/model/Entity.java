@@ -7,13 +7,7 @@ package game.model;
 import java.io.Serializable;
 
 /**
-<<<<<<< HEAD
  * An object that can be found in the dungeon.
-=======
- *
- * @author Son Nguyen - Thanks Nathan for starting the stuff
- * Probably make more stuff 'final' in general. 
->>>>>>> origin/master
  */
 public class Entity implements Serializable{
     /**
