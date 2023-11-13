@@ -45,7 +45,7 @@ public class EncounterGraphic extends JPanel {
                     //BufferedImage ePic = ImageIO.read(this.getClass().getResource(e.getSpriteReference()));
                     //images.add(new JLabel(new ImageIcon(ePic)));
             }          
-            BufferedImage pPic = ImageIO.read(this.getClass().getResource("/resources/BackArrow.png"));
+            BufferedImage pPic = ImageIO.read(this.getClass().getResource("/resources/CombatPlayer.png"));
             playerIcon = new JLabel(new ImageIcon(pPic));
             
         } catch (IOException ex) {
