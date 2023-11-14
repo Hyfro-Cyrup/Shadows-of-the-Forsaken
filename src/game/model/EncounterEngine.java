@@ -76,6 +76,12 @@ public class EncounterEngine {
        }
        
        else if (selectionLayer == 1){
+           if (buttonValue == 3){
+                // Back Button
+                selectionLayer -= 1;
+                return false;
+            }
+           
            if (player.selectAttack(buttonValue)){
                selectionLayer+=1;
                return false;
@@ -87,16 +93,28 @@ public class EncounterEngine {
        
        
         else if (selectionLayer == 2){
-        if (player.selectArcana(buttonValue)){
-            selectionLayer+=1;
-            return false;
-        }
-        else{
-            return false; 
-        }
+            if (buttonValue == 3){
+                // Back Button
+                selectionLayer -= 1;
+                return false;
+            }
+            
+            if (player.selectArcana(buttonValue)){
+                selectionLayer+=1;
+                return false;
+            }
+            else{
+                return false; 
+            }
         }
         
         else if (selectionLayer == 3){
+            if (buttonValue == 3){
+                // Back Button
+                selectionLayer -= 1;
+                return false;
+            }
+           
            player.attack(field[buttonValue]);
            return true; 
         }

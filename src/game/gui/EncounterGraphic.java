@@ -59,7 +59,7 @@ public class EncounterGraphic extends JPanel {
             this.add(l);
         }
         
-        //this.setBackground(Color.BLACK);
+        this.setBackground(Color.GRAY);
     }
     
     /**
@@ -70,6 +70,11 @@ public class EncounterGraphic extends JPanel {
     @Override
     protected void paintComponent(Graphics g) 
     {
+        int W = getWidth();
+        int H = getHeight();
+        
+        playerIcon.setBounds(0, H - playerIcon.getHeight(),(int) (playerIcon.getWidth() ), (int) (playerIcon.getHeight() ));
+        
         super.paintComponent(g);
     }
 }
