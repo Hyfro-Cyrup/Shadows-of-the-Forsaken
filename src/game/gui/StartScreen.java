@@ -27,14 +27,14 @@ public class StartScreen extends JPanel {
      */
     public StartScreen(SceneSwitcher parent) {
         switcher = parent;
-
+        
         // Loads the background image from the internet and resizes it (figuring out how to import and resize the image done by chat gpt)
         try {
             URL imageUrl = new URL("https://cdna.artstation.com/p/assets/images/images/006/315/366/large/taryn-meixner-dungeon-interior.jpg?1497628693");
             BufferedImage originalImage = ImageIO.read(imageUrl);
             int newWidth = 800;  // Set the width of the panel
             int newHeight = 600; // Set the height of the panel
-
+           
             // Resize the image to fit within the panel dimensions
             Image scaledImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
             backgroundImage = new ImageIcon(scaledImage); //The new image resized to fit the 800 x 600 window
@@ -42,7 +42,7 @@ public class StartScreen extends JPanel {
             e.printStackTrace();
             // Handle the exception, e.g., show an error message, basically if improper url input will throw error
         }
-
+       
         // Create the buttons
         startButton = new JButton("Start Game");
         loadButton = new JButton("Load Game");
