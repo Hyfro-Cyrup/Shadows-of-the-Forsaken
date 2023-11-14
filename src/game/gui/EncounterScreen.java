@@ -36,12 +36,13 @@ public class EncounterScreen extends JPanel {
         // make the text area
         log = new JTextArea("You encountered a...");
         log.setEditable(false);
+        log.setForeground(Color.WHITE);
         log.setBackground(new Color(69, 48, 8));
         this.add(log);
         //log.setPreferredSize(new Dimension(300, 0));
         
         // make the hotbar
-        hotbar = new Hotbar(tile.getEngine());
+        hotbar = new Hotbar(tile);
         this.add(hotbar);
         
         // make the graphic
@@ -65,8 +66,8 @@ public class EncounterScreen extends JPanel {
         int H = getHeight();
         
         // resize the components (easier than layout mangers)
-        int log_w = Math.min((int)((W * 5) / 16), 300);
-        int hot_h = Math.min((int)(H / 5), 80);
+        int log_w = Math.min((int)((W * 5) / 16), 300);  // default = 250 @ W=800 (transition @ W=960)
+        int hot_h = Math.min((int)(H / 5), 80);          // default = 80 @ H=600 (transition @ 400)
         hotbar.setBounds(0, H - hot_h, W - log_w, hot_h);
         log.setBounds(W - log_w, 0, log_w, H);
         graphic.setBounds(0, 0, W - log_w, H - hot_h);
