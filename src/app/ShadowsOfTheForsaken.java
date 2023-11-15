@@ -17,6 +17,6 @@ public class ShadowsOfTheForsaken {
      */
     public static void main(String[] args) {
         // Initialize the game object
-        MainGUI SoTF = new MainGUI();
+        MainGUI SoTF = MainGUI.getInstance();
     }
 }

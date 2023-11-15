@@ -23,6 +23,7 @@ public class Hotbar extends JPanel {
     private JButton Buttons[];
     private ImageIcon[][] buttonIcons;
     private EncounterEngine engine;
+    private DungeonTile tile;
     
     /**
      * Initialize the Hotbar with an array of buttons. Each button's event listener calls a method of the EncounterEngine 
@@ -33,6 +34,7 @@ public class Hotbar extends JPanel {
         // initialize the JPanel
         super();
         
+        this.tile = tile;
         this.engine = tile.getEngine();
         
         // create the buttons
@@ -44,7 +46,7 @@ public class Hotbar extends JPanel {
             Buttons[i].addActionListener(e ->{
                 if (true) // TODO: Check if it is currently the player's turn
                 {
-                    engine.inputTranslator(j);
+                    engine.inputTranslator(engine.getSelectionLayer() == 3 && j < 3 ? 2-j : j);
                     repaint();
                 }
             });
@@ -97,11 +99,18 @@ public class Hotbar extends JPanel {
         buttonIcons[2][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/BackArrow.png")));
         
         // selection layer = 3
-        buttonIcons[3][0] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
-        buttonIcons[3][1] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
-        buttonIcons[3][2] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
-        buttonIcons[3][3] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
+        buttonIcons[3][0] = null;
+        buttonIcons[3][1] = null;
+        buttonIcons[3][2] = null;
+        buttonIcons[3][3] = null;
         buttonIcons[3][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/BackArrow.png")));
+        int i = 2;
+        for (var e : tile.getContents())
+        {
+            // TODO: resize
+            buttonIcons[3][i] = new ImageIcon(ImageIO.read(this.getClass().getResource(e.getSpriteReference())));
+            i--;
+        }
         
         // selection layer = 4
         buttonIcons[4][0] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Investigate.png")));

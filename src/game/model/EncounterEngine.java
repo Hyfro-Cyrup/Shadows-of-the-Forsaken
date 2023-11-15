@@ -5,9 +5,6 @@
 package game.model;
 
 import game.gui.EncounterScreen;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -23,7 +20,17 @@ public class EncounterEngine {
     public EncounterEngine()
     {
     this.player = GameState.getInstance().getPlayer();
-    selectionLayer = 0; 
+    selectionLayer = 0;
+    }
+    
+    /**
+     * Set the gui reference after constructor has been called.
+     * Necessary due to gui -> hotbar -> engine -> gui circular reference
+     * @param gui The EncounterScreen responsible for this encounter
+     */
+    public void setGUI(EncounterScreen gui)
+    {
+        this.gui = gui;
     }
     
     public void combatEncounter(Enemy[] enemies){
@@ -35,13 +42,15 @@ public class EncounterEngine {
         
         
         while (!(this.combatOver())){
+            System.out.println("Combat not over");
             player.beginTurn();
-            waitForGUI();
+            gui.waitForPlayer();
             player.endTurn();
             
             for (int i = 0; i<3; i++){
                 if (field[i] != null)
                 {
+                    System.out.println(field[i].getName() + " starting turn");
                     field[i].beginTurn();
                     CheckIfDead(i);
                     field[i].takeTurn(player);
@@ -53,11 +62,6 @@ public class EncounterEngine {
             // REMOVE after making wait function work
             break;
         }
-    }
-    
-    private void waitForGUI()
-    {
-        // STUB
     }
     
     
@@ -83,11 +87,15 @@ public class EncounterEngine {
                  //insert a function for fleeing
            }
            
+           if (buttonValue == 4){
+               return true;
+           }
+           
            
        }
        
        else if (selectionLayer == 1){
-           if (buttonValue == 3){
+           if (buttonValue == 4){
                 // Back Button
                 selectionLayer -= 1;
                 return false;
@@ -104,7 +112,7 @@ public class EncounterEngine {
        
        
         else if (selectionLayer == 2){
-            if (buttonValue == 3){
+            if (buttonValue == 4){
                 // Back Button
                 selectionLayer -= 1;
                 return false;
@@ -120,7 +128,7 @@ public class EncounterEngine {
         }
         
         else if (selectionLayer == 3){
-            if (buttonValue == 3){
+            if (buttonValue == 4){
                 // Back Button
                 selectionLayer -= 1;
                 return false;

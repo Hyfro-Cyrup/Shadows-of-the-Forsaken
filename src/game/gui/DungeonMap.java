@@ -260,7 +260,7 @@ public class DungeonMap extends JPanel {
                             Logger.getLogger(DungeonMap.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         // Move to the EncounterScreen
-                        switcher.changeScene(new EncounterScreen(switcher, Tiles[player.x][player.y]));
+                        switcher.changeScene(Tiles[player.x][player.y].getGUI());
                     }
                 });
             }

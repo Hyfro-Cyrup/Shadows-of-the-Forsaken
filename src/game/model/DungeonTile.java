@@ -4,9 +4,11 @@
  */
 package game.model;
 
+import game.gui.EncounterScreen;
 import java.io.Serializable;
 import static java.util.Collections.emptyList;
 import java.util.List;
+import javax.swing.SwingWorker;
 
 /**
  * Location the player can go to, and container for the objects found there.
@@ -15,6 +17,7 @@ public class DungeonTile implements Serializable {
     private final List<Entity> Contents;
     private Boolean hasBeenSeen;
     private EncounterEngine engine = null;
+    private EncounterScreen gui = null;
     
     /**
      * Default constructor. Initializes as unseen with no contents.
@@ -81,7 +84,11 @@ public class DungeonTile implements Serializable {
         hasBeenSeen = true;
     }
     
-    private Enemy[] getEnemies()
+    /**
+     * get the enemies present
+     * @return Enemy array of length 3
+     */
+    public Enemy[] getEnemies()
     {
         Enemy[] enemies = {null, null, null};
         int i = 0;
@@ -111,8 +118,11 @@ public class DungeonTile implements Serializable {
             return;
         }
         engine = new EncounterEngine();
-        engine.combatEncounter(this.getEnemies());
-        System.out.println("starting combat");
+        gui = new EncounterScreen(this);
+        engine.setGUI(gui);
+        gui.startCombat();
+        //engine.combatEncounter(this.getEnemies());
+        //System.out.println("Combat Over");
     }
     
     /**
@@ -133,8 +143,21 @@ public class DungeonTile implements Serializable {
         return this.engine;
     }
     
+    /**
+     * Get all the entities inside of this tile
+     * @return List of entities
+     */
     public List<Entity> getContents()
     {
         return this.Contents;
+    }
+    
+    /**
+     * Get the gui associated with this tile and its EncounterEngine
+     * @return EncounterScreen object
+     */
+    public EncounterScreen getGUI()
+    {
+        return this.gui;
     }
 }

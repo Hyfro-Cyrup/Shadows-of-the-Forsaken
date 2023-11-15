@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import static java.util.Collections.emptyList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,7 +56,6 @@ public class GameState implements Serializable {
     {
         if (instance == null)
         {
-            // TODO: option for loading from file
             instance = new GameState();
         }
         return instance;

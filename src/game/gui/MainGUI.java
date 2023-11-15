@@ -17,10 +17,26 @@ public class MainGUI implements SceneSwitcher{
     private final JFrame frame;
     private JPanel panel;
     private final Map<String, JPanel> Scenes;
+    
+    private static MainGUI instance;
+    
+    /**
+     * Get singleton gui / SceneSwitcher
+     * @return MainGUI instance
+     */
+    public static MainGUI getInstance()
+    {
+        if (instance == null)
+        {
+            instance = new MainGUI();
+        }
+        return instance;
+    }
+    
     /**
      * Initializes the main game window.
      */
-    public MainGUI() {
+    private MainGUI() {
         // Initialize values for each scene
         Scenes = new HashMap();
         Scenes.put("START_SCREEN", new StartScreen(this));

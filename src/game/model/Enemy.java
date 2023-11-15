@@ -77,7 +77,7 @@ public class Enemy extends Creature {
         }*/
         
         // I didn't want to fully uproot Son's hard work, but need a better version
-        // that works with variable length array
+        // that works with variable length array, though it does assume that it's normalized
         double prob = 0.0;
         for (int i = 0; i < decisionMatrix.length - 1; i++)
         {

@@ -7,13 +7,19 @@ package game.gui;
 import game.model.Attack;
 import game.model.Creature;
 import game.model.DungeonTile;
+import game.model.EncounterEngine;
 import game.model.Entity;
 import game.model.GameState;
 import game.model.Player;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 /**
  * Displays necessary components for both combat and non-combat encounters
@@ -25,17 +31,24 @@ public class EncounterScreen extends JPanel {
     private final GameState gameState;
     private final JTextArea log;
     private final EncounterGraphic graphic;
+    private final SceneSwitcher switcher;
+    private final EncounterEngine engine;
+    private final DungeonTile tile;
     
     /**
      * Create new EncounterScreen. Initializes Hotbar, log, and graphics area from the DungeonTile information
-     * @param switcher The component that facilitates switching screens
      * @param tile  The DungeonTile this encounter was built from
      */
-    public EncounterScreen(SceneSwitcher switcher, DungeonTile tile)
+    public EncounterScreen(DungeonTile tile)
     {
         // initialize the JPanel
         super();
-        //this.setLayout(null);
+        
+        switcher = MainGUI.getInstance();
+        
+        // get encounter data
+        this.tile = tile;
+        this.engine = tile.getEngine();
         
         // get GameState data
         gameState = GameState.getInstance();
@@ -86,7 +99,12 @@ public class EncounterScreen extends JPanel {
         graphic.setBounds(0, 0, W - log_w, H - hot_h);
     }
     
-    
+    /**
+     * Appends an attack action to the log
+     * @param source The Creature who made the attack
+     * @param target The Creature who got attacked
+     * @param damage The amount of damage dealt
+     */
     public void outputTranslator(Creature source, Creature target, int damage)
     {
         if (source == player)
@@ -98,6 +116,40 @@ public class EncounterScreen extends JPanel {
         {
             log.append("The " + source.getName() + " attacked you with its " + target.getSelectedAttackName() + ".\n" + 
                     "It dealt " + damage + " damage!");
+        }
+    }
+    
+    /**
+     * Runs the combat encounter in the background, allowing for waiting
+     */
+    public void startCombat()
+    {
+        SwingWorker<Void, Void> bgThread = new SwingWorker<Void, Void>()
+        {
+            @Override
+            protected Void doInBackground()
+            {
+                synchronized (GameState.getInstance().getPlayer())
+                {
+                    engine.combatEncounter(tile.getEnemies());
+                }
+                return null;
+            }
+        };
+        
+        bgThread.execute();
+    }
+    
+    /**
+     * Waits for the player to take their turn
+     * To be called from the domain model
+     */
+    public void waitForPlayer()
+    {
+        try {
+            player.wait();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(EncounterScreen.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

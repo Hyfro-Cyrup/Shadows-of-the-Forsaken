@@ -31,6 +31,8 @@ public class Player extends Creature {
     private Attack selectedAttack;
     private Attack selectedArcana; 
     
+    private Boolean hasTakenTurn = false;
+    
     
     /**
      * Construct a Player with default parameters
@@ -106,6 +108,7 @@ public class Player extends Creature {
         isDefending = 0;
         selectedAttack = null;
         selectedArcana = null;
+        hasTakenTurn = false;
     }
     
     
@@ -125,7 +128,7 @@ public class Player extends Creature {
         }
     }
    
-      /**
+    /**
     * Switch the current 'selected' Arcana and make sure the selection is valid
     * If the selection is not, return false
     * @param slot - which Arcana you are attempting to switch to
@@ -169,6 +172,17 @@ public class Player extends Creature {
             this.condemnTick();
             currentStamina-=selectedAttack.getCost();
             currentMana-=selectedArcana.getCost(); 
+            
+            hasTakenTurn = true;
+    }
+    
+    /**
+    * On a creature's turn, of its option is to defend. Function sets defend to 1 (is defending) 
+    */
+    @Override
+    public void defend(){
+        isDefending = 1; 
+        hasTakenTurn = true;
     }
     
     
@@ -198,6 +212,15 @@ public class Player extends Creature {
     public String getSelectedAttackName()
     {
         return selectedArcana.getName() + "-infused " + selectedAttack.getName();
+    }
+    
+    /**
+     * Whether the player has taken their turn or not. Useful for waiting.
+     * @return True after the player has made their attack
+     */
+    public Boolean hasTakenTurn()
+    {
+        return this.hasTakenTurn;
     }
              
     
