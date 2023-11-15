@@ -12,8 +12,10 @@
             </test-roots>
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>attack'</word>
             <word>crits</word>
             <word>Deserializes</word>
+            <word>dmg</word>
             <word>dx</word>
             <word>dy</word>
             <word>filepath</word>
@@ -23,6 +25,7 @@
             <word>moveset</word>
             <word>movesets</word>
             <word>Mutator</word>
+            <word>off'</word>
             <word>pathfinding</word>
             <word>Regen</word>
         </spellchecker-wordlist>

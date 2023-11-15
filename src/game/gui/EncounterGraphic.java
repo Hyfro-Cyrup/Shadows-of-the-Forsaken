@@ -11,13 +11,12 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
@@ -26,8 +25,8 @@ import javax.swing.JPanel;
 public class EncounterGraphic extends JPanel {
     private final EncounterEngine engine;
     private final List<Entity> entities;
-    private final List<JLabel> images;
-    private JLabel playerIcon = null;
+    private final List<BufferedImage> images;
+    private BufferedImage playerIcon = null;
     
     /**
      * Create a new graphic for a given encounter
@@ -37,26 +36,19 @@ public class EncounterGraphic extends JPanel {
     {
         this.engine = tile.getEngine();
         this.entities = tile.getContents();
-        this.images = Arrays.asList();
+        this.images = new ArrayList<>();
+        
+        // populate the images and playerIcon
         try {
             for (Entity e : entities)
             {
-
-                    //BufferedImage ePic = ImageIO.read(this.getClass().getResource(e.getSpriteReference()));
-                    //images.add(new JLabel(new ImageIcon(ePic)));
+                    BufferedImage ePic = ImageIO.read(this.getClass().getResource(e.getSpriteReference()));
+                    images.add(ePic);
             }          
-            BufferedImage pPic = ImageIO.read(this.getClass().getResource("/resources/CombatPlayer.png"));
-            playerIcon = new JLabel(new ImageIcon(pPic));
+            playerIcon = ImageIO.read(this.getClass().getResource("/resources/CombatPlayer.png"));
             
         } catch (IOException ex) {
             Logger.getLogger(EncounterGraphic.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        // add everything to the panel
-        this.add(playerIcon);
-        for (JLabel l : images)
-        {
-            this.add(l);
         }
         
         this.setBackground(Color.GRAY);
@@ -70,11 +62,24 @@ public class EncounterGraphic extends JPanel {
     @Override
     protected void paintComponent(Graphics g) 
     {
-        int W = getWidth();
-        int H = getHeight();
-        
-        playerIcon.setBounds(0, H - playerIcon.getHeight(),(int) (playerIcon.getWidth() ), (int) (playerIcon.getHeight() ));
-        
         super.paintComponent(g);
+        
+        int W = getWidth();     // default = 542
+        int H = getHeight();    // default = 485
+        
+        // draw the player
+        int size = Math.min(H/2, 300);
+        g.drawImage(playerIcon, 0, H - size, size, size, this);
+        
+        // space entities properly
+        int padding = 10;
+        size = Math.min(Math.min((W - 4*padding)/3, H/2 - 20), 250); 
+        padding = (W - 3*size) / 4;
+        for (int i = 0; i < images.size(); i++)
+        {
+            var img = images.get(i);
+            g.drawImage(img, W - (i+1)*(padding + size), 0, size, size, this);
+        }
+        
     }
 }

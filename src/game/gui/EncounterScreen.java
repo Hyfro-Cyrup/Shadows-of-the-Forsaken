@@ -4,7 +4,10 @@
  */
 package game.gui;
 
+import game.model.Attack;
+import game.model.Creature;
 import game.model.DungeonTile;
+import game.model.Entity;
 import game.model.GameState;
 import game.model.Player;
 import java.awt.Color;
@@ -23,6 +26,11 @@ public class EncounterScreen extends JPanel {
     private final JTextArea log;
     private final EncounterGraphic graphic;
     
+    /**
+     * Create new EncounterScreen. Initializes Hotbar, log, and graphics area from the DungeonTile information
+     * @param switcher The component that facilitates switching screens
+     * @param tile  The DungeonTile this encounter was built from
+     */
     public EncounterScreen(SceneSwitcher switcher, DungeonTile tile)
     {
         // initialize the JPanel
@@ -34,12 +42,17 @@ public class EncounterScreen extends JPanel {
         player = gameState.getPlayer();
         
         // make the text area
-        log = new JTextArea("You encountered a...");
+        log = new JTextArea("You encountered a...\n");
         log.setEditable(false);
         log.setForeground(Color.WHITE);
         log.setBackground(new Color(69, 48, 8));
+        // print the initial text
+        for (Entity e : tile.getContents())
+        {
+            log.append(e.getIntro() + "\n");
+        }
+        
         this.add(log);
-        //log.setPreferredSize(new Dimension(300, 0));
         
         // make the hotbar
         hotbar = new Hotbar(tile);
@@ -71,5 +84,20 @@ public class EncounterScreen extends JPanel {
         hotbar.setBounds(0, H - hot_h, W - log_w, hot_h);
         log.setBounds(W - log_w, 0, log_w, H);
         graphic.setBounds(0, 0, W - log_w, H - hot_h);
+    }
+    
+    
+    public void outputTranslator(Creature source, Creature target, int damage)
+    {
+        if (source == player)
+        {
+            log.append(source.getName() + " attacked the " + target.getName() + " with your " +  source.getSelectedAttackName() + ".\n" + 
+                    "It dealt " + damage + " damage!");
+        }
+        else
+        {
+            log.append("The " + source.getName() + " attacked you with its " + target.getSelectedAttackName() + ".\n" + 
+                    "It dealt " + damage + " damage!");
+        }
     }
 }

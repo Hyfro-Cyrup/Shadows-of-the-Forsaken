@@ -7,9 +7,11 @@ package game.gui;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
-import java.net.URL;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * GUI for selecting and loading previously saved games
@@ -17,7 +19,7 @@ import java.awt.image.BufferedImage;
 public class LoadScreen extends JPanel {
     private SceneSwitcher switcher;
     private final JButton backButton;
-    private ImageIcon backgroundImage;
+    private BufferedImage backgroundImage;
     
     /**
      * Initialize the images and buttons for the load screen
@@ -28,21 +30,13 @@ public class LoadScreen extends JPanel {
     {
         switcher = parent;
         
-        // Load the background image from the internet and resize it (code for background image is copied from StartScreen.java
-        try {
-            URL imageUrl = new URL("https://cdna.artstation.com/p/assets/images/images/006/315/366/large/taryn-meixner-dungeon-interior.jpg?1497628693");
-            BufferedImage originalImage = ImageIO.read(imageUrl);
-
-            int newWidth = 800;  // Set the width of the panel
-            int newHeight = 600; // Set the height of the panel
-
-            // Resize the image to fit within the panel dimensions
-            Image scaledImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-            backgroundImage = new ImageIcon(scaledImage); //New image resized to fit the 800 x 600 window
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Handle the exception, e.g., show an error message, basically if improper url will throw error
-        }
+       // Loads the background image (figuring out how to import and resize the image done by chat gpt)
+            try
+            {
+                backgroundImage = ImageIO.read(this.getClass().getResource("/resources/StartMenuBackground.jpg"));
+            } catch (IOException ex) {
+                Logger.getLogger(StartScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
         
         // Create the components
         backButton = new JButton("Back to Start");
@@ -62,12 +56,22 @@ public class LoadScreen extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        backgroundImage.paintIcon(this, g, 0, 0);
+        
+        int panelWidth = getWidth(); // Get the panel's width
+        int panelHeight = getHeight(); // Get the panel's height
+        
+        int bgWidth = backgroundImage.getWidth();
+        int bgHeight = backgroundImage.getHeight();
+        
+        // scale and crop the background image -- there should be no whitespace around image regardless of window size
+        double scale = Math.max(((double)panelWidth )/ bgWidth, ((double) panelHeight )/ bgHeight);
+        int newWidth = (int) (scale * bgWidth);
+        int newHeight = (int) (scale * bgHeight);
+        g.drawImage(backgroundImage, (panelWidth - newWidth) / 2, (panelHeight - newHeight) / 2, newWidth, newHeight, this);
+        
         
         int buttonWidth = 150;
         int buttonHeight = 50;
-        int panelWidth = getWidth(); // Get the panel's width
-        int panelHeight = getHeight(); // Get the panel's height
         int buttonX = (panelWidth - buttonWidth) / 2;
         int buttonY = (panelHeight - (-2)*buttonHeight) / 2;
 

@@ -4,6 +4,7 @@
  */
 package game.model;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -16,22 +17,34 @@ public class Enemy extends Creature {
     private Attack selectedAttack; 
             
      /**
-     * Construct a Player with specified parameters
+     * Construct an Enemy with specified parameters
      * 
-     * @param _spritePath String filepath to the image of the entity
-     * @param hp The health of the creature
-     * @param attacks A list of Attack objects
+     * @param name The name of the entity
+     * @param desc A short description to be shown
+     * @param spriteFileName String filepath to the image of the entity
+     * @param hp Max health points to initialize the creature with
+     * @param str The creature's strength stat
+     * @param soul The creature's soul stat
+     * @param regen The creature's hpRegen stat
+     * @param moveset Array of Attacks the creature can take
+     * @param resistances  Array of damage resistances for each damage type
      */
-    
-    public Enemy(String _spritePath, int hp, List<Attack> attacks)
+    public Enemy(String name, String desc, String spriteFileName,int hp, int str, int soul, 
+            int regen, Attack[] moveset, float[] resistances)
     {
-        super("The Player", "The FOOOLISH KNIGHT", _spritePath);
+        super(name, desc, spriteFileName, hp, str, soul, regen, moveset, resistances);
+        //TODO: decisionMatrix needs to be initialized, but I don't know how you want them to work. 
+        decisionMatrix = new double[moveset.length];
+        for (int i = 0; i < moveset.length; i++)
+        {
+            decisionMatrix[i] = 1.0 / moveset.length;
+        }
     }
     
     
     public void takeTurn(Player player){
         double Rand = Math.random();
-        double sumProb = decisionMatrix[0]+decisionMatrix[1]+decisionMatrix[2]
+        /*double sumProb = decisionMatrix[0]+decisionMatrix[1]+decisionMatrix[2]
                 +decisionMatrix[3]+decisionMatrix[4]; 
         
         double range1 = decisionMatrix[0]/sumProb;
@@ -61,34 +74,67 @@ public class Enemy extends Creature {
         else if (Rand>=range4){
             selectedAttack = attackArray[3];
             this.attack(player);
+        }*/
+        
+        // I didn't want to fully uproot Son's hard work, but need a better version
+        // that works with variable length array
+        double prob = 0.0;
+        for (int i = 0; i < decisionMatrix.length - 1; i++)
+        {
+            prob += decisionMatrix[i];
+            if (Rand < prob)
+            {
+                if (i == 0)
+                {
+                    this.defend();
+                }
+                else
+                {
+                    selectedAttack = attackArray[i];
+                    this.attack(player);
+                }
+                return;
+            }
         }
+        selectedAttack = attackArray[decisionMatrix.length - 1];
+        this.attack(player);
         
     }
 
     
     @Override     
     public void attack(Creature target){
-    int accuracyRand = (int)(Math.random() * 100);
-    int modifier; 
-   
-    if (selectedAttack.IsMagic() == 1){
-        modifier = soul-conditions[4];
-    }
-    else{
-        modifier = strength-conditions[2]-conditions[3]-conditions[4];
-    }
-    
-    if (accuracyRand<(selectedAttack.getAccuracy())){
-        int[] finalDamage = new int[7]; 
-        
-        for (int i = 0; i < 7; i++) {
-            finalDamage[i]+=(selectedAttack.getDamage(i)*modifier);
+        int accuracyRand = (int)(Math.random() * 100);
+        int modifier; 
+
+        if (selectedAttack.IsMagic() == 1){
+            modifier = Math.min(0, soul-conditions[4]);
         }
-        
-        target.takeDamage(finalDamage);
-        target.increaseCondition (selectedAttack.getAfflictions());
-    }
+        else{
+            modifier = Math.min(0, strength-conditions[2]-conditions[3]-conditions[4]);
+        }
+
+        if (accuracyRand<(selectedAttack.getAccuracy())){
+            int[] finalDamage = new int[7]; 
+
+            for (int i = 0; i < 7; i++) {
+                finalDamage[i]+=(selectedAttack.getDamage(i)*modifier);
+            }
+
+            target.takeDamage(finalDamage);
+            target.increaseCondition (selectedAttack.getAfflictions());
+        }
     
         this.condemnTick();
+    }
+    
+    /**
+      * The name of the selected attack, to appear in the GUI
+      * @return a formatted string
+      */
+    @Override
+    public String getSelectedAttackName()
+    {
+        return selectedAttack.getName() + " attack";
     }
 }

@@ -35,9 +35,8 @@ public class GameState implements Serializable {
      */
     public GameState()
     {
-        player = new Player("Dummy/file/path", 69, emptyList(), false, emptyList());
+        player = new Player();
         map = MapMaker.newMap();
-        
     }
     
     /**
