@@ -153,9 +153,10 @@ public class Player extends Creature {
     * are below the threshold. 
     * @param target - creature that is being targeted by the player 
     */
-    public void attack(Creature target){
+    public int attack(Creature target){
         int accuracyRand = (int)(Math.random() * 100);
 
+        int damageDealt = 0;
         if (accuracyRand<(selectedAttack.getAccuracy()+selectedArcana.getAccuracy())){
             int[] finalDamage = new int[7]; 
 
@@ -164,7 +165,7 @@ public class Player extends Creature {
                         +(selectedArcana.getDamage(i)*soul-conditions[4]);
             }
 
-            target.takeDamage(finalDamage);
+            damageDealt = target.takeDamage(finalDamage);
             target.increaseCondition (selectedAttack.getAfflictions());
             target.increaseCondition (selectedArcana.getAfflictions());
         }
@@ -173,7 +174,9 @@ public class Player extends Creature {
             currentStamina-=selectedAttack.getCost();
             currentMana-=selectedArcana.getCost(); 
             
-            hasTakenTurn = true;
+        hasTakenTurn = true;
+            
+        return damageDealt;
     }
     
     /**
@@ -222,6 +225,25 @@ public class Player extends Creature {
     {
         return this.hasTakenTurn;
     }
-             
+      
+    /**
+     * Get a physical attack option at specified index
+     * @param index Int position of the attack array
+     * @return the Attack at that position of the array
+     */
+    public Attack getPhysAttack(int index)
+    {
+        return attackArray[index];
+    }
+    
+    /**
+     * Get a magical attack option at specified index
+     * @param index Int position of the attack array
+     * @return the Attack at that position of the array
+     */
+    public Attack getMagicAttack(int index)
+    {
+        return arcanaArray[index];
+    }
     
 }

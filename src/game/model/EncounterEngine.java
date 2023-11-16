@@ -45,6 +45,7 @@ public class EncounterEngine {
             System.out.println("Combat not over");
             player.beginTurn();
             gui.waitForPlayer();
+            System.out.println("Player turn over");
             player.endTurn();
             
             for (int i = 0; i<3; i++){
@@ -53,14 +54,21 @@ public class EncounterEngine {
                     System.out.println(field[i].getName() + " starting turn");
                     field[i].beginTurn();
                     CheckIfDead(i);
-                    field[i].takeTurn(player);
+                    int damage = field[i].takeTurn(player);
+                    if (damage == -1)
+                    {
+                        // enemy defended
+                        gui.outputTranslator(field[i]);
+                    }
+                    else
+                    {
+                        // enemy attacked
+                        gui.outputTranslator(field[i], player, damage);
+                    }
                     field[i].endTurn();
                     CheckIfDead(i);
                 }
             }
-            
-            // REMOVE after making wait function work
-            break;
         }
     }
     
@@ -74,6 +82,7 @@ public class EncounterEngine {
            
            if (buttonValue == 1){
                player.defend(); 
+               gui.outputTranslator(player);
                return true; 
            }
            

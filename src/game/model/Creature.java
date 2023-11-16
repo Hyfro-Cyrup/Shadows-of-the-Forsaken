@@ -69,7 +69,7 @@ public abstract class Creature extends Entity implements Serializable {
     * On a creature's turn, of its option is to defend. Function sets defend to 1 (is defending) 
     */
     public void defend(){
-        isDefending = 1; 
+        isDefending = 1;
     }
 
     /**
@@ -98,20 +98,25 @@ public abstract class Creature extends Entity implements Serializable {
     
     
     /**
-     * Calculates how much damage it takes from an attack, based on resistances. 
-     * Consider having a return value to let UI know how much damage is reduced, in case we want to add it to event log.
+     * Calculates how much damage it takes from an attack, based on resistances.Consider having a return value to let UI know how much damage is reduced, in case we want to add it to event log.
      * @param rawDamage the incoming damage array
+     * @return the total damage taken from the attack
      */
-    public void takeDamage (int[] rawDamage){
+    public int takeDamage (int[] rawDamage){
         
         // If defending, incoming dmg is halved. Then resistences are applied.
+        double total = 0.0;
         for (int i = 0; i<7; i++){
-            currentHP -= (int) (rawDamage[i]*(0.5*isDefending))*(1.0-resist[i]);
+            total += (rawDamage[i]*(0.5*isDefending))*(1.0-resist[i]);
         }
+        int finalDamage = (int) total;
+        currentHP -= (int) finalDamage;
         
         // Frozen and Doomed Condition 'go off' when a creature is hit
         frozenTick();
         doomTick();
+        
+        return finalDamage;
     }
     
     
@@ -129,15 +134,14 @@ public abstract class Creature extends Entity implements Serializable {
     
     /**
      * Implementation of attack for enemy and player 
-     * creatures will be very different. Players use a 
-     * 'combined magic/physical attack'. Enemies attack
-     * is simpler, but need some from of AI to determine 
-     * which move to use. All future Sonny's problems. 
+     * creatures will be very different.Players use a 
+ 'combined magic/physical attack'. Enemies attack
+ is simpler, but need some from of AI to determine 
+ which move to use. All future Sonny's problems. 
      * @param target is the target of the attack 
+     * @return  the total damage dealt
      */
-    public void attack(Creature target){
-        //continue; 
-    }
+    public abstract int attack(Creature target);
     
     // Override later once abstraction is implemented. 
     

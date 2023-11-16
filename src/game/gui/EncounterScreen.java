@@ -29,7 +29,7 @@ public class EncounterScreen extends JPanel {
     private final Hotbar hotbar;
     private final Player player;
     private final GameState gameState;
-    private final JTextArea log;
+    private final Log log;
     private final EncounterGraphic graphic;
     private final SceneSwitcher switcher;
     private final EncounterEngine engine;
@@ -55,10 +55,7 @@ public class EncounterScreen extends JPanel {
         player = gameState.getPlayer();
         
         // make the text area
-        log = new JTextArea("You encountered a...\n");
-        log.setEditable(false);
-        log.setForeground(Color.WHITE);
-        log.setBackground(new Color(69, 48, 8));
+        log = new Log("You encountered a...\n");
         // print the initial text
         for (Entity e : tile.getContents())
         {
@@ -109,14 +106,44 @@ public class EncounterScreen extends JPanel {
     {
         if (source == player)
         {
-            log.append(source.getName() + " attacked the " + target.getName() + " with your " +  source.getSelectedAttackName() + ".\n" + 
-                    "It dealt " + damage + " damage!");
+            SwingUtilities.invokeLater( () -> 
+            {
+                log.append("\n" + source.getName() + " attacked the " + target.getName() + " with your " +  source.getSelectedAttackName() + ".\n" + 
+                    "It dealt " + damage + " damage!\n");
+            });
+            
         }
         else
         {
-            log.append("The " + source.getName() + " attacked you with its " + target.getSelectedAttackName() + ".\n" + 
-                    "It dealt " + damage + " damage!");
+            SwingUtilities.invokeLater( () -> 
+            {
+                log.append("The " + source.getName() + " attacked you with its " + source.getSelectedAttackName() + ".\n" + 
+                        "It dealt " + damage + " damage!\n");
+            });
         }
+        repaint();
+    }
+    
+    /**
+     * Appends a defense action to the log
+     * @param defender The Creature who defended
+     */
+    public void outputTranslator(Creature defender)
+    {
+        if (defender == player)
+        {
+            log.append("\nYou defended!\n");
+        }
+        else
+        {
+            log.append(defender.getName() + " defended!\n");
+        }
+        repaint();
+    }
+    
+    public void outputTranslator(String message)
+    {
+        log.append(message + "\n");
     }
     
     /**
@@ -146,10 +173,17 @@ public class EncounterScreen extends JPanel {
      */
     public void waitForPlayer()
     {
-        try {
-            player.wait();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(EncounterScreen.class.getName()).log(Level.SEVERE, null, ex);
+        synchronized (player)
+        {
+            try {
+                while (!player.hasTakenTurn())
+                {
+                    player.wait();
+                }
+            } catch (InterruptedException ex) {
+                Logger.getLogger(EncounterScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+        
     }
 }

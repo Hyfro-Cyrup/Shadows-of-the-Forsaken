@@ -4,9 +4,6 @@
  */
 package game.model;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  *
  * @author Son Nguyen
@@ -42,7 +39,7 @@ public class Enemy extends Creature {
     }
     
     
-    public void takeTurn(Player player){
+    public int takeTurn(Player player){
         double Rand = Math.random();
         /*double sumProb = decisionMatrix[0]+decisionMatrix[1]+decisionMatrix[2]
                 +decisionMatrix[3]+decisionMatrix[4]; 
@@ -87,23 +84,22 @@ public class Enemy extends Creature {
                 if (i == 0)
                 {
                     this.defend();
+                    return -1;
                 }
                 else
                 {
                     selectedAttack = attackArray[i];
-                    this.attack(player);
+                    return this.attack(player);
                 }
-                return;
             }
         }
         selectedAttack = attackArray[decisionMatrix.length - 1];
-        this.attack(player);
-        
+        return this.attack(player);
     }
 
     
     @Override     
-    public void attack(Creature target){
+    public int attack(Creature target){
         int accuracyRand = (int)(Math.random() * 100);
         int modifier; 
 
@@ -113,7 +109,7 @@ public class Enemy extends Creature {
         else{
             modifier = Math.min(0, strength-conditions[2]-conditions[3]-conditions[4]);
         }
-
+        int damageDealt = 0;
         if (accuracyRand<(selectedAttack.getAccuracy())){
             int[] finalDamage = new int[7]; 
 
@@ -121,11 +117,12 @@ public class Enemy extends Creature {
                 finalDamage[i]+=(selectedAttack.getDamage(i)*modifier);
             }
 
-            target.takeDamage(finalDamage);
+            damageDealt = target.takeDamage(finalDamage);
             target.increaseCondition (selectedAttack.getAfflictions());
         }
     
         this.condemnTick();
+        return damageDealt;
     }
     
     /**

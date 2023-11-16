@@ -6,6 +6,8 @@ package game.gui;
 
 import game.model.DungeonTile;
 import game.model.EncounterEngine;
+import game.model.GameState;
+import game.model.Player;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.IOException;
@@ -39,14 +41,21 @@ public class Hotbar extends JPanel {
         
         // create the buttons
         Buttons = new JButton[5];
+        var p = GameState.getInstance().getPlayer();
         for (int i = 0; i < 5; i++)
         {
             final int j = i;
+            final var player = p;
             Buttons[i] = new JButton();
             Buttons[i].addActionListener(e ->{
                 if (true) // TODO: Check if it is currently the player's turn
                 {
-                    engine.inputTranslator(engine.getSelectionLayer() == 3 && j < 3 ? 2-j : j);
+                    synchronized (player)
+                    {
+                        engine.inputTranslator(engine.getSelectionLayer() == 3 && j < 3 ? 2-j : j);
+                        player.notify();  
+                    }
+                    
                     repaint();
                 }
             });
@@ -75,6 +84,8 @@ public class Hotbar extends JPanel {
         // initialize the whole buttons array
         // structure: Buttons[i].setIcon(buttonIcons[engine.getSelectionLayer()][i]);
         
+        Player player = GameState.getInstance().getPlayer();
+        
         buttonIcons = new ImageIcon[5][5];
         
         // selection layer = 0
@@ -85,17 +96,17 @@ public class Hotbar extends JPanel {
         buttonIcons[0][4] = null;
         
         // selection layer = 1
-        buttonIcons[1][0] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
-        buttonIcons[1][1] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
-        buttonIcons[1][2] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
-        buttonIcons[1][3] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
+        for (int i = 0; i < 4; i++)
+        {
+            buttonIcons[1][i] = new ImageIcon(ImageIO.read(this.getClass().getResource(player.getPhysAttack(i).getSpriteReference())));
+        }
         buttonIcons[1][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/BackArrow.png")));
         
         // selection layer = 2
-        buttonIcons[2][0] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
-        buttonIcons[2][1] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
-        buttonIcons[2][2] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
-        buttonIcons[2][3] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
+        for (int i = 0; i < 4; i++)
+        {
+            buttonIcons[2][i] = new ImageIcon(ImageIO.read(this.getClass().getResource(player.getMagicAttack(i).getSpriteReference())));
+        }
         buttonIcons[2][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/BackArrow.png")));
         
         // selection layer = 3
