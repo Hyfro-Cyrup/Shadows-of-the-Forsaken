@@ -7,9 +7,11 @@ package game.gui;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
-import java.net.URL; //allows the program to work with urls
 import javax.imageio.ImageIO; //allows the program to read and write images
 import java.awt.image.BufferedImage; //allows the program to use image processing
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Main menu for the game. Has buttons for navigating to the game or load screen.
@@ -18,7 +20,7 @@ public class StartScreen extends JPanel {
     private SceneSwitcher switcher;
     private final JButton startButton;
     private final JButton loadButton;
-    private ImageIcon backgroundImage;
+    private BufferedImage backgroundImage;
 
     /**
      * Initialize the images and buttons for the start screen
@@ -26,34 +28,29 @@ public class StartScreen extends JPanel {
      * @param parent The component that facilitates switching screens
      */
     public StartScreen(SceneSwitcher parent) {
-        switcher = parent;
         
-        // Loads the background image from the internet and resizes it (figuring out how to import and resize the image done by chat gpt)
-        try {
-            URL imageUrl = new URL("https://cdna.artstation.com/p/assets/images/images/006/315/366/large/taryn-meixner-dungeon-interior.jpg?1497628693");
-            BufferedImage originalImage = ImageIO.read(imageUrl);
-            int newWidth = 800;  // Set the width of the panel
-            int newHeight = 600; // Set the height of the panel
-           
-            // Resize the image to fit within the panel dimensions
-            Image scaledImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-            backgroundImage = new ImageIcon(scaledImage); //The new image resized to fit the 800 x 600 window
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Handle the exception, e.g., show an error message, basically if improper url input will throw error
-        }
-       
-        // Create the buttons
-        startButton = new JButton("Start Game");
-        loadButton = new JButton("Load Game");
-
-        // Add component functionality
-        startButton.addActionListener((ActionEvent e) -> switcher.changeScene("DUNGEON_MAP"));
-        loadButton.addActionListener((ActionEvent e) -> switcher.changeScene("LOAD_SCREEN"));
-
-        // Add the buttons to the panel
-        add(startButton);
-        add(loadButton);
+            switcher = parent;
+            
+            // Loads the background image (figuring out how to import and resize the image done by chat gpt)
+            try
+            {
+                backgroundImage = ImageIO.read(this.getClass().getResource("/resources/StartMenuBackground.jpg"));
+            } catch (IOException ex) {
+                Logger.getLogger(StartScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            // Create the buttons
+            startButton = new JButton("Start Game");
+            loadButton = new JButton("Load Game");
+            
+            // Add component functionality
+            startButton.addActionListener((ActionEvent e) -> switcher.changeScene("DUNGEON_MAP"));
+            loadButton.addActionListener((ActionEvent e) -> switcher.changeScene("LOAD_SCREEN"));
+            
+            // Add the buttons to the panel
+            add(startButton);
+            add(loadButton);
+        
     }
 
     /**
@@ -64,13 +61,25 @@ public class StartScreen extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        backgroundImage.paintIcon(this, g, 0, 0);
+        
+        int panelWidth = getWidth(); // Get the panel's width
+        int panelHeight = getHeight(); // Get the panel's height
+        
+        int bgWidth = backgroundImage.getWidth();
+        int bgHeight = backgroundImage.getHeight();
+        
+        // scale and crop the background image -- there should be no whitespace around image regardless of window size
+        double scale = Math.max(((double)panelWidth )/ bgWidth, ((double) panelHeight )/ bgHeight);
+        int newWidth = (int) (scale * bgWidth);
+        int newHeight = (int) (scale * bgHeight);
+        g.drawImage(backgroundImage, (panelWidth - newWidth) / 2, (panelHeight - newHeight) / 2, newWidth, newHeight, this);
+        
+        
         
         // Calculate the start button's position to center it
         int buttonWidth = 150;
         int buttonHeight = 50;
-        int panelWidth = getWidth(); // Get the panel's width
-        int panelHeight = getHeight(); // Get the panel's height
+        
         int buttonX = (panelWidth - buttonWidth) / 2; // Centers the button horizontally
         int buttonY = (panelHeight - buttonHeight) / 2; // Centers the button vertically
 

@@ -51,4 +51,12 @@ public class Entity implements Serializable{
      */
     public String getSpriteReference(){ return spritePath; }
     
+    /**
+     * Returns the intro text for announcing an entity on EncounterScreen
+     * @return formatted name and description
+     */
+    public String getIntro()
+    {
+        return name + ": " + description;
+    }
 }

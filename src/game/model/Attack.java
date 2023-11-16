@@ -11,50 +11,28 @@ import java.io.Serializable;
  * 
  */
 public class Attack implements Serializable{
-    /**
-     * name of the attack 
-     */
+    // name of the attack 
     private final String Name; 
-    /**
-     * description of the attack 
-     */
+    // description of the attack 
     private final String infoText; 
-    /**
-     * String filepath of the object 
-     */
+    // String filepath of the object 
     private final String spriteReference; 
-    /**
-     * whether or not the attack is magical of physical. 0 is physical. 1 is magical
-     */
-    private final int mightOrmagic; 
+    // whether or not the attack is magical of physical. 0 is physical. 1 is magical
+    private final int mightOrMagic; 
     private final int Cost; 
-    /**
-     * Minimum damage range of the attack - An array because multiple damage types 
-     */
+    // Minimum damage range of the attack - An array because multiple damage types 
     private final int[] damageArrayMin; 
-    /**
-     * Maximum damage range of the attack [Physical, Fire, Toxic, Cold, Lightning, Necrotic, Radiant] 
-     */
+    // Maximum damage range of the attack [Physical, Fire, Toxic, Cold, Lightning, Necrotic, Radiant] 
     private final int[] damageArrayMax; 
-    /**
-     * Array which represents the afflictions the attack imposes on a target on hit.
-     */
+    // Array which represents the afflictions the attack imposes on a target on hit.
     private final int[] afflictionArray;
-    /**
-     * base chance that the attack hits
-     */
+    // base chance that the attack hits
     private final int accuracy; 
-    /**
-     * base chance that the attack crits, doing double damage 
-     */
+    // base chance that the attack crits, doing double damage 
     private final int critChance; 
-    /**
-     * how many times the attack can make a strike 
-     */
+    // how many times the attack can make a strike 
     private final int hits; 
-    /**
-     * if the attack hits all enemies in field 
-     */
+    // if the attack hits all enemies in field 
     private final Boolean massAttack; 
     
     /**
@@ -80,7 +58,7 @@ public class Attack implements Serializable{
         Name = name;
         infoText = info;
         spriteReference = spriteFile;
-        mightOrmagic = isMagic;
+        mightOrMagic = isMagic;
         Cost = price;
         damageArrayMin = minDmg;
         damageArrayMax = maxDmg;
@@ -123,7 +101,7 @@ public class Attack implements Serializable{
     }
     
     public int IsMagic(){
-        return mightOrmagic; 
+        return mightOrMagic; 
     }
  
     public int getCost(){
@@ -135,5 +113,56 @@ public class Attack implements Serializable{
         int damage = (int) (Math.random() * range)+damageArrayMin[type];
         return damage; 
     }
+    
+    /*  Named attacks because these are complicated to construct    */
+    
+    // TODO: change these filepaths out for real ones
+    // Physical
+    public static final Attack SLASH = new Attack(
+            "Slash", "medium damage and accuracy", "/resources/BackArrow.png", 0, 2, 
+            new int[]{1, 0, 0, 0, 0, 0, 0}, new int[]{6, 0, 0, 0, 0, 0, 0}, 
+            new int[]{0, 0, 0, 0, 0, 0, 0}, 80, 5, 1, false
+    );
+    public static final Attack CLEAVE = new Attack(
+            "Cleave", "high damage, low accuracy", "/resources/BackArrow.png", 0, 4, 
+            new int[]{2, 0, 0, 0, 0, 0, 0}, new int[]{8, 0, 0, 0, 0, 0, 0}, 
+            new int[]{0, 0, 0, 0, 0, 0, 0}, 70, 5, 1, false
+    );
+    public static final Attack QUICK_STRIKE = new Attack(
+            "Quick Strike", "low damage, high accuracy", "/resources/BackArrow.png", 0, 2, 
+            new int[]{1, 0, 0, 0, 0, 0, 0}, new int[]{4, 0, 0, 0, 0, 0, 0}, 
+            new int[]{0, 0, 0, 0, 0, 0, 0}, 100, 5, 1, false
+    );
+    public static final Attack SHIELD_BASH = new Attack(
+            "Shield Bash", "low damage, stuns enemies", "/resources/BackArrow.png", 0, 3, 
+            new int[]{1, 0, 0, 0, 0, 0, 0}, new int[]{6, 0, 0, 0, 0, 0, 0}, 
+            new int[]{0, 0, 0, 0, 2, 0, 0}, // 2 Stun
+            60, 5, 1, false
+    );
+    
+    // Magical
+    public static final Attack TRUE_STRIKE = new Attack(
+            "True Strike", "increases accuracy", "/resources/BackArrow.png", 1, 3, 
+            new int[]{0, 0, 0, 0, 0, 0, 0}, new int[]{0, 0, 0, 0, 0, 0, 0}, 
+            new int[]{0, 0, 0, 0, 0, 0, 0}, 50, 20, 1, false
+    );
+    public static final Attack FLAME = new Attack(
+            "Flame", "fire damage and burn", "/resources/BackArrow.png", 1, 3, 
+            new int[]{0, 1, 0, 0, 0, 0, 0}, new int[]{0, 4, 0, 0, 0, 0, 0}, 
+            new int[]{0, 2, 0, 0, 0, 0, 0}, // 2 Burn
+            0, 0, 1, false
+    );
+    public static final Attack DEATH = new Attack(
+            "Death", "high necrotic damage at a price", "/resources/BackArrow.png", 1, 6, 
+            new int[]{0, 0, 0, 0, 0, 4, 0}, new int[]{0, 0, 0, 0, 0, 8, 0}, 
+            new int[]{0, 0, 0, 0, 0, 0, 0}, 0, 10, 1, false
+    );
+    public static final Attack POISON_SPRAY = new Attack(
+            "Poison Spray", "toxic damage and shock", "/resources/BackArrow.png", 1, 4, 
+            new int[]{0, 0, 2, 0, 0, 0, 0}, new int[]{0, 0, 4, 0, 0, 0, 0}, 
+            new int[]{0, 0, 2, 0, 0, 0, 0}, // 2 Poison
+            0, 0, 1, false
+    );
+    
     
 }

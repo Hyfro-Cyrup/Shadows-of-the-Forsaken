@@ -13,42 +13,24 @@ import java.io.Serializable;
  * Creature class which is a superclass that encompasses Enemy and Player within the Encounter Framework. 
  * Class name is somewhat self explanatory in its role.
  */
-public class Creature extends Entity implements Serializable {
-    /**
-     *  max health of the creature
-     */
+public abstract class Creature extends Entity implements Serializable {
+    // max health of the creature
     protected int maxHP;
-    /**
-     * current health of the creature
-     */
+    //current health of the creature
     protected int currentHP;
-    /**
-     * how much health a creature regains at the start of its turns 
-     */
+    //how much health a creature regains at the start of its turns 
     protected int hpRegen; 
-    /**
-     * integer that amplifies the damage of a physical attack 
-     */
+    //integer that amplifies the damage of a physical attack 
     protected int strength;
-    /**
-     * integer that amplifies damage of a magical attack 
-     */
+    //integer that amplifies damage of a magical attack 
     protected int soul;
-    /**
-     * Array which represents the attacks of the the creature 
-     */
+    //Array which represents the attacks of the the creature 
     protected Attack[] attackArray; 
-    /**
-     * array that represents the damage resistances of a creature 
-     */
+    //array that represents the damage resistances of a creature 
     protected float[] resist;
-    /**
-     * array that represents the value of a creature's conditions (bleeding, burning, etc.) 
-     */
+    //array that represents the value of a creature's conditions (bleeding, burning, etc.) 
     protected int[] conditions = new int[7]; 
-    /**
-     * int that represents if a creature is Defending. 0 if not, 1 if it is. 
-     */
+    //int that represents if a creature is Defending. 0 if not, 1 if it is. 
     protected int isDefending = 0; 
     
     /**
@@ -62,10 +44,10 @@ public class Creature extends Entity implements Serializable {
      * @param soul The creature's soul stat
      * @param regen The creature's hpRegen stat
      * @param moveset Array of Attacks the creature can take
-     * @param resistences  Array of damage resistances for each damage type
+     * @param resistances  Array of damage resistances for each damage type
      */
     public Creature(String name, String desc, String spriteFileName,int hp, int str, int soul, 
-            int regen, Attack[] moveset, float[] resistences){
+            int regen, Attack[] moveset, float[] resistances){
         super(name, desc, spriteFileName);
         
         currentHP = maxHP = hp;
@@ -73,7 +55,7 @@ public class Creature extends Entity implements Serializable {
         this.soul = soul;
         hpRegen = regen; 
         attackArray = moveset; 
-        resist = resistences; 
+        resist = resistances; 
     }
     
     public Creature(String name, String desc, String spriteFileName)
@@ -116,8 +98,8 @@ public class Creature extends Entity implements Serializable {
     
     
     /**
-     * Calculates how much damage it takes from an attack, based on resistences. 
-     * Consider having a return value to let UI know how much dmg is reduced, in case we want to add it to eventlog.
+     * Calculates how much damage it takes from an attack, based on resistances. 
+     * Consider having a return value to let UI know how much damage is reduced, in case we want to add it to event log.
      * @param rawDamage the incoming damage array
      */
     public void takeDamage (int[] rawDamage){
@@ -136,7 +118,7 @@ public class Creature extends Entity implements Serializable {
     /**
      * when an attack inflicts a condition, like burn. 
      * @param afflicted - an array of conditions an attack would inflict on a creature. 
-     * Example: Player gets hit by Great Slash, dealing 5 dmg and 2 Bleed. The 2 Bleed is repersented by the first element in
+     * Example: Player gets hit by Great Slash, dealing 5 dmg and 2 Bleed. The 2 Bleed is represented by the first element in
      * the afflicted array. This is added to the Player's conditions array. 
      */
     public void increaseCondition (int[] afflicted){
@@ -146,11 +128,11 @@ public class Creature extends Entity implements Serializable {
     }
     
     /**
-     * Implementation of attack for enenmy and player 
+     * Implementation of attack for enemy and player 
      * creatures will be very different. Players use a 
-     * 'combined magic/physical attack'. Enimies attack
-     * is simplier, but need some from of AI to determine 
-     * which move to use. All future Sonny's probelms. 
+     * 'combined magic/physical attack'. Enemies attack
+     * is simpler, but need some from of AI to determine 
+     * which move to use. All future Sonny's problems. 
      * @param target is the target of the attack 
      */
     public void attack(Creature target){
@@ -163,7 +145,7 @@ public class Creature extends Entity implements Serializable {
     
 
 /**
- *  Below methods are Condition Ticks. Essientally, when a creature is 
+ *  Below methods are Condition Ticks. Essentially, when a creature is 
  * afflicted by some condition, something occurs to make it 'go off' and deal an effect to the creature 
  */
 
@@ -173,17 +155,17 @@ public class Creature extends Entity implements Serializable {
      */
     public void bleedTick(){
         currentHP-= conditions[0];
-        conditions[0]--; 
+        conditions[0] = Math.max(0,conditions[0] - 1);
     }
 
     /**
      * Burning effect. A creature takes damage equal to its current Burn value (condition[0])
      * Burned value is then reduce by 1. Occurs at the end of a creature's turn 
-     * If a creature has any value of Burn greater than 0, then it recieves no health regen. 
+     * If a creature has any value of Burn greater than 0, then it receives no health regen. 
      */
     public void burnTick(){
         currentHP-= conditions[1];
-        conditions[1]--; 
+        conditions[1] = Math.max(0,conditions[1] - 1);
     }
 
     /**
@@ -193,17 +175,17 @@ public class Creature extends Entity implements Serializable {
      */
     public void poisonTick(){
         currentHP-= conditions[2];
-        conditions[2]--;
+        conditions[2] = Math.max(0,conditions[2] - 1);
     }
 
     /**
-     * Frozened effect. A creature takes damage equal to its current Frozen value (condition[0])
-     * Frozen is then reduced to 0. This occurs whenvers the afflicted creature gets hit.
+     * Frozen effect. A creature takes damage equal to its current Frozen value (condition[0])
+     * Frozen is then reduced to 0. This occurs whenever the afflicted creature gets hit.
      * Frozen also reduces strength by an amount equal to its value.  
      */
     public void frozenTick(){
         currentHP -= conditions[3];
-        conditions[3] = 0; 
+        conditions[3] = Math.max(0,conditions[3] - 1);
     }
     
     /**
@@ -211,7 +193,7 @@ public class Creature extends Entity implements Serializable {
      * Lowers whenever a creature gets hit and at the end of a creature's turn. 
      */
     public void stunTick(){
-        conditions[4]--;
+        conditions[4] = Math.max(0,conditions[4] - 1);
     }
 
     /**
@@ -229,5 +211,11 @@ public class Creature extends Entity implements Serializable {
     public void condemnTick(){
         currentHP -= conditions[6];
     }
+    
+    /**
+      * The name of the selected attack, to appear in the GUI
+      * @return a formatted string
+      */
+     public abstract String getSelectedAttackName();
     
 }

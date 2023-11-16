@@ -4,7 +4,10 @@
  */
 package game.model;
 
-import java.util.List;
+import game.gui.EncounterScreen;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,6 +18,7 @@ public class EncounterEngine {
     private int selectionLayer;
     private final Player player;
     private String eventLog; 
+    private EncounterScreen gui;
     
     public EncounterEngine()
     {
@@ -22,12 +26,8 @@ public class EncounterEngine {
     selectionLayer = 0; 
     }
     
-    
-    
-    //promptPlayerInput is a placeholder for a therotical method in a GUI class
-    // that will take user input. 
-    
     public void combatEncounter(Enemy[] enemies){
+        System.out.println("confirmed starting combat");
         if (enemies.length != 3) {
             throw new IllegalArgumentException("Array 'enemies' must have length 3.");
         }
@@ -36,17 +36,28 @@ public class EncounterEngine {
         
         while (!(this.combatOver())){
             player.beginTurn();
-            // promptPlayerInput()
+            waitForGUI();
             player.endTurn();
             
             for (int i = 0; i<3; i++){
-                field[i].beginTurn();
-                CheckIfDead(i);
-                field[i].takeTurn(player);
-                field[i].endTurn();
-                CheckIfDead(i);
+                if (field[i] != null)
+                {
+                    field[i].beginTurn();
+                    CheckIfDead(i);
+                    field[i].takeTurn(player);
+                    field[i].endTurn();
+                    CheckIfDead(i);
+                }
             }
+            
+            // REMOVE after making wait function work
+            break;
         }
+    }
+    
+    private void waitForGUI()
+    {
+        // STUB
     }
     
     

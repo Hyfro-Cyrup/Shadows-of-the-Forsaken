@@ -21,8 +21,13 @@ import javax.swing.JPanel;
 import game.model.Player;
 import game.model.DungeonTile;
 import game.model.GameState;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 /**
@@ -42,6 +47,9 @@ public class DungeonMap extends JPanel {
     private JPanel centeredPanel;
     private JPanel rightPanel;
     private GameState gameState;
+    
+    private BufferedImage tile, combat, key, ladder, playerIcon;
+    private Boolean playerFacingLeft = false; // used to make playerIcon look where they're going
 
     
     /**
@@ -106,10 +114,21 @@ public class DungeonMap extends JPanel {
     
     private void drawPlayer(Graphics2D g) 
     {
-        g.setColor(Color.BLUE);
-        int x = (int) (GRIDSIZE*(player.x + 0.5) + origin[0]);
-        int y = (int) (GRIDSIZE*(player.y + 0.5) + origin[1]);
-        g.fillOval(x - GRIDSIZE / 2, y - GRIDSIZE / 2, GRIDSIZE, GRIDSIZE);
+        int x = (int) (GRIDSIZE*(player.x) + origin[0]);
+        int y = (int) (GRIDSIZE*(player.y) + origin[1]);
+        
+        if (playerFacingLeft)
+        {
+            AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+            tx.translate(-playerIcon.getWidth(null), 0);
+            AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+            g.drawImage(op.filter(playerIcon, null), x, y, GRIDSIZE, GRIDSIZE, this);
+        }
+        else
+        {
+            g.drawImage(playerIcon, x, y, GRIDSIZE, GRIDSIZE, this);
+        }
+        
     }
     
     private void resizeMap()
@@ -196,6 +215,13 @@ public class DungeonMap extends JPanel {
         this.setLayout(null);
         makePauseButton();
         makePauseScreen();
+        
+        // make all the icons
+        try {
+            makeAllIcons();
+        } catch (IOException ex) {
+            Logger.getLogger(DungeonMap.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         setFocusable(true);
         
@@ -213,8 +239,14 @@ public class DungeonMap extends JPanel {
                    {
                         case KeyEvent.VK_UP -> player.move(0, -1, Tiles);
                         case KeyEvent.VK_DOWN -> player.move(0, 1, Tiles);
-                        case KeyEvent.VK_LEFT -> player.move(-1, 0, Tiles);
-                        case KeyEvent.VK_RIGHT -> player.move(1, 0, Tiles);
+                        case KeyEvent.VK_LEFT -> {
+                            player.move(-1, 0, Tiles);
+                            playerFacingLeft = true;
+                        }
+                        case KeyEvent.VK_RIGHT -> {
+                            player.move(1, 0, Tiles);
+                            playerFacingLeft = false;
+                        }
                     } 
                 }
                 
@@ -322,6 +354,14 @@ public class DungeonMap extends JPanel {
         
         this.add(centeredPanel);
         this.add(rightPanel);
+        
+    }
+    
+    private void makeAllIcons() throws IOException
+    {
+        playerIcon = ImageIO.read(this.getClass().getResource("/resources/MapPlayer.png"));
+        tile = ImageIO.read(this.getClass().getResource("/resources/MapTile.png"));
+        key = ImageIO.read(this.getClass().getResource("/resources/Key.png"));
         
     }
     

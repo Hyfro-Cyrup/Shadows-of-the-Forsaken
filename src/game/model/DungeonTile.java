@@ -112,6 +112,7 @@ public class DungeonTile implements Serializable {
         }
         engine = new EncounterEngine();
         engine.combatEncounter(this.getEnemies());
+        System.out.println("starting combat");
     }
     
     /**

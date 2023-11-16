@@ -21,12 +21,12 @@ package game.model;
  * 
  */
 public class EncounterObject extends Entity {
-    String encounterText; 
-    int[][] options; 
-    Attack[] attackGift[]; 
-    String[] optionText; 
-    String[] resultText;
-    String [] addInventory; 
+    private String encounterText; 
+    private int[][] options; 
+    private Attack[] attackGift[]; 
+    private String[] optionText; 
+    private String[] resultText;
+    private String [] addInventory; 
     
     EncounterObject(String name, String description, String spriteFile){
         super(name,description, spriteFile);

@@ -4,9 +4,10 @@
  */
 package game.util;
 
+import game.model.Attack;
 import game.model.DungeonTile;
 import game.model.Entity;
-import game.model.Creature;
+import game.model.Enemy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -16,8 +17,7 @@ import java.util.PriorityQueue;
 import java.util.function.Function;
 
 /**
- *
- * @author Nathan Ainslie
+ * Singleton class used to create new randomized dungeon maps, which are 2d arrays of DungeonTile objects
  */
 public final class MapMaker {
     // Map Generation Parameters
@@ -38,6 +38,11 @@ public final class MapMaker {
      * Higher makes more densely-packed creatures.
      */
     private static final double CREATURE_PROB = 0.2;
+    /**
+     * The probability of an additional creature in a tile, given one already exists
+     * Hence, the probability of 2 or 3 creatures is CP*SCP and CP*SCP^2 respectively
+     */
+    private static final double SUBSEQUENT_CREATURE_PROB = 0.3;
     /**
      * Clustering coefficient. At 0, no 2x2 rooms appear. 
      * Higher makes more clusters like that.
@@ -65,12 +70,13 @@ public final class MapMaker {
      */
     private static final int MIN_COMBATS = 2;
     /**
-     * List of creature entities from which to populate the grid
+     * List of enemy entities from which to populate the grid
      */
-    private static final List<Creature> CREATURES = new ArrayList<>(Arrays.asList(
-            new Creature("Gerblin", "Nasty-looking fellow", "dummy/path"),
-            new Creature("Ogre", "A little bigger than you", "dummy/path")
-    ));
+    private static final List<Enemy> ENEMIES = Arrays.asList(
+            new Enemy("Skeleton", "Boney guy", "/resources/Skeleton.png",
+                    30, 2, 0, 1, new Attack[]{Attack.SLASH, Attack.QUICK_STRIKE}, 
+                    new float[]{1.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f})
+    );
     
     
     /**
@@ -93,9 +99,6 @@ public final class MapMaker {
         
         // track which cells are filled
         ArrayList<List<Integer>> visited = new ArrayList<>();
-        
-        // fill the first tile
-        //map[cursor.get(0).get(0)][cursor.get(0).get(1)] = new DungeonTile(Arrays.asList(), true);
         
         // modeled after influence diffusion in a network. 
         // each tile has a chance to infect its neighbors.
@@ -122,10 +125,23 @@ public final class MapMaker {
                     Objects.remove(index);
                     
                 }
-                else if ((i > CREATURE_START) && (Math.random() < CREATURE_PROB))
+                else if ((i > CREATURE_START) && Math.random() < CREATURE_PROB)
                 {
-                    Entity entity = CREATURES.get((int) Math.floor(Math.random()*CREATURES.size()));
+                    Entity entity = ENEMIES.get((int) Math.floor(Math.random()*ENEMIES.size()));
                     contents.add(entity);
+                    for (int j = 0; j < 2; j++)
+                    {
+                        if ((Math.random() < SUBSEQUENT_CREATURE_PROB))
+                        {
+                            entity = ENEMIES.get((int) Math.floor(Math.random()*ENEMIES.size()));
+                            contents.add(entity);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    
                 }
                 
                 map[tile.get(0)][tile.get(1)] = new DungeonTile(new ArrayList<>(contents), false);               

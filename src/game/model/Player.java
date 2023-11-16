@@ -4,6 +4,7 @@
  */
 package game.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,15 +15,15 @@ public class Player extends Creature {
     private List<Entity> Inventory;
     public int x, y;
     
-    private Attack[] arcanaArray; 
+    private final Attack[] arcanaArray; 
     
-    private int maxStamina; 
+    private final int maxStamina; 
     private int currentStamina;
-    private int regenStamina; 
+    private final int regenStamina; 
     
-    private int maxMana;
+    private final int maxMana;
     private int currentMana;
-    private int regenMana; 
+    private final int regenMana; 
     
     private int Ego;
     private int Will;
@@ -32,21 +33,27 @@ public class Player extends Creature {
     
     
     /**
-     * Construct a Player with specified parameters
-     * 
-     * @param _spritePath String filepath to the image of the entity
-     * @param hp The health of the creature
-     * @param attacks A list of Attack objects
-     * @param key Boolean whether or not the exit key is in the player's inventory
-     * @param inventory List of entities that the player has with them. Currently unused.
+     * Construct a Player with default parameters
      */
-    public Player(String _spritePath, int hp, List<Attack> attacks, Boolean key, List<Entity> inventory)
+    public Player()
     {
-        super("The Player", "The FOOOLISH KNIGHT", _spritePath);
-        hasExitKey = key;
-        Inventory = inventory;
+        super("The Player", "The FOOOLISH KNIGHT", "/resources/CombatPlayer.png");
+        hasExitKey = false;
+        Inventory = new ArrayList<>();
         x = 0;
         y = 0;
+        maxStamina = currentStamina = 10;
+        regenStamina = 2;
+        maxMana = currentMana = 10;
+        regenMana = 2;
+        currentHP = maxHP = 30;
+        resist = new float[]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+        attackArray = new Attack[]{
+            Attack.SLASH, Attack.CLEAVE, Attack.QUICK_STRIKE, Attack.SHIELD_BASH
+        };
+        arcanaArray = new Attack[]{
+            Attack.TRUE_STRIKE, Attack.FLAME, Attack.POISON_SPRAY, Attack.DEATH
+        };
     }
     
     /**
@@ -96,7 +103,9 @@ public class Player extends Creature {
         if (currentMana>maxMana){
             currentMana=maxMana;
         }
-        isDefending = 0; 
+        isDefending = 0;
+        selectedAttack = null;
+        selectedArcana = null;
     }
     
     
@@ -142,24 +151,24 @@ public class Player extends Creature {
     * @param target - creature that is being targeted by the player 
     */
     public void attack(Creature target){
-    int accuracyRand = (int)(Math.random() * 100);
-    
-    if (accuracyRand<(selectedAttack.getAccuracy()+selectedArcana.getAccuracy())){
-        int[] finalDamage = new int[7]; 
-        
-        for (int i = 0; i < 7; i++) {
-            finalDamage[i]+=(selectedAttack.getDamage(i)*(strength-conditions[2]-conditions[3]-conditions[4]))
-                    +(selectedArcana.getDamage(i)*soul-conditions[4]);
+        int accuracyRand = (int)(Math.random() * 100);
+
+        if (accuracyRand<(selectedAttack.getAccuracy()+selectedArcana.getAccuracy())){
+            int[] finalDamage = new int[7]; 
+
+            for (int i = 0; i < 7; i++) {
+                finalDamage[i]+=(selectedAttack.getDamage(i)*(strength-conditions[2]-conditions[3]-conditions[4]))
+                        +(selectedArcana.getDamage(i)*soul-conditions[4]);
+            }
+
+            target.takeDamage(finalDamage);
+            target.increaseCondition (selectedAttack.getAfflictions());
+            target.increaseCondition (selectedArcana.getAfflictions());
         }
-        
-        target.takeDamage(finalDamage);
-        target.increaseCondition (selectedAttack.getAfflictions());
-        target.increaseCondition (selectedArcana.getAfflictions());
-    }
-    
-        this.condemnTick();
-        currentStamina-=selectedAttack.getCost();
-        currentMana-=selectedArcana.getCost(); 
+
+            this.condemnTick();
+            currentStamina-=selectedAttack.getCost();
+            currentMana-=selectedArcana.getCost(); 
     }
     
     
@@ -171,14 +180,25 @@ public class Player extends Creature {
     * @param slot - which slot are your inserting it into. 
     * @param newAttack - the Attack you are inserting.
     */
-     public void exchangeAttack(int techOrArcane, int slot, Attack newAttack){
-         if (techOrArcane == 0){
-            attackArray[slot] = newAttack;
-         }
-         
-         else{
-            arcanaArray[slot] = newAttack; 
+    public void exchangeAttack(int techOrArcane, int slot, Attack newAttack){
+        if (techOrArcane == 0){
+           attackArray[slot] = newAttack;
         }
-     }
+
+        else{
+           arcanaArray[slot] = newAttack; 
+       }
+    }
+     
+     /**
+      * The name of the selected attack, to appear in the GUI
+      * @return a formatted string
+      */
+    @Override
+    public String getSelectedAttackName()
+    {
+        return selectedArcana.getName() + "-infused " + selectedAttack.getName();
+    }
+             
     
 }
