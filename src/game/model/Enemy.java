@@ -10,7 +10,7 @@ package game.model;
  */
 public class Enemy extends Creature {
     
-    private double[] decisionMatrix; 
+    private final double[] decisionMatrix; 
     private Attack selectedAttack; 
             
      /**
@@ -31,10 +31,10 @@ public class Enemy extends Creature {
     {
         super(name, desc, spriteFileName, hp, str, soul, regen, moveset, resistances);
         //TODO: decisionMatrix needs to be initialized, but I don't know how you want them to work. 
-        decisionMatrix = new double[moveset.length];
+        decisionMatrix = new double[moveset.length + 1];
         for (int i = 0; i < moveset.length; i++)
         {
-            decisionMatrix[i] = 1.0 / moveset.length;
+            decisionMatrix[i] = 1.0 / (moveset.length + 1);
         }
     }
     
@@ -84,7 +84,7 @@ public class Enemy extends Creature {
                 if (i == 0)
                 {
                     this.defend();
-                    return -1;
+                    return DamageCode.DEFENDED;
                 }
                 else
                 {
@@ -104,21 +104,25 @@ public class Enemy extends Creature {
         int modifier; 
 
         if (selectedAttack.IsMagic() == 1){
-            modifier = Math.min(0, soul-conditions[4]);
+            modifier = Math.max(0, soul-conditions[4]);
         }
         else{
-            modifier = Math.min(0, strength-conditions[2]-conditions[3]-conditions[4]);
+            modifier = Math.max(0, strength-conditions[2]-conditions[3]-conditions[4]);
         }
-        int damageDealt = 0;
+        int damageDealt;
         if (accuracyRand<(selectedAttack.getAccuracy())){
             int[] finalDamage = new int[7]; 
 
             for (int i = 0; i < 7; i++) {
-                finalDamage[i]+=(selectedAttack.getDamage(i)*modifier);
+                finalDamage[i]=(selectedAttack.getDamage(i)*modifier);
             }
 
             damageDealt = target.takeDamage(finalDamage);
             target.increaseCondition (selectedAttack.getAfflictions());
+        }
+        else
+        {
+            damageDealt = DamageCode.MISSED;
         }
     
         this.condemnTick();
@@ -134,4 +138,11 @@ public class Enemy extends Creature {
     {
         return selectedAttack.getName() + " attack";
     }
+    
+    public static final Enemy SKELETON = new Enemy("Skeleton", 
+            "Boney guy", "/resources/Skeleton.png",
+            30, 2, 0, 1, new Attack[]{
+                Attack.SLASH, Attack.QUICK_STRIKE
+            }, 
+            new float[]{0.25f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.75f}); 
 }

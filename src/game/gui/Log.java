@@ -5,10 +5,8 @@
 package game.gui;
 
 import java.awt.Color;
-import java.awt.ScrollPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.text.DefaultCaret;
 
 /**
  * Custom JTextArea to house log messages
@@ -28,9 +26,11 @@ public class Log extends JScrollPane {
         this.log.setLineWrap(true);
         this.log.setWrapStyleWord(true);
         this.log.setAutoscrolls(true);
-        this.log.setBackground(new Color(69, 48, 8));
+        Color bg = new Color(69, 48, 8);
+        this.log.setBackground(bg);
         
         setViewportView(log);
+        this.setBackground(bg);
     }
     
     public void append(String s)
@@ -39,7 +39,6 @@ public class Log extends JScrollPane {
         // Scroll to the bottom
         int bottomPosition = log.getDocument().getLength();
         log.setCaretPosition(bottomPosition);
-        System.out.println("Caret position set: " + bottomPosition);
         
     }
 }

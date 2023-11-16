@@ -42,29 +42,18 @@ public class EncounterEngine {
         
         
         while (!(this.combatOver())){
-            System.out.println("Combat not over");
             player.beginTurn();
             gui.waitForPlayer();
-            System.out.println("Player turn over");
+            selectionLayer = 0;
             player.endTurn();
             
             for (int i = 0; i<3; i++){
                 if (field[i] != null)
                 {
-                    System.out.println(field[i].getName() + " starting turn");
                     field[i].beginTurn();
                     CheckIfDead(i);
                     int damage = field[i].takeTurn(player);
-                    if (damage == -1)
-                    {
-                        // enemy defended
-                        gui.outputTranslator(field[i]);
-                    }
-                    else
-                    {
-                        // enemy attacked
-                        gui.outputTranslator(field[i], player, damage);
-                    }
+                    sendToGUI(field[i], player, damage);
                     field[i].endTurn();
                     CheckIfDead(i);
                 }
@@ -143,11 +132,24 @@ public class EncounterEngine {
                 return false;
             }
            
-           player.attack(field[buttonValue]);
+           int damage = player.attack(field[buttonValue]);
+           sendToGUI(player, field[buttonValue], damage);
            return true; 
         }
     
     return true; 
+    }
+    
+    private void sendToGUI(Creature source, Creature target, int damage)
+    {
+        switch (damage) {
+            case DamageCode.DEFENDED -> // source defended
+                gui.outputTranslator(source);
+            case DamageCode.MISSED -> // source missed
+                gui.outputTranslator(source, target);
+            default -> // source hit
+                gui.outputTranslator(source, target, damage);
+        }
     }
     
     public int getSelectionLayer(){

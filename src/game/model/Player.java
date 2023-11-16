@@ -49,13 +49,14 @@ public class Player extends Creature {
         maxMana = currentMana = 10;
         regenMana = 2;
         currentHP = maxHP = 30;
-        resist = new float[]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+        resist = new float[]{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
         attackArray = new Attack[]{
             Attack.SLASH, Attack.CLEAVE, Attack.QUICK_STRIKE, Attack.SHIELD_BASH
         };
         arcanaArray = new Attack[]{
             Attack.TRUE_STRIKE, Attack.FLAME, Attack.POISON_SPRAY, Attack.DEATH
         };
+        strength = soul = 2;
     }
     
     /**
@@ -156,18 +157,22 @@ public class Player extends Creature {
     public int attack(Creature target){
         int accuracyRand = (int)(Math.random() * 100);
 
-        int damageDealt = 0;
+        int damageDealt;
         if (accuracyRand<(selectedAttack.getAccuracy()+selectedArcana.getAccuracy())){
             int[] finalDamage = new int[7]; 
 
             for (int i = 0; i < 7; i++) {
-                finalDamage[i]+=(selectedAttack.getDamage(i)*(strength-conditions[2]-conditions[3]-conditions[4]))
+                finalDamage[i] = (selectedAttack.getDamage(i)*(strength-conditions[2]-conditions[3]-conditions[4]))
                         +(selectedArcana.getDamage(i)*soul-conditions[4]);
             }
 
             damageDealt = target.takeDamage(finalDamage);
             target.increaseCondition (selectedAttack.getAfflictions());
             target.increaseCondition (selectedArcana.getAfflictions());
+        }
+        else
+        {
+            damageDealt = DamageCode.MISSED;
         }
 
             this.condemnTick();
@@ -245,5 +250,41 @@ public class Player extends Creature {
     {
         return arcanaArray[index];
     }
+    
+    /**
+      * Get the current amount of stamina
+      * @return currentStamina
+      */
+     public int getCurrentStamina()
+     {
+         return currentStamina;
+     }
+     
+     /**
+      * Get the max amount of stamina
+      * @return maxStamina
+      */
+     public int getMaxStamina()
+     {
+         return maxStamina;
+     }
+     
+     /**
+      * Get the current amount of mana
+      * @return currentMana
+      */
+     public int getCurrentMana()
+     {
+         return currentMana;
+     }
+     
+     /**
+      * Get the max amount of mana
+      * @return maxMana
+      */
+     public int getMaxMana()
+     {
+         return maxMana;
+     }
     
 }

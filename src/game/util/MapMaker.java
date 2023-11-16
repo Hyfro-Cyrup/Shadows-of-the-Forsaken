@@ -73,9 +73,7 @@ public final class MapMaker {
      * List of enemy entities from which to populate the grid
      */
     private static final List<Enemy> ENEMIES = Arrays.asList(
-            new Enemy("Skeleton", "Boney guy", "/resources/Skeleton.png",
-                    30, 2, 0, 1, new Attack[]{Attack.SLASH, Attack.QUICK_STRIKE}, 
-                    new float[]{1.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f})
+            Enemy.SKELETON
     );
     
     

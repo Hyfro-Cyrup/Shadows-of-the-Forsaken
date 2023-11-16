@@ -11,13 +11,10 @@ import game.model.EncounterEngine;
 import game.model.Entity;
 import game.model.GameState;
 import game.model.Player;
-import java.awt.Color;
 import java.awt.Graphics;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
@@ -104,11 +101,12 @@ public class EncounterScreen extends JPanel {
      */
     public void outputTranslator(Creature source, Creature target, int damage)
     {
+        String atk = source.getSelectedAttackName();
         if (source == player)
         {
             SwingUtilities.invokeLater( () -> 
             {
-                log.append("\n" + source.getName() + " attacked the " + target.getName() + " with your " +  source.getSelectedAttackName() + ".\n" + 
+                log.append("\nYou attacked the " + target.getName() + " with your " +  atk + ".\n" + 
                     "It dealt " + damage + " damage!\n");
             });
             
@@ -117,11 +115,10 @@ public class EncounterScreen extends JPanel {
         {
             SwingUtilities.invokeLater( () -> 
             {
-                log.append("The " + source.getName() + " attacked you with its " + source.getSelectedAttackName() + ".\n" + 
+                log.append("The " + source.getName() + " attacked you with its " + atk + ".\n" + 
                         "It dealt " + damage + " damage!\n");
             });
         }
-        repaint();
     }
     
     /**
@@ -132,15 +129,51 @@ public class EncounterScreen extends JPanel {
     {
         if (defender == player)
         {
-            log.append("\nYou defended!\n");
+            SwingUtilities.invokeLater( () -> 
+            {
+                log.append("\nYou defended!\n");
+            });
         }
         else
         {
-            log.append(defender.getName() + " defended!\n");
+            SwingUtilities.invokeLater( () -> 
+            {
+                log.append(defender.getName() + " defended!\n");
+            });
         }
-        repaint();
     }
     
+    /**
+     * Appends a missed attack action to the log
+     * @param source The Creature who made the attack
+     * @param target The Creature who got attacked
+     */
+    public void outputTranslator(Creature source, Creature target)
+    {
+        String atk = source.getSelectedAttackName();
+        if (source == player)
+        {
+            SwingUtilities.invokeLater( () -> 
+            {
+                log.append("\nYou attacked the " + target.getName() + " with your " +  atk + ".\n" + 
+                    "You missed.\n");
+            });
+            
+        }
+        else
+        {
+            SwingUtilities.invokeLater( () -> 
+            {
+                log.append("The " + source.getName() + " attacked you with its " + atk + ".\n" + 
+                        "It missed!\n");
+            });
+        }
+    }
+    
+    /**
+     * Appends an arbitrary string to the log
+     * @param message The String to print
+     */
     public void outputTranslator(String message)
     {
         log.append(message + "\n");

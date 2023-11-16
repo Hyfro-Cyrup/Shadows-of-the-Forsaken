@@ -107,7 +107,7 @@ public abstract class Creature extends Entity implements Serializable {
         // If defending, incoming dmg is halved. Then resistences are applied.
         double total = 0.0;
         for (int i = 0; i<7; i++){
-            total += (rawDamage[i]*(0.5*isDefending))*(1.0-resist[i]);
+            total += (rawDamage[i]*(0.5*(2-isDefending)))*(1.0-resist[i]);
         }
         int finalDamage = (int) total;
         currentHP -= (int) finalDamage;
@@ -222,4 +222,22 @@ public abstract class Creature extends Entity implements Serializable {
       */
      public abstract String getSelectedAttackName();
     
+     /**
+      * Get the current amount of hp
+      * @return currentHP
+      */
+     public int getCurrentHP()
+     {
+         return currentHP;
+     }
+     
+     /**
+      * Get the max amount of hp
+      * @return maxHP
+      */
+     public int getMaxHP()
+     {
+         return maxHP;
+     }
+     
 }
