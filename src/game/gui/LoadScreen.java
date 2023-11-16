@@ -4,11 +4,13 @@
  */
 package game.gui;
 
+import game.model.GameState;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +22,7 @@ public class LoadScreen extends JPanel {
     private SceneSwitcher switcher;
     private final JButton backButton;
     private BufferedImage backgroundImage;
+    private final JButton loadButtons[];
     
     /**
      * Initialize the images and buttons for the load screen
@@ -40,6 +43,19 @@ public class LoadScreen extends JPanel {
         
         // Create the components
         backButton = new JButton("Back to Start");
+        loadButtons = new JButton[3];
+        for (int i = 0; i < 3; i++)
+        {
+            loadButtons[i] = new JButton("Load Save " + (i+1));
+            final int j = i+1;
+            loadButtons[i].addActionListener((ActionEvent e) -> GameState.loadGame("save" + j));
+            this.add(loadButtons[i]);
+            // optionally disable the button
+            File f = new File("saves/save" + (i+1) + ".ser");
+            if(!f.exists() || f.isDirectory()) { 
+                loadButtons[i].setEnabled(false);
+            }
+        }
         
         // Add component functionality
         backButton.addActionListener((ActionEvent e) -> switcher.changeScene("START_SCREEN"));
@@ -73,8 +89,14 @@ public class LoadScreen extends JPanel {
         int buttonWidth = 150;
         int buttonHeight = 50;
         int buttonX = (panelWidth - buttonWidth) / 2;
-        int buttonY = (panelHeight - (-2)*buttonHeight) / 2;
+        int buttonY = (panelHeight - (-5)*buttonHeight) / 2;
 
         backButton.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
+        
+        for (int i = 0; i < 3; i++)
+        {
+            buttonY = (panelHeight - (3*i - 2)*buttonHeight) / 2;
+            loadButtons[2 - i].setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
+        }
     }
 }

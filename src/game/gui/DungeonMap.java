@@ -133,6 +133,12 @@ public class DungeonMap extends JPanel {
     
     private void resizeMap()
     {
+        // Now is as good a time as any to refresh these in case of loading desynchronization
+        gameState = GameState.getInstance();
+        player = gameState.getPlayer();
+        Tiles = gameState.getMap();
+        
+        
         // panel dimensions
         int X_MAX = getWidth();
         int Y_MAX = getHeight();

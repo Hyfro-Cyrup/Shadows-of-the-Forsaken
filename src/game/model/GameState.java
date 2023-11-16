@@ -4,6 +4,7 @@
  */
 package game.model;
 
+import game.gui.MainGUI;
 import game.util.MapMaker;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -98,6 +99,16 @@ public class GameState implements Serializable {
             file = new FileInputStream("saves/" + filename + ".ser");
             ObjectInputStream obStream = new ObjectInputStream(file);
             instance.copy((GameState) obStream.readObject());
+            DungeonTile tile = instance.map[instance.player.x][instance.player.y];
+            if (tile.inCombat())
+            {
+                // loaded game is actively in combat
+                MainGUI.getInstance().changeScene(tile.getGUI());
+            }
+            else
+            {
+                MainGUI.getInstance().changeScene("DUNGEON_MAP");
+            }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException | ClassNotFoundException ex) {
