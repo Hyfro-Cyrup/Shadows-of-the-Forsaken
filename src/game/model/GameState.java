@@ -103,6 +103,7 @@ public class GameState implements Serializable {
             if (tile.inCombat())
             {
                 // loaded game is actively in combat
+                tile.startCombat();
                 MainGUI.getInstance().changeScene(tile.getGUI());
             }
             else

@@ -10,6 +10,7 @@ import game.model.GameState;
 import game.model.Player;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +29,7 @@ public class Hotbar extends JPanel {
     private DungeonTile tile;
     
     /**
-     * Initialize the Hotbar with an array of buttons. Each button's event listener calls a method of the EncounterEngine 
+     * Initialize the Hotbar with an array of buttons.Each button's event listener calls a method of the EncounterEngine 
      * @param tile The DungeonTile this encounter was built from
      */
     public Hotbar(DungeonTile tile)
@@ -92,7 +93,7 @@ public class Hotbar extends JPanel {
         buttonIcons[0][0] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
         buttonIcons[0][1] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Block.png")));
         buttonIcons[0][2] = null;
-        buttonIcons[0][3] = null;
+        buttonIcons[0][3] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/pause_icon.png")).getScaledInstance(60, 60, Image.SCALE_SMOOTH));
         buttonIcons[0][4] = null;
         
         // selection layer = 1
@@ -158,5 +159,15 @@ public class Hotbar extends JPanel {
                 
             }
         }
+    }
+    
+    /**
+     * Get one of the hotbar's buttons
+     * @param i Index of the button
+     * @return the button
+     */
+    public JButton getButton(int i)
+    {
+        return Buttons[i];
     }
 }

@@ -59,4 +59,10 @@ public class Entity implements Serializable{
     {
         return name + ": " + description;
     }
+    
+    /**
+     * Returns the entity's description as a String
+     * @return the description
+     */
+    public String getDescription() { return description; }
 }

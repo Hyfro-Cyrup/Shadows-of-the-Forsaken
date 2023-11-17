@@ -20,7 +20,7 @@ public class Log extends JScrollPane {
     public Log(String s)
     {
         super();
-        log = new JTextArea();
+        log = new JTextArea(s);
         this.log.setEditable(false);
         this.log.setForeground(Color.WHITE);
         this.log.setLineWrap(true);

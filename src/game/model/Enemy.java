@@ -38,6 +38,16 @@ public class Enemy extends Creature {
         }
     }
     
+    /**
+     * Get a deep copy of this entity instead of having multiple references to it
+     * @return a new Enemy
+     */
+    public Enemy copy()
+    {
+        return new Enemy(this.getName(), this.getDescription(), this.getSpriteReference(), this.maxHP, this.strength, this.soul,
+        this.hpRegen, this.attackArray, this.resist);
+    }
+    
     
     public int takeTurn(Player player){
         double Rand = Math.random();

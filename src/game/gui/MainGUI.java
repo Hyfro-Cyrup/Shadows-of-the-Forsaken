@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 public class MainGUI implements SceneSwitcher{
     private final JFrame frame;
     private JPanel panel;
-    private final Map<String, JPanel> Scenes;
+    private Map<String, JPanel> Scenes;
     
     private static MainGUI instance;
     
@@ -29,6 +29,9 @@ public class MainGUI implements SceneSwitcher{
         if (instance == null)
         {
             instance = new MainGUI();
+            instance.initializeScenes();
+            instance.changeScene("START_SCREEN");
+            instance.frame.setVisible(true);
         }
         return instance;
     }
@@ -36,24 +39,24 @@ public class MainGUI implements SceneSwitcher{
     /**
      * Initializes the main game window.
      */
-    private MainGUI() {
-        // Initialize values for each scene
-        Scenes = new HashMap();
-        Scenes.put("START_SCREEN", new StartScreen(this));
-        Scenes.put("LOAD_SCREEN", new LoadScreen(this));
-        Scenes.put("DUNGEON_MAP", new DungeonMap(this));
-        
+    private MainGUI() 
+    {
         // Create the frame (window) to house the main menu.
         frame = new JFrame("Shadows of the Forsaken");
         frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        // Go to the first scene
-        panel = Scenes.get("START_SCREEN"); 
-        
-        frame.add(panel);
-        
-        frame.setVisible(true);
+        // hide until fully loaded
+        frame.setVisible(false);
+    }
+    
+    private void initializeScenes()
+    {
+        // Initialize values for each scene
+        Scenes = new HashMap();
+        Scenes.put("START_SCREEN", new StartScreen(this));
+        Scenes.put("LOAD_SCREEN", new LoadScreen(this));
+        Scenes.put("DUNGEON_MAP", new DungeonMap(this));
     }
     
     /**

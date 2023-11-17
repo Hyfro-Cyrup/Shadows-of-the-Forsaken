@@ -4,7 +4,7 @@
  */
 package game.util;
 
-import game.model.Attack;
+import game.gui.MainGUI;
 import game.model.DungeonTile;
 import game.model.Entity;
 import game.model.Enemy;
@@ -125,14 +125,14 @@ public final class MapMaker {
                 }
                 else if ((i > CREATURE_START) && Math.random() < CREATURE_PROB)
                 {
-                    Entity entity = ENEMIES.get((int) Math.floor(Math.random()*ENEMIES.size()));
-                    contents.add(entity);
+                    Enemy entity = ENEMIES.get((int) Math.floor(Math.random()*ENEMIES.size()));
+                    contents.add(entity.copy());
                     for (int j = 0; j < 2; j++)
                     {
                         if ((Math.random() < SUBSEQUENT_CREATURE_PROB))
                         {
                             entity = ENEMIES.get((int) Math.floor(Math.random()*ENEMIES.size()));
-                            contents.add(entity);
+                            contents.add(entity.copy());
                         }
                         else
                         {
@@ -158,7 +158,6 @@ public final class MapMaker {
                     {tile.get(0) - 1, tile.get(1) + 1}, // SW
                     {tile.get(0) + 1, tile.get(1) + 1}, // SE
                 };
-                
                 
                 for(int j = 0; j < 4; j++)
                 {

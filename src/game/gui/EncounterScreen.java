@@ -12,6 +12,7 @@ import game.model.Entity;
 import game.model.GameState;
 import game.model.Player;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
@@ -31,6 +32,8 @@ public class EncounterScreen extends JPanel {
     private final SceneSwitcher switcher;
     private final EncounterEngine engine;
     private final DungeonTile tile;
+    private final ScreenPauser screenPauser;
+    private final JPanel test;
     
     /**
      * Create new EncounterScreen. Initializes Hotbar, log, and graphics area from the DungeonTile information
@@ -51,6 +54,8 @@ public class EncounterScreen extends JPanel {
         gameState = GameState.getInstance();
         player = gameState.getPlayer();
         
+        
+        
         // make the text area
         log = new Log("You encountered a...\n");
         // print the initial text
@@ -59,23 +64,57 @@ public class EncounterScreen extends JPanel {
             log.append(e.getIntro() + "\n");
         }
         
-        this.add(log);
+        
         
         // make the hotbar
         hotbar = new Hotbar(tile);
-        this.add(hotbar);
+        
+        screenPauser = new ScreenPauser(this, hotbar.getButton(3));
         
         // make the graphic
         graphic = new EncounterGraphic(tile);
-        this.add(graphic);
+        
+        
+        test = new JPanel()
+        {
+            @Override 
+            protected void paintComponent(Graphics g)
+            {
+                super.paintComponent(g);
+                int W = getWidth();
+                int H = getHeight();
+
+                // resize the components (easier than layout mangers)
+                int log_w = Math.min((int)((W * 5) / 16), 300);  // default = 250 @ W=800 (transition @ W=960)
+                int hot_h = Math.min((int)(H / 5), 80);          // default = 80 @ H=600 (transition @ 400)
+                hotbar.setBounds(0, H - hot_h, W - log_w, hot_h);
+                log.setBounds(W - log_w, 0, log_w, H);
+                graphic.setBounds(0, 0, W - log_w, H - hot_h);
+            }
+            
+            @Override
+            protected void paintChildren(Graphics g) 
+            {
+                super.paintChildren(g);
+
+                screenPauser.draw((Graphics2D) g);
+            }
+        };
+        
+        test.add(log);
+        test.add(hotbar);
+        test.add(graphic);
+        
+        this.add(test);
         
         repaint();
         
     }
     
+     
     /**
-     * Override the paintComponent method for custom rendering.
-     *
+     * Override the paintComponeent method for custom rendering
+     * 
      * @param g The graphics object.
      */
     @Override
@@ -85,13 +124,11 @@ public class EncounterScreen extends JPanel {
         int W = getWidth();
         int H = getHeight();
         
-        // resize the components (easier than layout mangers)
-        int log_w = Math.min((int)((W * 5) / 16), 300);  // default = 250 @ W=800 (transition @ W=960)
-        int hot_h = Math.min((int)(H / 5), 80);          // default = 80 @ H=600 (transition @ 400)
-        hotbar.setBounds(0, H - hot_h, W - log_w, hot_h);
-        log.setBounds(W - log_w, 0, log_w, H);
-        graphic.setBounds(0, 0, W - log_w, H - hot_h);
+        // resize the inner JPanel (easier than layout mangers)
+        test.setBounds(0, 0, W, H);
+        
     }
+    
     
     /**
      * Appends an attack action to the log

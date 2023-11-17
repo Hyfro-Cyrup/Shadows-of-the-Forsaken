@@ -16,8 +16,9 @@ import javax.swing.SwingWorker;
 public class DungeonTile implements Serializable {
     private final List<Entity> Contents;
     private Boolean hasBeenSeen;
-    private EncounterEngine engine = null;
-    private EncounterScreen gui = null;
+    private transient EncounterEngine engine = null;
+    private transient EncounterScreen gui = null;
+    private Boolean inCombat = false;
     
     /**
      * Default constructor. Initializes as unseen with no contents.
@@ -121,6 +122,7 @@ public class DungeonTile implements Serializable {
         gui = new EncounterScreen(this);
         engine.setGUI(gui);
         gui.startCombat();
+        inCombat = true;
         //engine.combatEncounter(this.getEnemies());
         //System.out.println("Combat Over");
     }
@@ -131,7 +133,7 @@ public class DungeonTile implements Serializable {
      */
     public Boolean inCombat()
     {
-        return this.engine != null;
+        return this.inCombat;
     }
     
     /**

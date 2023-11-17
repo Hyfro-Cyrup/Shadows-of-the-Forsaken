@@ -18,6 +18,7 @@
             <word>dmg</word>
             <word>dx</word>
             <word>dy</word>
+            <word>enum</word>
             <word>filepath</word>
             <word>gui</word>
             <word>Hotbar</word>
@@ -28,7 +29,9 @@
             <word>Mutator</word>
             <word>off'</word>
             <word>pathfinding</word>
+            <word>pauser</word>
             <word>Regen</word>
+            <word>unpaused</word>
         </spellchecker-wordlist>
     </configuration>
 </project>

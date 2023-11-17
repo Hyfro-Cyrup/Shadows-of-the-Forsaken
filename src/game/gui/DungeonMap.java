@@ -84,11 +84,13 @@ public class DungeonMap extends JPanel {
                     }
                     else
                     {
-                        g2d.setColor(Color.GRAY);
+                        g2d.setColor(new Color(0, 0, 0, 0));
                     }
+                    g2d.drawImage(tile, GRIDSIZE*i + origin[0], GRIDSIZE*j + origin[1], GRIDSIZE, GRIDSIZE, this);
                     g2d.fillRect(GRIDSIZE*i + origin[0], GRIDSIZE*j + origin[1], GRIDSIZE, GRIDSIZE);
                     g2d.setColor(Color.BLACK);
                     g2d.drawRect(GRIDSIZE*i + origin[0], GRIDSIZE*j + origin[1], GRIDSIZE, GRIDSIZE);
+                    
                 }
             }
         }
