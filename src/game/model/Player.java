@@ -286,5 +286,16 @@ public class Player extends Creature {
      {
          return maxMana;
      }
+     
+     /**
+      * Cheap fix to an exploit where saving and reloading allows the player to 
+      * gain the benefits of `startTurn` an additional time
+      * This negates those benefits, called at load time
+      */
+     public void loadFix()
+     {
+        currentStamina -= regenStamina*(1+isDefending);
+        currentMana -= regenMana*(1+isDefending);
+     }
     
 }

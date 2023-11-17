@@ -69,7 +69,10 @@ public class EncounterScreen extends JPanel {
         // make the hotbar
         hotbar = new Hotbar(tile);
         
-        screenPauser = new ScreenPauser(this, hotbar.getButton(3));
+        screenPauser = new ScreenPauser(this, hotbar.getButton(3), () -> {
+            int s = engine.getSelectionLayer();
+            return ((s == 0) || (s == 4));
+        });
         
         // make the graphic
         graphic = new EncounterGraphic(tile);

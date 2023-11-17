@@ -10,6 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.util.function.Supplier;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -44,13 +45,19 @@ public class ScreenPauser {
      * Make a screen pauser and attaches it to a specified button
      * @param parent The JPanel that holds the ScreenPauser object
      * @param pauseButton The button to facilitate pausing
+     * @param condition function void -> Boolean that returns true when you want the button to pause.
      */
-    public ScreenPauser(JPanel parent, JButton pauseButton)
+    public ScreenPauser(JPanel parent, JButton pauseButton, Supplier<Boolean> condition)
     {
         this.parent = parent;
         this.pauseButton = pauseButton;
         this.switcher = MainGUI.getInstance();
-        pauseButton.addActionListener(e -> pause());
+        pauseButton.addActionListener(e -> {
+            if (condition.get())
+            {
+                pause();
+            }
+        });
         makePauseScreen();
     }
     

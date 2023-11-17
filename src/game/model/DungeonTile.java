@@ -8,7 +8,6 @@ import game.gui.EncounterScreen;
 import java.io.Serializable;
 import static java.util.Collections.emptyList;
 import java.util.List;
-import javax.swing.SwingWorker;
 
 /**
  * Location the player can go to, and container for the objects found there.

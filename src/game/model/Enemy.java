@@ -103,7 +103,8 @@ public class Enemy extends Creature {
                 }
             }
         }
-        selectedAttack = attackArray[decisionMatrix.length - 1];
+        selectedAttack = attackArray[attackArray.length - 1];
+        
         return this.attack(player);
     }
 

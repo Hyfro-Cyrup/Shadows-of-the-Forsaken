@@ -4,6 +4,7 @@
  */
 package game.gui;
 
+import game.model.GameState;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
@@ -44,7 +45,7 @@ public class StartScreen extends JPanel {
             loadButton = new JButton("Load Game");
             
             // Add component functionality
-            startButton.addActionListener((ActionEvent e) -> switcher.changeScene("DUNGEON_MAP"));
+            startButton.addActionListener((ActionEvent e) -> GameState.getInstance().loadScreen());
             loadButton.addActionListener((ActionEvent e) -> switcher.changeScene("LOAD_SCREEN"));
             
             // Add the buttons to the panel

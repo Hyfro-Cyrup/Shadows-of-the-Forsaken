@@ -99,17 +99,7 @@ public class GameState implements Serializable {
             file = new FileInputStream("saves/" + filename + ".ser");
             ObjectInputStream obStream = new ObjectInputStream(file);
             instance.copy((GameState) obStream.readObject());
-            DungeonTile tile = instance.map[instance.player.x][instance.player.y];
-            if (tile.inCombat())
-            {
-                // loaded game is actively in combat
-                tile.startCombat();
-                MainGUI.getInstance().changeScene(tile.getGUI());
-            }
-            else
-            {
-                MainGUI.getInstance().changeScene("DUNGEON_MAP");
-            }
+            instance.loadScreen();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException | ClassNotFoundException ex) {
@@ -122,6 +112,25 @@ public class GameState implements Serializable {
                 Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
             }
         }    
+    }
+    
+    /**
+     * Load the correct scene for the current GameState
+     */
+    public void loadScreen()
+    {
+        player.loadFix();
+        DungeonTile tile = map[player.x][player.y];
+        if (tile.inCombat())
+        {
+            // loaded game is actively in combat
+            tile.startCombat();
+            MainGUI.getInstance().changeScene(tile.getGUI());
+        }
+        else
+        {
+            MainGUI.getInstance().changeScene("DUNGEON_MAP");
+        }
     }
     
     /**
