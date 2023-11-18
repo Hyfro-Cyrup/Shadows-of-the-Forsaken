@@ -51,6 +51,80 @@ public class DungeonMap extends JPanel {
     private BufferedImage tile, combat, key, ladder, playerIcon;
     private Boolean playerFacingLeft = false; // used to make playerIcon look where they're going
 
+    /**
+     * Initialize visualization from GameState data
+     * @param parent The component that facilitates switching screens
+     */
+    public DungeonMap(SceneSwitcher parent)
+    {
+        super();
+        switcher = parent;
+        gameState = GameState.getInstance();
+        Tiles = gameState.getMap();
+        Tiles[Tiles.length / 2][Tiles[0].length / 2].markSeen(); 
+        
+        player = gameState.getPlayer();
+        player.x = Tiles.length / 2;
+        player.y = Tiles[0].length / 2;
+        markAdjacentSeen();
+        
+        // make all the buttons
+        this.setLayout(null);
+        makePauseButton();
+        makePauseScreen();
+        
+        // make all the icons
+        try {
+            makeAllIcons();
+        } catch (IOException ex) {
+            Logger.getLogger(DungeonMap.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        setFocusable(true);
+        
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+                {
+                    pause();
+                    return;
+                }
+                if (!paused)
+                {
+                   switch (e.getKeyCode()) 
+                   {
+                        case KeyEvent.VK_UP -> player.move(0, -1, Tiles);
+                        case KeyEvent.VK_DOWN -> player.move(0, 1, Tiles);
+                        case KeyEvent.VK_LEFT -> {
+                            player.move(-1, 0, Tiles);
+                            playerFacingLeft = true;
+                        }
+                        case KeyEvent.VK_RIGHT -> {
+                            player.move(1, 0, Tiles);
+                            playerFacingLeft = false;
+                        }
+                    } 
+                }
+                
+                markAdjacentSeen();
+                repaint();
+                SwingUtilities.invokeLater(() -> { // ensure the scene is repainted first
+                    if (Tiles[player.x][player.y].inCombat()) {
+                        try {
+                            Thread.sleep(500); // add a small delay (Make animation later if time)
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(DungeonMap.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        // Move to the EncounterScreen
+                        switcher.changeScene(Tiles[player.x][player.y].getGUI());
+                    }
+                });
+            }
+        });
+        this.setBackground(Color.BLACK);
+
+    }
     
     /**
      * Override the paintComponent method for custom rendering.
@@ -68,26 +142,27 @@ public class DungeonMap extends JPanel {
         {
             for (int j = 0; j < Tiles[i].length; j++)
             {
+                BufferedImage img = null;
                 if (Tiles[i][j] != null && Tiles[i][j].hasBeenSeen())
                 {
                     if (Tiles[i][j].containsKey())
                     {
-                        g2d.setColor(Color.YELLOW);
+                        img = key;
                     }
                     else if (Tiles[i][j].containsLadder())
                     {
-                        g2d.setColor(Color.ORANGE);
+                        img = ladder;
                     }
                     else if (Tiles[i][j].containsEnemy())
                     {
-                        g2d.setColor(Color.RED);
+                        img = combat;
                     }
-                    else
-                    {
-                        g2d.setColor(new Color(0, 0, 0, 0));
-                    }
+                    
                     g2d.drawImage(tile, GRIDSIZE*i + origin[0], GRIDSIZE*j + origin[1], GRIDSIZE, GRIDSIZE, this);
-                    g2d.fillRect(GRIDSIZE*i + origin[0], GRIDSIZE*j + origin[1], GRIDSIZE, GRIDSIZE);
+                    if (img != null)
+                    {
+                        g2d.drawImage(img, GRIDSIZE*i + origin[0], GRIDSIZE*j + origin[1], GRIDSIZE, GRIDSIZE, this);
+                    }
                     g2d.setColor(Color.BLACK);
                     g2d.drawRect(GRIDSIZE*i + origin[0], GRIDSIZE*j + origin[1], GRIDSIZE, GRIDSIZE);
                     
@@ -202,81 +277,6 @@ public class DungeonMap extends JPanel {
         }
     }
     
-    /**
-     * Initialize visualization from GameState data
-     * @param parent The component that facilitates switching screens
-     */
-    public DungeonMap(SceneSwitcher parent)
-    {
-        super();
-        switcher = parent;
-        gameState = GameState.getInstance();
-        Tiles = gameState.getMap();
-        Tiles[Tiles.length / 2][Tiles[0].length / 2].markSeen(); 
-        
-        player = gameState.getPlayer();
-        player.x = Tiles.length / 2;
-        player.y = Tiles[0].length / 2;
-        markAdjacentSeen();
-        
-        // make all the buttons
-        this.setLayout(null);
-        makePauseButton();
-        makePauseScreen();
-        
-        // make all the icons
-        try {
-            makeAllIcons();
-        } catch (IOException ex) {
-            Logger.getLogger(DungeonMap.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        setFocusable(true);
-        
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-                {
-                    pause();
-                    return;
-                }
-                if (!paused)
-                {
-                   switch (e.getKeyCode()) 
-                   {
-                        case KeyEvent.VK_UP -> player.move(0, -1, Tiles);
-                        case KeyEvent.VK_DOWN -> player.move(0, 1, Tiles);
-                        case KeyEvent.VK_LEFT -> {
-                            player.move(-1, 0, Tiles);
-                            playerFacingLeft = true;
-                        }
-                        case KeyEvent.VK_RIGHT -> {
-                            player.move(1, 0, Tiles);
-                            playerFacingLeft = false;
-                        }
-                    } 
-                }
-                
-                markAdjacentSeen();
-                repaint();
-                SwingUtilities.invokeLater(() -> { // ensure the scene is repainted first
-                    if (Tiles[player.x][player.y].inCombat()) {
-                        try {
-                            Thread.sleep(500); // add a small delay (Make animation later if time)
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(DungeonMap.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        // Move to the EncounterScreen
-                        switcher.changeScene(Tiles[player.x][player.y].getGUI());
-                    }
-                });
-            }
-        });
-        this.setBackground(Color.BLACK);
-
-    }
-    
     private void pause()
     {
         paused = !paused;
@@ -370,6 +370,8 @@ public class DungeonMap extends JPanel {
         playerIcon = ImageIO.read(this.getClass().getResource("/resources/MapPlayer.png"));
         tile = ImageIO.read(this.getClass().getResource("/resources/MapTile.png"));
         key = ImageIO.read(this.getClass().getResource("/resources/Key.png"));
+        combat = ImageIO.read(this.getClass().getResource("/resources/AttackMapIcon.png"));
+        ladder = ImageIO.read(this.getClass().getResource("/resources/LadderMapIcon.png"));
         
     }
     
