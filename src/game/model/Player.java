@@ -331,5 +331,22 @@ public class Player extends Creature {
         currentStamina -= regenStamina*(1+isDefending);
         currentMana -= regenMana*(1+isDefending);
      }
+     
+     /**
+      * Whether the player has found the exit key or not.
+      * @return True if the player can exit
+      */
+     public Boolean hasKey()
+     {
+         return this.hasExitKey;
+     }
+     
+     /**
+      * Indicate that the player has found the exit key
+      */
+     public void recieveKey()
+     {
+         this.hasExitKey = true;
+     }
     
 }

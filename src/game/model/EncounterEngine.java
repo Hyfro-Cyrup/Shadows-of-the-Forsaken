@@ -5,6 +5,7 @@
 package game.model;
 
 import game.gui.EncounterScreen;
+import java.util.List;
 
 /**
  *
@@ -16,11 +17,12 @@ public class EncounterEngine {
     private final Player player;
     private String eventLog; 
     private EncounterScreen gui;
+    private DungeonTile tile;
     
-    public EncounterEngine()
+    public EncounterEngine(DungeonTile tile)
     {
     this.player = GameState.getInstance().getPlayer();
-    selectionLayer = SelectionLayer.BASE;
+    this.tile = tile;
     }
     
     /**
@@ -33,19 +35,32 @@ public class EncounterEngine {
         this.gui = gui;
     }
     
-    public void combatEncounter(Enemy[] enemies){
+    public void combatEncounter(List<Entity> contents){
         try
         {
-        if (enemies.length != 3) {
-            throw new IllegalArgumentException("Array 'enemies' must have length 3.");
+        SelectionLayer dfault = SelectionLayer.NON_COMBAT;  // COMBAT or NON_COMBAT
+        // populate the field
+        field = new Enemy[]{null, null, null};
+        int j = 0;
+        for (Entity e : contents)
+        {
+            if (e instanceof Enemy enemy)
+            {
+                field[j] = enemy;
+                dfault = SelectionLayer.COMBAT;
+                j++;
+                if (j > 2)
+                {
+                    break;
+                }
+            }
         }
-        field = enemies;
         
         
         while (true){
             player.beginTurn();
+            selectionLayer = dfault;
             gui.waitForPlayer();
-            selectionLayer = SelectionLayer.BASE;
             player.endTurn();
             
             if (player.ranAway() != DamageCode.FOUGHT)
@@ -57,7 +72,7 @@ public class EncounterEngine {
                     return;
                 }
             }
-            if (!(this.combatOver()))
+            if (!(this.combatOver())) // combat always over in non-combat encounters
             {
                 for (int i = 0; i<3; i++){
                     CheckIfDead(i);
@@ -86,82 +101,102 @@ public class EncounterEngine {
         }
     }
     
-    public boolean inputTranslator(int buttonValue){    
-       if (selectionLayer == SelectionLayer.BASE){
-           if (buttonValue == 0){
-               selectionLayer = selectionLayer.getNext(); 
-               return false; 
-           }
-           
-           if (buttonValue == 1){
-               player.defend(); 
-               gui.outputTranslator(player, null, DamageCode.DEFENDED);
-               return true; 
-           }
-           
-           if (buttonValue == 2){
-               return true; 
-               // There's not really a third option for button.   
-           }
-           
-           if (buttonValue == 3){
-               return true;
-           }
-           
-           if (buttonValue == 4){
-               player.runAway(combatOver());
-               return true;
-           }
-           
-           
-       }
-       
-       else if (selectionLayer == SelectionLayer.PHYSICAL){
-           if (buttonValue == 4){
-                // Back Button
-                selectionLayer = selectionLayer.getPrev();
-                return false;
+    public void inputTranslator(int buttonValue){    
+        switch (selectionLayer) 
+        {
+            case COMBAT -> {
+                if (buttonValue == 0){
+                    selectionLayer = selectionLayer.getNext();
+                    return;
+                }
+                
+                if (buttonValue == 1){
+                    player.defend();
+                    gui.outputTranslator(player, null, DamageCode.DEFENDED);
+                    return;
+                }    
+                
+                if (buttonValue == 4){
+                    player.runAway(combatOver());
+                    return;
+                }
+                
             }
-           
-           if (player.selectAttack(buttonValue)){
-               selectionLayer = selectionLayer.getNext();
-               return false;
-           }
-           else{
-               return false; 
-           }
-       }
-       
-       
-        else if (selectionLayer == SelectionLayer.MAGICAL){
-            if (buttonValue == 4){
-                // Back Button
-                selectionLayer = selectionLayer.getPrev();
-                return false;
+            case PHYSICAL -> {
+                if (buttonValue == 4){
+                    // Back Button
+                    selectionLayer = selectionLayer.getPrev();
+                    return;
+                }
+                
+                if (player.selectAttack(buttonValue)){
+                    selectionLayer = selectionLayer.getNext();
+                    return;
+                }
             }
-            
-            if (player.selectArcana(buttonValue)){
-                selectionLayer = selectionLayer.getNext();
-                return false;
+            case MAGICAL -> {
+                if (buttonValue == 4){
+                    // Back Button
+                    selectionLayer = selectionLayer.getPrev();
+                    return;
+                }
+                
+                if (player.selectArcana(buttonValue)){
+                    selectionLayer = selectionLayer.getNext();
+                    return;
+                }
             }
-            else{
-                return false; 
+            case ENEMY -> {
+                if (buttonValue == 4){
+                    // Back Button
+                    selectionLayer = selectionLayer.getPrev();
+                    return;
+                }
+                
+                int damage = player.attack(field[buttonValue]);
+                gui.outputTranslator(player, field[buttonValue], damage);
+
+            }
+            case POST_COMBAT -> {
+                if (buttonValue == 4){
+                    player.runAway(true);
+                    return;
+                }
+            }
+            case NON_COMBAT -> {
+                if (buttonValue == 0)
+                {
+                    gui.outputTranslator(player, null, DamageCode.INVESTIGATED);
+                    return;
+                }
+                if (buttonValue == 1)
+                {
+                    gui.outputTranslator(player, null, DamageCode.TOUCHED);
+                    if (tile.containsKey())
+                    {
+                        player.recieveKey();
+                    }
+                    if (tile.containsLadder())
+                    {
+                        if (player.hasKey())
+                        {
+                            // win
+                        }
+                        else
+                        {
+                            // don't
+                        }
+                    }
+                    return;
+                }
+                
+                if (buttonValue == 4) {
+                    player.runAway(true);
+                    return;
+                }
+                
             }
         }
-        
-        else if (selectionLayer == SelectionLayer.ENEMY){
-            if (buttonValue == 4){
-                // Back Button
-                selectionLayer = selectionLayer.getPrev();
-                return false;
-            }
-           
-           int damage = player.attack(field[buttonValue]);
-           gui.outputTranslator(player, field[buttonValue], damage);
-           return true; 
-        }
-    
-    return true; 
     }
     
     public int getSelectionLayer(){

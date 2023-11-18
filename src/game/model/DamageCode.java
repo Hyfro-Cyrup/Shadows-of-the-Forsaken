@@ -15,6 +15,8 @@ public class DamageCode
     public static final int MISSED      = -2;
     public static final int RAN_AWAY_SUCCESSFUL = -3;
     public static final int RAN_AWAY_FAILED     = -4;
+    public static final int INVESTIGATED        = -5;
+    public static final int TOUCHED     = -6;
     
     private DamageCode(){}
 }

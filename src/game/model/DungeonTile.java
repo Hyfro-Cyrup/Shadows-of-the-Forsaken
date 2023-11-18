@@ -6,6 +6,7 @@ package game.model;
 
 import game.gui.EncounterScreen;
 import java.io.Serializable;
+import java.util.ArrayList;
 import static java.util.Collections.emptyList;
 import java.util.List;
 
@@ -119,7 +120,7 @@ public class DungeonTile implements Serializable {
         }
         if (engine == null)
         {
-            engine = new EncounterEngine();
+            engine = new EncounterEngine(this);
             gui = new EncounterScreen(this);
             engine.setGUI(gui);
         }
@@ -138,7 +139,7 @@ public class DungeonTile implements Serializable {
         gui = null;
         inCombat = false;
         // clear out dead creatures
-        for (Entity e : Contents)
+        for (Entity e : new ArrayList<>(Contents))
         {
             if (e instanceof Creature c && c.getCurrentHP() == 0)
             {

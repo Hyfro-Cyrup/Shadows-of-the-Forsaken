@@ -10,7 +10,7 @@ package game.model;
  * Easier to remember than an int
  */
 public enum SelectionLayer {
-    BASE,
+    COMBAT,
     PHYSICAL,
     MAGICAL,
     ENEMY,

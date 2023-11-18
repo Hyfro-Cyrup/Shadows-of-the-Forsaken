@@ -277,7 +277,7 @@ public class EncounterScreen extends JPanel {
             {
                 synchronized (GameState.getInstance().getPlayer())
                 {
-                    engine.combatEncounter(tile.getEnemies());
+                    engine.combatEncounter(tile.getContents());
                 }
                 return null;
             }
