@@ -37,6 +37,8 @@ public class GameState implements Serializable {
     {
         player = new Player();
         map = MapMaker.newMap();
+        player.x = map.length / 2;
+        player.y = map[0].length / 2;
     }
     
     /**
@@ -59,6 +61,16 @@ public class GameState implements Serializable {
         {
             instance = new GameState();
         }
+        return instance;
+    }
+    
+    /**
+     * When called, created new game
+     * @return a GameState object
+     */
+    public static GameState newInstance()
+    {
+        instance.copy(new GameState());
         return instance;
     }
     
@@ -112,6 +124,33 @@ public class GameState implements Serializable {
                 Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
             }
         }    
+    }
+    
+    /**
+     * Checks file to ensure it exists and is valid
+     * @param filename The name of the file to read from, without extension
+     * @return false when file is not valid or does not exist, true when file exists and is valid 
+     */
+    public static Boolean checkFile(String filename)
+    {
+        FileInputStream file = null;
+        try {
+            file = new FileInputStream("saves/" + filename + ".ser");
+            ObjectInputStream obStream = new ObjectInputStream(file);
+            GameState temp = (GameState) obStream.readObject();
+        } catch (FileNotFoundException ex) {
+            return false;
+        } catch (IOException | ClassNotFoundException ex) {
+            return false;
+        }
+        finally {
+            try {
+                if (file != null) { file.close(); } 
+            } catch (IOException ex) {
+                Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }   
+        return true;
     }
     
     /**

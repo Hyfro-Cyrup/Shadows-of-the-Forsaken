@@ -107,7 +107,7 @@ public class DungeonMap extends JPanel {
                     } 
                 }
                 
-                markAdjacentSeen();
+                
                 repaint();
                 SwingUtilities.invokeLater(() -> { // ensure the scene is repainted first
                     if (Tiles[player.x][player.y].inEncounter()) {
@@ -214,7 +214,7 @@ public class DungeonMap extends JPanel {
         gameState = GameState.getInstance();
         player = gameState.getPlayer();
         Tiles = gameState.getMap();
-        
+        markAdjacentSeen();
         
         // panel dimensions
         int X_MAX = getWidth();
@@ -261,6 +261,7 @@ public class DungeonMap extends JPanel {
             {player.x + 1, player.y},
             {player.x + 1, player.y + 1},
             {player.x, player.y - 1},
+            {player.x, player.y},
             {player.x, player.y + 1},
             {player.x - 1, player.y - 1},
             {player.x - 1, player.y},
