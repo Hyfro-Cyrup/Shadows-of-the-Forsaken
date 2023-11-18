@@ -19,8 +19,9 @@ import java.util.logging.Logger;
  */
 public class StartScreen extends JPanel {
     private SceneSwitcher switcher;
-    private final JButton startButton;
-    private final JButton loadButton;
+    private final JButton newButton;        // var for new game button
+    private final JButton loadButton;       // var for load game button
+    private final JButton exitButton;   // var for continue game button
     private BufferedImage backgroundImage;
 
     /**
@@ -41,17 +42,20 @@ public class StartScreen extends JPanel {
             }
             
             // Create the buttons
-            startButton = new JButton("Start Game");
+            newButton = new JButton("New Game");
             loadButton = new JButton("Load Game");
+            exitButton = new JButton("Exit");
             
             // Add component functionality
-            startButton.addActionListener((ActionEvent e) -> GameState.getInstance().loadScreen());
+            newButton.addActionListener((ActionEvent e) -> GameState.newInstance().loadScreen());
             loadButton.addActionListener((ActionEvent e) -> switcher.changeScene("LOAD_SCREEN"));
+            exitButton.addActionListener((ActionEvent e) -> System.exit(0));
+
             
             // Add the buttons to the panel
-            add(startButton);
+            add(newButton);
             add(loadButton);
-        
+            add(exitButton);
     }
 
     /**
@@ -76,22 +80,29 @@ public class StartScreen extends JPanel {
         g.drawImage(backgroundImage, (panelWidth - newWidth) / 2, (panelHeight - newHeight) / 2, newWidth, newHeight, this);
         
         
-        
-        // Calculate the start button's position to center it
+        // Calculate the New Game button's position to center it
         int buttonWidth = 150;
         int buttonHeight = 50;
         
         int buttonX = (panelWidth - buttonWidth) / 2; // Centers the button horizontally
         int buttonY = (panelHeight - buttonHeight) / 2; // Centers the button vertically
 
-        startButton.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
+        newButton.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
         
-        // Calculate the load button's position to place it slightly below the start button
+        // Calculate the Load Game button's position to place it slightly below the start button
         int lbuttonWidth = 150;
         int lbuttonHeight = 50;
         int lbuttonX = (panelWidth - lbuttonWidth) / 2; // Centers the button horizontally
         int lbuttonY = (panelHeight - (-2)*lbuttonHeight) / 2; // Slightly shifts the button down from vertical center
         
         loadButton.setBounds(lbuttonX, lbuttonY, lbuttonWidth, lbuttonHeight);
+        
+         // Exits program
+        int ebuttonWidth = 75;
+        int ebuttonHeight = 50;
+        int ebuttonX = (panelWidth - ebuttonWidth) / 2; // Centers the button horizontally
+        int ebuttonY = (panelHeight - (-5)*ebuttonHeight) / 2; // Slightly shifts the button down from vertical center
+        
+        exitButton.setBounds(ebuttonX, ebuttonY, ebuttonWidth, ebuttonHeight);
     }
 }

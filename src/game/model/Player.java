@@ -35,6 +35,7 @@ public class Player extends Creature {
     private int runAwayResult;
     
     
+    
     /**
      * Construct a Player with default parameters
      */

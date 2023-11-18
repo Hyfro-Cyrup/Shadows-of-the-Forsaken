@@ -51,10 +51,7 @@ public class LoadScreen extends JPanel {
             loadButtons[i].addActionListener((ActionEvent e) -> GameState.loadGame("save" + j));
             this.add(loadButtons[i]);
             // optionally disable the button
-            File f = new File("saves/save" + (i+1) + ".ser");
-            if(!f.exists() || f.isDirectory()) { 
-                loadButtons[i].setEnabled(false);
-            }
+            
         }
         
         // Add component functionality
@@ -97,6 +94,7 @@ public class LoadScreen extends JPanel {
         {
             buttonY = (panelHeight - (3*i - 2)*buttonHeight) / 2;
             loadButtons[2 - i].setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
+            loadButtons[i].setEnabled(GameState.checkFile("save" + (i+1)));
         }
     }
 }
