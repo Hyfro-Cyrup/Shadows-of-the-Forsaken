@@ -27,6 +27,7 @@ public class Hotbar extends JPanel {
     private ImageIcon[][] buttonIcons;
     private EncounterEngine engine;
     private DungeonTile tile;
+    private String tooltips[][];
     
     /**
      * Initialize the Hotbar with an array of buttons.Each button's event listener calls a method of the EncounterEngine 
@@ -70,6 +71,7 @@ public class Hotbar extends JPanel {
         } catch (IOException ex) {
             Logger.getLogger(Hotbar.class.getName()).log(Level.SEVERE, null, ex);
         }
+        makeAllTooltips();
     }
     
     /**
@@ -81,11 +83,10 @@ public class Hotbar extends JPanel {
         btn.setBackground(new Color(102, 69 ,19));
     }
     
+    // initialize the whole buttons array
+    // structure: Buttons[i].setIcon(buttonIcons[engine.getSelectionLayer()][i]);
     private void makeAllIcons() throws IOException
     {
-        // initialize the whole buttons array
-        // structure: Buttons[i].setIcon(buttonIcons[engine.getSelectionLayer()][i]);
-        
         Player player = GameState.getInstance().getPlayer();
         
         buttonIcons = new ImageIcon[6][5];
@@ -93,7 +94,6 @@ public class Hotbar extends JPanel {
         // selection layer = 0
         buttonIcons[0][0] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
         buttonIcons[0][1] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Block.png")));
-        buttonIcons[0][2] = null;
         buttonIcons[0][3] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/pause_icon.png")).getScaledInstance(60, 60, Image.SCALE_SMOOTH));
         buttonIcons[0][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/RunAway.png")));
         
@@ -112,10 +112,6 @@ public class Hotbar extends JPanel {
         buttonIcons[2][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/BackArrow.png")));
         
         // selection layer = 3
-        buttonIcons[3][0] = null;
-        buttonIcons[3][1] = null;
-        buttonIcons[3][2] = null;
-        buttonIcons[3][3] = null;
         buttonIcons[3][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/BackArrow.png")));
         int i = 2;
         for (var e : tile.getContents())
@@ -126,18 +122,60 @@ public class Hotbar extends JPanel {
         }
         
         // selection layer = 4
-        buttonIcons[4][0] = null;
-        buttonIcons[4][1] = null;
-        buttonIcons[4][2] = null;
         buttonIcons[4][3] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/pause_icon.png")).getScaledInstance(60, 60, Image.SCALE_SMOOTH));
         buttonIcons[4][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/RunAway.png")));
         
         // selection layer = 5
         buttonIcons[5][0] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Investigate.png")));
         buttonIcons[5][1] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Touch.png")));
-        buttonIcons[5][2] = null;
-        buttonIcons[5][3] = null;
-        buttonIcons[5][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/BackArrow.png")));
+        buttonIcons[5][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/RunAway.png")));
+        
+    }
+    // initialize the whole tooltips array
+    // structure: Buttons[i].setToolTipText(buttonIcons[engine.getSelectionLayer()][i]);
+    private void makeAllTooltips()
+    {
+        Player player = GameState.getInstance().getPlayer();
+        tooltips = new String[6][5];
+        
+        // selectionLayer == COMBAT
+        tooltips[0][0] = "Attack";
+        tooltips[0][1] = "Defend";
+        tooltips[0][3] = "Pause";
+        tooltips[0][4] = "Flee";
+        
+        // selectionLayer == PHYSICAL
+        for (int i = 0; i < 4; i++)
+        {
+            tooltips[1][i] = player.getPhysAttack(i).getInfo();
+        }
+        tooltips[1][4] = "Back";
+        
+        // selectionLayer == MAGICAL
+        for (int i = 0; i < 4; i++)
+        {
+            tooltips[2][i] = player.getMagicAttack(i).getInfo();
+        }
+        tooltips[2][4] = "Back";
+        
+        // selectionLayer == ENEMY
+        int i = 2;
+        for (var e : tile.getContents())
+        {
+            // TODO: resize
+            tooltips[3][i] = e.getName();
+            i--;
+        }
+        tooltips[3][4] = "Back";
+        
+        // selectionLayer == POST_COMBAT
+        tooltips[4][3] = "Pause";
+        tooltips[4][4] = "Exit";
+        
+        // selectionLayer == NON_COMBAT
+        tooltips[5][0] = "Investigate";
+        tooltips[5][1] = "Interact";
+        tooltips[5][4] = "Exit";
         
     }
     
@@ -161,11 +199,7 @@ public class Hotbar extends JPanel {
         {
             Buttons[i].setBounds((int) Math.ceil((W*i) / 5.0), 0, (int) Math.ceil(((float) W) / 5.0), H);
             Buttons[i].setIcon(buttonIcons[engine.getSelectionLayer()][i]);
-            if (buttonIcons[engine.getSelectionLayer()][i] == null)
-            {
-                //Buttons[i].setBackground(Color.RED);
-                
-            }
+            Buttons[i].setToolTipText(tooltips[engine.getSelectionLayer()][i]);
         }
     }
     

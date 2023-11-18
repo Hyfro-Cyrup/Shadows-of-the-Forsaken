@@ -4,7 +4,6 @@
  */
 package game.util;
 
-import game.gui.MainGUI;
 import game.model.DungeonTile;
 import game.model.Entity;
 import game.model.Enemy;
