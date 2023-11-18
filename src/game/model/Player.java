@@ -76,14 +76,14 @@ public class Player extends Creature {
         {
             x = nx;
             y = ny;
-            if (tile.inCombat())
+            if (tile.inEncounter())
             {
                 // This should handle the combat re-entry better than rewriting it here
                 GameState.getInstance().loadScreen();
             }
-            else if (tile.containsEnemy())
+            else if (tile.hasEncounter())
             {
-                tile.startCombat();
+                tile.startEncounter();
             }
         }
     }

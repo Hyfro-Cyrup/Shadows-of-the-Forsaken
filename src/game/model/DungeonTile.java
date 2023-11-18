@@ -18,7 +18,7 @@ public class DungeonTile implements Serializable {
     private Boolean hasBeenSeen;
     private transient EncounterEngine engine = null;
     private transient EncounterScreen gui = null;
-    private Boolean inCombat = false;
+    private Boolean inEncounter = false;
     
     /**
      * Default constructor. Initializes as unseen with no contents.
@@ -112,11 +112,11 @@ public class DungeonTile implements Serializable {
     /**
      * Initializes this tile's EncounterEngine and starts combat.
      */
-    public void startCombat()
+    public void startEncounter()
     {
         if (!this.containsEnemy())
         {
-            return;
+            //return;
         }
         if (engine == null)
         {
@@ -125,23 +125,23 @@ public class DungeonTile implements Serializable {
             engine.setGUI(gui);
         }
         gui.startCombat();
-        inCombat = true;
-        //engine.combatEncounter(this.getEnemies());
+        inEncounter = true;
+        //engine.runEncounter(this.getEnemies());
         //System.out.println("Combat Over");
     }
     
     /**
      * Resets all combat-related variables
      */
-    public void endCombat()
+    public void endEncounter()
     {
         engine = null;
         gui = null;
-        inCombat = false;
+        inEncounter = false;
         // clear out dead creatures
         for (Entity e : new ArrayList<>(Contents))
         {
-            if (e instanceof Creature c && c.getCurrentHP() == 0)
+            if (e instanceof Creature c && c.getCurrentHP() <= 0)
             {
                 Contents.remove(e);
             }
@@ -152,9 +152,18 @@ public class DungeonTile implements Serializable {
      * Determines whether combat has been started in this tile.
      * @return True if combat has been started
      */
-    public Boolean inCombat()
+    public Boolean inEncounter()
     {
-        return this.inCombat;
+        return this.inEncounter;
+    }
+    
+    /**
+     * Determines whether this tile has a (combat or non-combat) encounter or not
+     * @return True if it could spawn an encounter
+     */
+    public Boolean hasEncounter()
+    {
+        return !this.Contents.isEmpty();
     }
     
     /**

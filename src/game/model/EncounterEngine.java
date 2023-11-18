@@ -6,6 +6,7 @@ package game.model;
 
 import game.gui.EncounterScreen;
 import java.util.List;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -35,7 +36,7 @@ public class EncounterEngine {
         this.gui = gui;
     }
     
-    public void combatEncounter(List<Entity> contents){
+    public void runEncounter(List<Entity> contents){
         try
         {
         SelectionLayer dfault = SelectionLayer.NON_COMBAT;  // COMBAT or NON_COMBAT
@@ -88,7 +89,12 @@ public class EncounterEngine {
                 }
                 if (allDead())
                 {
-                    selectionLayer = SelectionLayer.POST_COMBAT;
+                    SwingUtilities.invokeLater( () -> {
+                        // I don't like referencing Swing on the domain model side, 
+                        // but this block was causing a concurrency issue with selectionLayer
+                        selectionLayer = SelectionLayer.POST_COMBAT;
+                        gui.outputTranslator("All enemies are vanquished.\n");
+                    });
                 }
             }
         }
@@ -234,6 +240,21 @@ public class EncounterEngine {
         }
         
         return true;
+    }
+    
+    /**
+     * Kills all the enemies
+     */
+    public void cheatCode()
+    {
+        for (Enemy e : field)
+        {
+            if (e != null)
+            {
+                e.currentHP = 0;
+            }
+        }
+        player.defend(); // must look like player took their turn
     }
     
     

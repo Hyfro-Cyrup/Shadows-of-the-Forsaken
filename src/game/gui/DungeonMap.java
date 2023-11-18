@@ -110,7 +110,7 @@ public class DungeonMap extends JPanel {
                 markAdjacentSeen();
                 repaint();
                 SwingUtilities.invokeLater(() -> { // ensure the scene is repainted first
-                    if (Tiles[player.x][player.y].inCombat()) {
+                    if (Tiles[player.x][player.y].inEncounter()) {
                         try {
                             Thread.sleep(500); // add a small delay (Make animation later if time)
                         } catch (InterruptedException ex) {
@@ -369,7 +369,7 @@ public class DungeonMap extends JPanel {
     {
         playerIcon = ImageIO.read(this.getClass().getResource("/resources/MapPlayer.png"));
         tile = ImageIO.read(this.getClass().getResource("/resources/MapTile.png"));
-        key = ImageIO.read(this.getClass().getResource("/resources/Key.png"));
+        key = ImageIO.read(this.getClass().getResource("/resources/Chest.png"));
         combat = ImageIO.read(this.getClass().getResource("/resources/AttackMapIcon.png"));
         ladder = ImageIO.read(this.getClass().getResource("/resources/LadderMapIcon.png"));
         

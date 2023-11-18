@@ -87,8 +87,8 @@ public final class MapMaker {
     private static DungeonTile[][] coolMapGenerator(int w, int h, int iterations, double probability)
     {       
         List<Entity> Objects = new ArrayList<>();
-        Objects.add(new Entity("Ladder", "The exit beckons.", "dummy/path"));
-        Objects.add(new Entity("Key", "It shines with hope.", "dummy/path"));
+        Objects.add(new Entity("Ladder", "The exit beckons.", "/resources/LadderMapIcon.png"));
+        Objects.add(new Entity("Key", "It shines with hope.", "/resources/Chest.png"));
         
         DungeonTile[][] map = new DungeonTile[w][h];
         ArrayList<List<Integer>> cursor = new ArrayList<>();

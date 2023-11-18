@@ -121,10 +121,10 @@ public class GameState implements Serializable {
     {
         player.loadFix();
         DungeonTile tile = map[player.x][player.y];
-        if (tile.inCombat())
+        if (tile.inEncounter())
         {
             // loaded game is actively in combat
-            tile.startCombat();
+            tile.startEncounter();
             MainGUI.getInstance().changeScene(tile.getGUI());
         }
         else

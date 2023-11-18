@@ -14,6 +14,8 @@ import game.model.GameState;
 import game.model.Player;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
@@ -34,7 +36,7 @@ public class EncounterScreen extends JPanel {
     private final EncounterEngine engine;
     private final DungeonTile tile;
     private final ScreenPauser screenPauser;
-    private final JPanel test;
+    private final JPanel innerPanel;
     
     /**
      * Create new EncounterScreen. Initializes Hotbar, log, and graphics area from the DungeonTile information
@@ -79,7 +81,7 @@ public class EncounterScreen extends JPanel {
         graphic = new EncounterGraphic(tile);
         
         
-        test = new JPanel()
+        innerPanel = new JPanel()
         {
             @Override 
             protected void paintComponent(Graphics g)
@@ -105,11 +107,37 @@ public class EncounterScreen extends JPanel {
             }
         };
         
-        test.add(log);
-        test.add(hotbar);
-        test.add(graphic);
+        innerPanel.add(log);
+        innerPanel.add(hotbar);
+        innerPanel.add(graphic);
         
-        this.add(test);
+        this.add(innerPanel);
+        
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+                {
+                    screenPauser.pause();
+                    return;
+                }
+                if (!screenPauser.isPaused())
+                {
+                   switch (e.getKeyCode()) 
+                   {
+                        case KeyEvent.VK_C -> {
+                            // cheat code
+                            engine.cheatCode();
+                            synchronized (player)
+                            {
+                                player.notify();
+                            }
+                        }
+                    } 
+                   repaint();
+                }
+            }
+        });
         
         repaint();
         
@@ -129,7 +157,7 @@ public class EncounterScreen extends JPanel {
         int H = getHeight();
         
         // resize the inner JPanel (easier than layout mangers)
-        test.setBounds(0, 0, W, H);
+        innerPanel.setBounds(0, 0, W, H);
         
     }
     
@@ -142,13 +170,18 @@ public class EncounterScreen extends JPanel {
                 logDefense(source);
             case DamageCode.MISSED -> // source missed
                 logMiss(source, target);
-            case DamageCode.RAN_AWAY_SUCCESSFUL -> //source ran away successfully
+            case DamageCode.RAN_AWAY_SUCCESSFUL -> // player ran away successfully
                 logRanAway(true);
-            case DamageCode.RAN_AWAY_FAILED -> // source could not get away
+            case DamageCode.RAN_AWAY_FAILED -> // player could not get away
                 logRanAway(false);
+            case DamageCode.INVESTIGATED -> // player investigated non-combat
+                logInvestigation();
+            case DamageCode.TOUCHED -> // player interacted non-combat
+                logInteraction();
             default -> // source hit
                 logAttack(source, target, damage);
         }
+        repaint();
     }
     
     /**
@@ -241,6 +274,7 @@ public class EncounterScreen extends JPanel {
     public void outputTranslator(String message)
     {
         log.append(message + "\n");
+        repaint();
     }
     
     /**
@@ -249,7 +283,6 @@ public class EncounterScreen extends JPanel {
      */
     public void logRanAway(Boolean succeeded)
     {
-        
         SwingUtilities.invokeLater( () -> 
         {
             log.append("\nYou tried to run away from the fight...\n");
@@ -260,6 +293,62 @@ public class EncounterScreen extends JPanel {
             else
             {
                 log.append("You couldn't get away.\n");
+            }
+        });
+            
+    }
+    
+    /**
+     * Appends an investigate action to the log
+     */
+    public void logInvestigation()
+    {
+        Boolean isLadder = tile.containsLadder();
+        SwingUtilities.invokeLater( () -> 
+        {
+            if (isLadder)
+            {
+                log.append("There's a trapdoor at the top. \nCould this be the way out?\n");
+            }
+            else
+            {
+                log.append("Something is glimmering inside the chest.\n");
+            }
+        });
+            
+    }
+    
+    /**
+     * Appends an interaction action to the log
+     */
+    public void logInteraction()
+    {
+        Boolean isLadder = tile.containsLadder();
+        Boolean hasKey = player.hasKey();
+        SwingUtilities.invokeLater( () -> 
+        {
+            if (isLadder)
+            {
+                if (hasKey)
+                {
+                    log.append("\nDaylight fills your eyes...");
+                    // win
+                }
+                else
+                {
+                    log.append("The trapdoor is locked.\n");
+                }
+            }
+            else
+            {
+                if (hasKey)
+                {
+                    log.append("There's nothing else inside.\n");
+                }
+                else
+                {
+                    log.append("There's a key inside!\nWonder where it goes.");
+                }
             }
         });
             
@@ -277,7 +366,7 @@ public class EncounterScreen extends JPanel {
             {
                 synchronized (GameState.getInstance().getPlayer())
                 {
-                    engine.combatEncounter(tile.getContents());
+                    engine.runEncounter(tile.getContents());
                 }
                 return null;
             }
@@ -292,7 +381,7 @@ public class EncounterScreen extends JPanel {
                 } catch (InterruptedException ex) {
                     Logger.getLogger(EncounterScreen.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                tile.endCombat();
+                tile.endEncounter();
                 switcher.changeScene("DUNGEON_MAP");
             }
         };
