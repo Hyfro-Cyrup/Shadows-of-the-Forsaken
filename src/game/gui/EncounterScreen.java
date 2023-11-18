@@ -283,17 +283,26 @@ public class EncounterScreen extends JPanel {
      */
     public void logRanAway(Boolean succeeded)
     {
+        Boolean combat = !engine.combatOver();
         SwingUtilities.invokeLater( () -> 
         {
-            log.append("\nYou tried to run away from the fight...\n");
-            if (succeeded)
+            if (combat)
             {
-                log.append("You got away successfully!\n");
+                log.append("\nYou tried to run away from the fight...\n");
+                if (succeeded)
+                {
+                    log.append("You got away successfully!\n");
+                }
+                else
+                {
+                    log.append("You couldn't get away.\n");
+                }
             }
             else
             {
-                log.append("You couldn't get away.\n");
+                log.append("Back to the fray...\n");
             }
+            
         });
             
     }
@@ -331,7 +340,7 @@ public class EncounterScreen extends JPanel {
             {
                 if (hasKey)
                 {
-                    log.append("\nDaylight fills your eyes...");
+                    log.append("The key fits!\nFinally, daylight fills your eyes...");
                     // win
                 }
                 else
@@ -377,7 +386,7 @@ public class EncounterScreen extends JPanel {
                 // Combat is over and we're back on the EDT
                 // small wait then go back to the Dungeon Map
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(engine.combatOver() ? 1000 : 2000);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(EncounterScreen.class.getName()).log(Level.SEVERE, null, ex);
                 }
