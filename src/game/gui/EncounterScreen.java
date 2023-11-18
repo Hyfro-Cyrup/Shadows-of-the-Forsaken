@@ -6,6 +6,7 @@ package game.gui;
 
 import game.model.Attack;
 import game.model.Creature;
+import game.model.DamageCode;
 import game.model.DungeonTile;
 import game.model.EncounterEngine;
 import game.model.Entity;
@@ -133,39 +134,62 @@ public class EncounterScreen extends JPanel {
     }
     
     
+    
+    public void outputTranslator(Creature source, Creature target, int damage)
+    {
+        switch (damage) {
+            case DamageCode.DEFENDED -> // source defended
+                logDefense(source);
+            case DamageCode.MISSED -> // source missed
+                logMiss(source, target);
+            case DamageCode.RAN_AWAY_SUCCESSFUL -> //source ran away successfully
+                logRanAway(true);
+            case DamageCode.RAN_AWAY_FAILED -> // source could not get away
+                logRanAway(false);
+            default -> // source hit
+                logAttack(source, target, damage);
+        }
+    }
+    
     /**
      * Appends an attack action to the log
      * @param source The Creature who made the attack
      * @param target The Creature who got attacked
      * @param damage The amount of damage dealt
      */
-    public void outputTranslator(Creature source, Creature target, int damage)
+    public void logAttack(Creature source, Creature target, int damage)
     {
         String atk = source.getSelectedAttackName();
-        if (source == player)
+        Boolean killed = target.getCurrentHP() < 1;
+        SwingUtilities.invokeLater( () ->
         {
-            SwingUtilities.invokeLater( () -> 
+            if (source == player)
             {
+                
                 log.append("\nYou attacked the " + target.getName() + " with your " +  atk + ".\n" + 
                     "It dealt " + damage + " damage!\n");
-            });
-            
-        }
-        else
-        {
-            SwingUtilities.invokeLater( () -> 
+                if (killed)
+                {
+                    log.append("You killed it!\n");
+                }
+            }
+            else
             {
                 log.append("The " + source.getName() + " attacked you with its " + atk + ".\n" + 
-                        "It dealt " + damage + " damage!\n");
-            });
-        }
+                    "It dealt " + damage + " damage!\n");
+                if (killed)
+                {
+                    log.append("\nYou have been slain.\n");
+                }
+            }
+        });
     }
     
     /**
      * Appends a defense action to the log
      * @param defender The Creature who defended
      */
-    public void outputTranslator(Creature defender)
+    public void logDefense(Creature defender)
     {
         if (defender == player)
         {
@@ -188,7 +212,7 @@ public class EncounterScreen extends JPanel {
      * @param source The Creature who made the attack
      * @param target The Creature who got attacked
      */
-    public void outputTranslator(Creature source, Creature target)
+    public void logMiss(Creature source, Creature target)
     {
         String atk = source.getSelectedAttackName();
         if (source == player)
@@ -220,6 +244,28 @@ public class EncounterScreen extends JPanel {
     }
     
     /**
+     * Appends a flee action to the log
+     * @param succeeded whether the player succeeded or not
+     */
+    public void logRanAway(Boolean succeeded)
+    {
+        
+        SwingUtilities.invokeLater( () -> 
+        {
+            log.append("\nYou tried to run away from the fight...\n");
+            if (succeeded)
+            {
+                log.append("You got away successfully!\n");
+            }
+            else
+            {
+                log.append("You couldn't get away.\n");
+            }
+        });
+            
+    }
+    
+    /**
      * Runs the combat encounter in the background, allowing for waiting
      */
     public void startCombat()
@@ -235,6 +281,20 @@ public class EncounterScreen extends JPanel {
                 }
                 return null;
             }
+            
+            @Override
+            protected void done()
+            {
+                // Combat is over and we're back on the EDT
+                // small wait then go back to the Dungeon Map
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(EncounterScreen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                tile.endCombat();
+                switcher.changeScene("DUNGEON_MAP");
+            }
         };
         
         bgThread.execute();
@@ -246,6 +306,7 @@ public class EncounterScreen extends JPanel {
      */
     public void waitForPlayer()
     {
+        repaint();
         synchronized (player)
         {
             try {
@@ -257,6 +318,10 @@ public class EncounterScreen extends JPanel {
                 Logger.getLogger(EncounterScreen.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    private void leaveCombat()
+    {
         
     }
 }

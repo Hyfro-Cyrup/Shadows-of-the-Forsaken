@@ -117,13 +117,34 @@ public class DungeonTile implements Serializable {
         {
             return;
         }
-        engine = new EncounterEngine();
-        gui = new EncounterScreen(this);
-        engine.setGUI(gui);
+        if (engine == null)
+        {
+            engine = new EncounterEngine();
+            gui = new EncounterScreen(this);
+            engine.setGUI(gui);
+        }
         gui.startCombat();
         inCombat = true;
         //engine.combatEncounter(this.getEnemies());
         //System.out.println("Combat Over");
+    }
+    
+    /**
+     * Resets all combat-related variables
+     */
+    public void endCombat()
+    {
+        engine = null;
+        gui = null;
+        inCombat = false;
+        // clear out dead creatures
+        for (Entity e : Contents)
+        {
+            if (e instanceof Creature c && c.getCurrentHP() == 0)
+            {
+                Contents.remove(e);
+            }
+        }
     }
     
     /**
@@ -161,4 +182,6 @@ public class DungeonTile implements Serializable {
     {
         return this.gui;
     }
+    
+    
 }

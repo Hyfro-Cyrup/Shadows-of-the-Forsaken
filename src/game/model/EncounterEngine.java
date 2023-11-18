@@ -12,7 +12,7 @@ import game.gui.EncounterScreen;
  */
 public class EncounterEngine {
     private Enemy field[] = new Enemy[3]; 
-    private int selectionLayer;
+    private SelectionLayer selectionLayer;
     private final Player player;
     private String eventLog; 
     private EncounterScreen gui;
@@ -20,7 +20,7 @@ public class EncounterEngine {
     public EncounterEngine()
     {
     this.player = GameState.getInstance().getPlayer();
-    selectionLayer = 0;
+    selectionLayer = SelectionLayer.BASE;
     }
     
     /**
@@ -34,44 +34,68 @@ public class EncounterEngine {
     }
     
     public void combatEncounter(Enemy[] enemies){
-        System.out.println("confirmed starting combat");
+        try
+        {
         if (enemies.length != 3) {
             throw new IllegalArgumentException("Array 'enemies' must have length 3.");
         }
         field = enemies;
         
         
-        while (!(this.combatOver())){
+        while (true){
             player.beginTurn();
             gui.waitForPlayer();
-            selectionLayer = 0;
+            selectionLayer = SelectionLayer.BASE;
             player.endTurn();
             
-            for (int i = 0; i<3; i++){
-                if (field[i] != null)
+            if (player.ranAway() != DamageCode.FOUGHT)
+            {
+                gui.outputTranslator(player, null, player.ranAway());
+                if (player.ranAway() == DamageCode.RAN_AWAY_SUCCESSFUL)
                 {
-                    field[i].beginTurn();
+                    // exit combat
+                    return;
+                }
+            }
+            if (!(this.combatOver()))
+            {
+                for (int i = 0; i<3; i++){
                     CheckIfDead(i);
-                    int damage = field[i].takeTurn(player);
-                    sendToGUI(field[i], player, damage);
-                    field[i].endTurn();
-                    CheckIfDead(i);
+                    if (field[i] != null)
+                    {
+                        field[i].beginTurn();
+                        int damage = field[i].takeTurn(player);
+                        gui.outputTranslator(field[i], player, damage);
+                        field[i].endTurn();
+                        //CheckIfDead(i);
+                        
+                    }
+                }
+                if (allDead())
+                {
+                    selectionLayer = SelectionLayer.POST_COMBAT;
                 }
             }
         }
+        
+        }
+        catch (Exception e)
+        {
+            // errors in the background thread are normally silent, so we need to help them speak up.
+            e.printStackTrace();
+        }
     }
     
-    
     public boolean inputTranslator(int buttonValue){    
-       if (selectionLayer == 0){
+       if (selectionLayer == SelectionLayer.BASE){
            if (buttonValue == 0){
-               selectionLayer+=1; 
+               selectionLayer = selectionLayer.getNext(); 
                return false; 
            }
            
            if (buttonValue == 1){
                player.defend(); 
-               gui.outputTranslator(player);
+               gui.outputTranslator(player, null, DamageCode.DEFENDED);
                return true; 
            }
            
@@ -81,26 +105,26 @@ public class EncounterEngine {
            }
            
            if (buttonValue == 3){
-               return true; 
-                 //insert a function for fleeing
+               return true;
            }
            
            if (buttonValue == 4){
+               player.runAway(combatOver());
                return true;
            }
            
            
        }
        
-       else if (selectionLayer == 1){
+       else if (selectionLayer == SelectionLayer.PHYSICAL){
            if (buttonValue == 4){
                 // Back Button
-                selectionLayer -= 1;
+                selectionLayer = selectionLayer.getPrev();
                 return false;
             }
            
            if (player.selectAttack(buttonValue)){
-               selectionLayer+=1;
+               selectionLayer = selectionLayer.getNext();
                return false;
            }
            else{
@@ -109,15 +133,15 @@ public class EncounterEngine {
        }
        
        
-        else if (selectionLayer == 2){
+        else if (selectionLayer == SelectionLayer.MAGICAL){
             if (buttonValue == 4){
                 // Back Button
-                selectionLayer -= 1;
+                selectionLayer = selectionLayer.getPrev();
                 return false;
             }
             
             if (player.selectArcana(buttonValue)){
-                selectionLayer+=1;
+                selectionLayer = selectionLayer.getNext();
                 return false;
             }
             else{
@@ -125,35 +149,23 @@ public class EncounterEngine {
             }
         }
         
-        else if (selectionLayer == 3){
+        else if (selectionLayer == SelectionLayer.ENEMY){
             if (buttonValue == 4){
                 // Back Button
-                selectionLayer -= 1;
+                selectionLayer = selectionLayer.getPrev();
                 return false;
             }
            
            int damage = player.attack(field[buttonValue]);
-           sendToGUI(player, field[buttonValue], damage);
+           gui.outputTranslator(player, field[buttonValue], damage);
            return true; 
         }
     
     return true; 
     }
     
-    private void sendToGUI(Creature source, Creature target, int damage)
-    {
-        switch (damage) {
-            case DamageCode.DEFENDED -> // source defended
-                gui.outputTranslator(source);
-            case DamageCode.MISSED -> // source missed
-                gui.outputTranslator(source, target);
-            default -> // source hit
-                gui.outputTranslator(source, target, damage);
-        }
-    }
-    
     public int getSelectionLayer(){
-        return selectionLayer; 
+        return selectionLayer.ordinal(); 
     }
    
     public boolean combatOver(){
@@ -170,10 +182,24 @@ public class EncounterEngine {
         return true;
     }
     
-    public void CheckIfDead(int enemyNumber){
-        if (field[enemyNumber].currentHP<=0){
+    private void CheckIfDead(int enemyNumber){
+        if (field[enemyNumber] != null && field[enemyNumber].currentHP<=0){
             field[enemyNumber] = null; 
         }
     }
+    
+    private Boolean allDead()
+    {
+        for (Enemy e : field)
+        {
+            if (e != null)
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
     
 }

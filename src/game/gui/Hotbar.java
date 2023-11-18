@@ -53,6 +53,7 @@ public class Hotbar extends JPanel {
                 {
                     synchronized (player)
                     {
+                        // ternary allows entities to be shown right to left
                         engine.inputTranslator(engine.getSelectionLayer() == 3 && j < 3 ? 2-j : j);
                         player.notify();  
                     }
@@ -87,14 +88,14 @@ public class Hotbar extends JPanel {
         
         Player player = GameState.getInstance().getPlayer();
         
-        buttonIcons = new ImageIcon[5][5];
+        buttonIcons = new ImageIcon[6][5];
         
         // selection layer = 0
         buttonIcons[0][0] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
         buttonIcons[0][1] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Block.png")));
         buttonIcons[0][2] = null;
         buttonIcons[0][3] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/pause_icon.png")).getScaledInstance(60, 60, Image.SCALE_SMOOTH));
-        buttonIcons[0][4] = null;
+        buttonIcons[0][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/RunAway.png")));
         
         // selection layer = 1
         for (int i = 0; i < 4; i++)
@@ -125,11 +126,18 @@ public class Hotbar extends JPanel {
         }
         
         // selection layer = 4
-        buttonIcons[4][0] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Investigate.png")));
-        buttonIcons[4][1] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Touch.png")));
+        buttonIcons[4][0] = null;
+        buttonIcons[4][1] = null;
         buttonIcons[4][2] = null;
-        buttonIcons[4][3] = null;
-        buttonIcons[4][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/BackArrow.png")));
+        buttonIcons[4][3] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/pause_icon.png")).getScaledInstance(60, 60, Image.SCALE_SMOOTH));
+        buttonIcons[4][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/RunAway.png")));
+        
+        // selection layer = 5
+        buttonIcons[5][0] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Investigate.png")));
+        buttonIcons[5][1] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Touch.png")));
+        buttonIcons[5][2] = null;
+        buttonIcons[5][3] = null;
+        buttonIcons[5][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/BackArrow.png")));
         
     }
     

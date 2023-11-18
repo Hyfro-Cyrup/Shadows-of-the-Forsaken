@@ -32,6 +32,7 @@ public class Player extends Creature {
     private Attack selectedArcana; 
     
     private Boolean hasTakenTurn = false;
+    private int runAwayResult;
     
     
     /**
@@ -75,7 +76,12 @@ public class Player extends Creature {
         {
             x = nx;
             y = ny;
-            if (tile.containsEnemy())
+            if (tile.inCombat())
+            {
+                // This should handle the combat re-entry better than rewriting it here
+                GameState.getInstance().loadScreen();
+            }
+            else if (tile.containsEnemy())
             {
                 tile.startCombat();
             }
@@ -110,6 +116,7 @@ public class Player extends Creature {
         selectedAttack = null;
         selectedArcana = null;
         hasTakenTurn = false;
+        runAwayResult = DamageCode.FOUGHT;
     }
     
     
@@ -120,7 +127,7 @@ public class Player extends Creature {
     * @return - true if the selection is valid
     */
     public boolean selectAttack(int slot){
-        if ((attackArray[slot].getCost()<currentStamina) && (attackArray[slot]!=null)){
+        if ((attackArray[slot].getCost()<=currentStamina) && (attackArray[slot]!=null)){
             selectedAttack = attackArray[slot];
             return true; 
         }
@@ -136,7 +143,7 @@ public class Player extends Creature {
     * @return - true if the selection is valid
     */
     public boolean selectArcana(int slot){
-        if ((arcanaArray[slot].getCost()<currentMana) && (arcanaArray[slot]!=null)){
+        if ((arcanaArray[slot].getCost()<=currentMana) && (arcanaArray[slot]!=null)){
             selectedArcana = arcanaArray[slot];
             return true; 
         }
@@ -193,9 +200,36 @@ public class Player extends Creature {
         hasTakenTurn = true;
     }
     
+    /**
+     * Player has the option to run away from combat, but it doesn't work every time
+     * @param combatOver True if combat is already over. Overrides the chance of failure.
+     */
+    public void runAway(Boolean combatOver)
+    {
+        if (combatOver || Math.random() < 0.34) // ~1/3 chance
+        {
+            runAwayResult = DamageCode.RAN_AWAY_SUCCESSFUL;
+        }
+        else
+        {
+            runAwayResult = DamageCode.RAN_AWAY_FAILED;
+        }
+        hasTakenTurn = true;
+    }
+    
+    /**
+     * Determine if the player successfully escaped combat this turn.
+     * Reuses DamageCode to represent all 3 cases: Didn't run, ran successfully, and ran but failed to get away.
+     * @return a DamageCode constant
+     */
+    public int ranAway()
+    {
+        return this.runAwayResult;
+    }
     
     
-      /**
+    
+    /**
     * Add an attack or switch out an attack to the player's Technique or Arcana 
     * moveset. 
     * @param techOrArcane - is an Arcana or a Technique 
