@@ -5,6 +5,7 @@
 package game.gui;
 
 import java.awt.Color;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
@@ -33,12 +34,18 @@ public class Log extends JScrollPane {
         this.setBackground(bg);
     }
     
+    /**
+     * Add text to the bottom of the log, and autoscroll to the bottom of the log
+     * @param s The String to add
+     */
     public void append(String s)
     {
         this.log.append(s);
         // Scroll to the bottom
         int bottomPosition = log.getDocument().getLength();
         log.setCaretPosition(bottomPosition);
+        JScrollBar vertical = this.getVerticalScrollBar();
+        vertical.setValue( vertical.getMaximum() );
         
     }
 }

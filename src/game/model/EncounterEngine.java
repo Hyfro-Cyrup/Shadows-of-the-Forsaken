@@ -165,7 +165,8 @@ public class EncounterEngine {
                     selectionLayer = selectionLayer.getPrev();
                     return;
                 }
-                if (field[buttonValue] != null){
+                
+                if (buttonValue < 3 && field[buttonValue] != null){
                     int damage = player.attack(field[buttonValue]);
                     gui.outputTranslator(player, field[buttonValue], damage);
                 }

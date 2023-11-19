@@ -4,7 +4,6 @@
  */
 package game.gui;
 
-import game.model.GameState;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
@@ -36,7 +35,7 @@ public class LoseScreen extends JPanel {
             // Loads the background image (figuring out how to import and resize the image done by chat gpt)
             try
             {
-                backgroundImage = ImageIO.read(this.getClass().getResource("/resources/StartMenuBackground.jpg"));
+                backgroundImage = ImageIO.read(this.getClass().getResource("/resources/GameOverBackground.gif"));
             } catch (IOException ex) {
                 Logger.getLogger(StartScreen.class.getName()).log(Level.SEVERE, null, ex);
             }
