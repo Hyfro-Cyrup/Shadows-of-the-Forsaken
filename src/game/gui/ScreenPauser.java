@@ -67,23 +67,20 @@ public class ScreenPauser {
      */
     public void draw(Graphics2D g2d)
     {
+        int W = parent.getWidth();
+        int H = parent.getHeight();
         if (paused)
-        {
-            int W = parent.getWidth();
-            int H = parent.getHeight();
-            
+        {  
             g2d.setColor(new Color(50, 50, 50, 150));
             g2d.fillRect(0, 0, W, H);
             
-            var size = centeredPanel.getPreferredSize();
-            centeredPanel.setBounds((W - size.width) / 2, (H - size.height) / 2, size.width, size.height);
-            size = rightPanel.getPreferredSize();
-            rightPanel.setBounds((7*W / 10) + ((3*W / 10) - 2*size.width) / 2, (H - size.height) / 2, 3 * W/ 10, size.height);
-            centeredPanel.revalidate();
-            centeredPanel.repaint();
-            rightPanel.revalidate();
-            rightPanel.repaint();
         }
+        var size = centeredPanel.getPreferredSize();
+        centeredPanel.setBounds((W - size.width) / 2, (H - size.height) / 2, size.width, size.height);
+        size = rightPanel.getPreferredSize();
+        rightPanel.setBounds((7*W / 10) + ((3*W / 10) - 2*size.width) / 2, (H - size.height) / 2, 3 * W/ 10, size.height);
+
+
         
     }
     
@@ -128,17 +125,16 @@ public class ScreenPauser {
         
         rightPanel = new JPanel(new GridLayout(0, 1));
         
-        
-        JButton goToStart = new JButton("Main Menu");
         JButton backToGame = new JButton("Back to Game");
+        JButton goToStart = new JButton("Main Menu");
         
+        backToGame.addActionListener((ActionEvent e) -> pause());
         goToStart.addActionListener((ActionEvent e) -> {
             switcher.changeScene("START_SCREEN");
             pause();
         });
-        backToGame.addActionListener((ActionEvent e) -> pause());
         
-        for (JButton btn : new JButton[] {goToStart, backToGame})
+        for (JButton btn : new JButton[] {backToGame, goToStart})
         {
             JPanel bp = new JPanel();
             bp.add(btn);
@@ -153,7 +149,10 @@ public class ScreenPauser {
         
         JLabel label = new JLabel("Save Game");
         label.setForeground(Color.WHITE);
-        rightPanel.add(label);
+        JPanel lp = new JPanel();
+        lp.setOpaque(false);
+        lp.add(label);
+        rightPanel.add(lp);
         
         int i = 1;
         for (JButton btn : new JButton[]{ slot1, slot2, slot3})
