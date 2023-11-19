@@ -146,7 +146,6 @@ public class ScreenPauser {
         JButton slot2 = new JButton("Slot 2");
         JButton slot3 = new JButton("Slot 3");
         
-        
         JLabel label = new JLabel("Save Game");
         label.setForeground(Color.WHITE);
         JPanel lp = new JPanel();

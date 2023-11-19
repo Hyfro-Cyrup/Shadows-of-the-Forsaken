@@ -57,6 +57,8 @@ public class MainGUI implements SceneSwitcher{
         Scenes.put("START_SCREEN", new StartScreen(this));
         Scenes.put("LOAD_SCREEN", new LoadScreen(this));
         Scenes.put("DUNGEON_MAP", new DungeonMap(this));
+        Scenes.put("WIN_SCREEN", new WinScreen(this));
+        Scenes.put("LOSE_SCREEN", new LoseScreen(this));
     }
     
     /**
