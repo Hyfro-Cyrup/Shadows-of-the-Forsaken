@@ -128,9 +128,8 @@ public class ScreenPauser {
         
         rightPanel = new JPanel(new GridLayout(0, 1));
         
-        
-        JButton goToStart = new JButton("Main Menu");
         JButton backToGame = new JButton("Back to Game");
+        JButton goToStart = new JButton("Main Menu");
         
         goToStart.addActionListener((ActionEvent e) -> {
             switcher.changeScene("START_SCREEN");
@@ -138,7 +137,7 @@ public class ScreenPauser {
         });
         backToGame.addActionListener((ActionEvent e) -> pause());
         
-        for (JButton btn : new JButton[] {goToStart, backToGame})
+        for (JButton btn : new JButton[] {backToGame, goToStart})
         {
             JPanel bp = new JPanel();
             bp.add(btn);
@@ -149,7 +148,6 @@ public class ScreenPauser {
         JButton slot1 = new JButton("Slot 1");
         JButton slot2 = new JButton("Slot 2");
         JButton slot3 = new JButton("Slot 3");
-        
         
         JLabel label = new JLabel("Save Game");
         label.setForeground(Color.WHITE);

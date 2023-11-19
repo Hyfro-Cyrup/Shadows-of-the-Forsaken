@@ -50,7 +50,6 @@ public class StartScreen extends JPanel {
             newButton.addActionListener((ActionEvent e) -> GameState.newInstance().loadScreen());
             loadButton.addActionListener((ActionEvent e) -> switcher.changeScene("LOAD_SCREEN"));
             exitButton.addActionListener((ActionEvent e) -> System.exit(0));
-
             
             // Add the buttons to the panel
             add(newButton);
@@ -97,7 +96,7 @@ public class StartScreen extends JPanel {
         
         loadButton.setBounds(lbuttonX, lbuttonY, lbuttonWidth, lbuttonHeight);
         
-         // Exits program
+        // Exits program
         int ebuttonWidth = 75;
         int ebuttonHeight = 50;
         int ebuttonX = (panelWidth - ebuttonWidth) / 2; // Centers the button horizontally
