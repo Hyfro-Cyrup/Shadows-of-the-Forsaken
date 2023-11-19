@@ -48,7 +48,7 @@ public class DungeonTile implements Serializable {
      */
     public Boolean containsKey()
     {
-        return Contents.stream().anyMatch(e -> "Key".equals(e.getName()));
+        return Contents.stream().anyMatch(e -> "Chest".equals(e.getName()));
     }
     
     /**

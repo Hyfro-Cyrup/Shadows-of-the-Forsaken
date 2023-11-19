@@ -373,7 +373,7 @@ public class EncounterScreen extends JPanel {
                 }
                 else
                 {
-                    log.append("There's a key inside!\nWonder where it goes.\n");
+                    log.append("You found a key!\nWonder where it goes.\n");
                 }
             }
         });

@@ -88,7 +88,7 @@ public final class MapMaker {
     {       
         List<Entity> Objects = new ArrayList<>();
         Objects.add(new Entity("Ladder", "The exit beckons.", "/resources/LadderMapIcon.png"));
-        Objects.add(new Entity("Key", "It shines with hope.", "/resources/Chest.png"));
+        Objects.add(new Entity("Chest", "Wonder what's inside.", "/resources/Chest.png"));
         
         DungeonTile[][] map = new DungeonTile[w][h];
         ArrayList<List<Integer>> cursor = new ArrayList<>();
