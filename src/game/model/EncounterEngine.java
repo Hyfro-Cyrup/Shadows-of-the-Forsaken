@@ -39,66 +39,70 @@ public class EncounterEngine {
     public void runEncounter(List<Entity> contents){
         try
         {
-        SelectionLayer dfault = SelectionLayer.NON_COMBAT;  // COMBAT or NON_COMBAT
-        // populate the field
-        field = new Enemy[]{null, null, null};
-        int j = 0;
-        for (Entity e : contents)
-        {
-            if (e instanceof Enemy enemy)
+            SelectionLayer dfault = SelectionLayer.NON_COMBAT;  // COMBAT or NON_COMBAT
+            // populate the field
+            field = new Enemy[]{null, null, null};
+            int j = 0;
+            for (Entity e : contents)
             {
-                field[j] = enemy;
-                dfault = SelectionLayer.COMBAT;
-                j++;
-                if (j > 2)
+                if (e instanceof Enemy enemy)
                 {
-                    break;
-                }
-            }
-        }
-        
-        
-        while (true){
-            player.beginTurn();
-            selectionLayer = dfault;
-            gui.waitForPlayer();
-            player.endTurn();
-            
-            if (player.ranAway() != DamageCode.FOUGHT)
-            {
-                gui.outputTranslator(player, null, player.ranAway());
-                if (player.ranAway() == DamageCode.RAN_AWAY_SUCCESSFUL)
-                {
-                    // exit combat
-                    return;
-                }
-            }
-            if (!(this.combatOver())) // combat always over in non-combat encounters
-            {
-                for (int i = 0; i<3; i++){
-                    CheckIfDead(i);
-                    if (field[i] != null)
+                    field[j] = enemy;
+                    dfault = SelectionLayer.COMBAT;
+                    j++;
+                    if (j > 2)
                     {
-                        field[i].beginTurn();
-                        int damage = field[i].takeTurn(player);
-                        gui.outputTranslator(field[i], player, damage);
-                        field[i].endTurn();
-                        //CheckIfDead(i);
-                        
+                        break;
                     }
                 }
-                if (allDead())
+            }
+
+
+            while (true){
+                player.beginTurn();
+                selectionLayer = dfault;
+                gui.waitForPlayer();
+                player.endTurn();
+
+                if (player.ranAway() != DamageCode.FOUGHT)
                 {
-                    SwingUtilities.invokeLater( () -> {
-                        // I don't like referencing Swing on the domain model side, 
-                        // but this block was causing a concurrency issue with selectionLayer
-                        selectionLayer = SelectionLayer.POST_COMBAT;
-                        gui.outputTranslator("All enemies are vanquished.\n");
-                    });
+                    gui.outputTranslator(player, null, player.ranAway());
+                    if (player.ranAway() == DamageCode.RAN_AWAY_SUCCESSFUL)
+                    {
+                        // exit combat
+                        break;
+                    }
+                }
+                if (!(this.combatOver())) // combat always over in non-combat encounters
+                {
+                    for (int i = 0; i<3; i++){
+                        CheckIfDead(i);
+                        if (field[i] != null)
+                        {
+                            field[i].beginTurn();
+                            int damage = field[i].takeTurn(player);
+                            gui.outputTranslator(field[i], player, damage);
+                            field[i].endTurn();
+
+                        }
+                    }
+                    if (player.currentHP <= 0)
+                    {
+                        GameState.getInstance().Lose();
+                        break;
+                    }
+                    if (allDead())
+                    {
+                        SwingUtilities.invokeLater( () -> {
+                            // I don't like referencing Swing on the domain model side, 
+                            // but this block was causing a concurrency issue with selectionLayer
+                            selectionLayer = SelectionLayer.POST_COMBAT;
+                            gui.outputTranslator("All enemies are vanquished.");
+                        });
+                    }
                 }
             }
-        }
-        
+            
         }
         catch (Exception e)
         {
@@ -112,17 +116,20 @@ public class EncounterEngine {
         {
             case COMBAT -> {
                 if (buttonValue == 0){
+                    // Go to attack selection
                     selectionLayer = selectionLayer.getNext();
                     return;
                 }
                 
                 if (buttonValue == 1){
+                    // Action: Defend
                     player.defend();
                     gui.outputTranslator(player, null, DamageCode.DEFENDED);
                     return;
                 }    
                 
                 if (buttonValue == 4){
+                    // Action: Flee
                     player.runAway(combatOver());
                     return;
                 }
@@ -158,45 +165,48 @@ public class EncounterEngine {
                     selectionLayer = selectionLayer.getPrev();
                     return;
                 }
-                
-                int damage = player.attack(field[buttonValue]);
-                gui.outputTranslator(player, field[buttonValue], damage);
+                if (field[buttonValue] != null){
+                    int damage = player.attack(field[buttonValue]);
+                    gui.outputTranslator(player, field[buttonValue], damage);
+                }
 
             }
             case POST_COMBAT -> {
                 if (buttonValue == 4){
+                    // Action: Leave
                     player.runAway(true);
                     return;
                 }
             }
             case NON_COMBAT -> {
-                if (buttonValue == 0)
-                {
+                if (buttonValue == 0){
+                    // Action: Investigate
                     gui.outputTranslator(player, null, DamageCode.INVESTIGATED);
                     return;
                 }
-                if (buttonValue == 1)
-                {
+                if (buttonValue == 1){
+                    // Action: Interact
                     gui.outputTranslator(player, null, DamageCode.TOUCHED);
                     if (tile.containsKey())
                     {
                         player.recieveKey();
                     }
-                    if (tile.containsLadder())
+                    else if (tile.containsLadder() && player.hasKey())
                     {
-                        if (player.hasKey())
-                        {
-                            // win
-                        }
-                        else
-                        {
-                            // don't
-                        }
+                        tile.unlockExit();
                     }
                     return;
                 }
+                if (buttonValue == 2 && tile.exitUnlocked()){
+                    // Action: Ascend
+                    gui.outputTranslator(null, null, DamageCode.GAME_WON);
+                    GameState.getInstance().Win();
+                    player.runAway(true); // need to exit combat
+                    
+                }
                 
                 if (buttonValue == 4) {
+                    // Action: Leave
                     player.runAway(true);
                     return;
                 }

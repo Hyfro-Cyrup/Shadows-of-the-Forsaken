@@ -11,6 +11,9 @@ import game.model.DungeonTile;
 import game.model.EncounterEngine;
 import game.model.Entity;
 import game.model.GameState;
+import static game.model.GameState.WinState.LOST;
+import static game.model.GameState.WinState.PLAYING;
+import static game.model.GameState.WinState.WON;
 import game.model.Player;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -74,7 +77,7 @@ public class EncounterScreen extends JPanel {
         
         screenPauser = new ScreenPauser(this, hotbar.getButton(3), () -> {
             int s = engine.getSelectionLayer();
-            return ((s == 0) || (s == 4));
+            return (!(s == 1 || s == 2 || s == 3));
         });
         
         // make the graphic
@@ -133,6 +136,10 @@ public class EncounterScreen extends JPanel {
                                 player.notify();
                             }
                         }
+                        case KeyEvent.VK_SPACE, KeyEvent.VK_ENTER -> {
+                            // keybinds I wanted for leaving combat
+                            hotbar.getButton(4).doClick();
+                        }
                     } 
                    repaint();
                 }
@@ -162,7 +169,12 @@ public class EncounterScreen extends JPanel {
     }
     
     
-    
+    /**
+     * Finds the correct GUI response to an output from the EncounterEngine
+     * @param source The acting Creature
+     * @param target The Creature being acted upon
+     * @param damage The damage dealt or DamageCode indicating action
+     */
     public void outputTranslator(Creature source, Creature target, int damage)
     {
         switch (damage) {
@@ -178,9 +190,23 @@ public class EncounterScreen extends JPanel {
                 logInvestigation();
             case DamageCode.TOUCHED -> // player interacted non-combat
                 logInteraction();
+            case DamageCode.GAME_WON -> // player escaped!
+                logWin();
             default -> // source hit
                 logAttack(source, target, damage);
         }
+        repaint();
+    }
+    
+    /**
+     * Appends an arbitrary string to the log
+     * @param message The String to print
+     */
+    public void outputTranslator(String message)
+    {
+        SwingUtilities.invokeLater(() ->{
+           log.append(message + "\n"); 
+        });
         repaint();
     }
     
@@ -190,7 +216,7 @@ public class EncounterScreen extends JPanel {
      * @param target The Creature who got attacked
      * @param damage The amount of damage dealt
      */
-    public void logAttack(Creature source, Creature target, int damage)
+    private void logAttack(Creature source, Creature target, int damage)
     {
         String atk = source.getSelectedAttackName();
         Boolean killed = target.getCurrentHP() < 1;
@@ -212,7 +238,7 @@ public class EncounterScreen extends JPanel {
                     "It dealt " + damage + " damage!\n");
                 if (killed)
                 {
-                    log.append("\nYou have been slain.\n");
+                    log.append("You have been slain.\n");
                 }
             }
         });
@@ -222,7 +248,7 @@ public class EncounterScreen extends JPanel {
      * Appends a defense action to the log
      * @param defender The Creature who defended
      */
-    public void logDefense(Creature defender)
+    private void logDefense(Creature defender)
     {
         if (defender == player)
         {
@@ -245,7 +271,7 @@ public class EncounterScreen extends JPanel {
      * @param source The Creature who made the attack
      * @param target The Creature who got attacked
      */
-    public void logMiss(Creature source, Creature target)
+    private void logMiss(Creature source, Creature target)
     {
         String atk = source.getSelectedAttackName();
         if (source == player)
@@ -268,22 +294,13 @@ public class EncounterScreen extends JPanel {
     }
     
     /**
-     * Appends an arbitrary string to the log
-     * @param message The String to print
-     */
-    public void outputTranslator(String message)
-    {
-        log.append(message + "\n");
-        repaint();
-    }
-    
-    /**
      * Appends a flee action to the log
      * @param succeeded whether the player succeeded or not
      */
-    public void logRanAway(Boolean succeeded)
+    private void logRanAway(Boolean succeeded)
     {
         Boolean combat = !engine.combatOver();
+        Boolean fray = (gameState.getWinState() == GameState.WinState.PLAYING); 
         SwingUtilities.invokeLater( () -> 
         {
             if (combat)
@@ -298,7 +315,7 @@ public class EncounterScreen extends JPanel {
                     log.append("You couldn't get away.\n");
                 }
             }
-            else
+            else if (fray) // only print if we're exiting toward the dungeon map, not the win screen
             {
                 log.append("Back to the fray...\n");
             }
@@ -310,7 +327,7 @@ public class EncounterScreen extends JPanel {
     /**
      * Appends an investigate action to the log
      */
-    public void logInvestigation()
+    private void logInvestigation()
     {
         Boolean isLadder = tile.containsLadder();
         SwingUtilities.invokeLater( () -> 
@@ -330,7 +347,7 @@ public class EncounterScreen extends JPanel {
     /**
      * Appends an interaction action to the log
      */
-    public void logInteraction()
+    private void logInteraction()
     {
         Boolean isLadder = tile.containsLadder();
         Boolean hasKey = player.hasKey();
@@ -340,8 +357,8 @@ public class EncounterScreen extends JPanel {
             {
                 if (hasKey)
                 {
-                    log.append("The key fits!\nFinally, daylight fills your eyes...");
-                    // win
+                    log.append("The key fits!\n The way is open!\n");
+                    hotbar.unlockExit();
                 }
                 else
                 {
@@ -356,11 +373,22 @@ public class EncounterScreen extends JPanel {
                 }
                 else
                 {
-                    log.append("There's a key inside!\nWonder where it goes.");
+                    log.append("There's a key inside!\nWonder where it goes.\n");
                 }
             }
         });
             
+    }
+    
+    /**
+     * Appends an ascent action to the log
+     */
+    private void logWin()
+    {
+        SwingUtilities.invokeLater( () -> 
+        {
+            log.append("\nDaylight fills your eyes...");
+        });
     }
     
     /**
@@ -391,7 +419,14 @@ public class EncounterScreen extends JPanel {
                     Logger.getLogger(EncounterScreen.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 tile.endEncounter();
-                switcher.changeScene("DUNGEON_MAP");
+                
+                switcher.changeScene(
+                    switch (gameState.getWinState()) {
+                        case PLAYING ->  "DUNGEON_MAP";
+                        case WON ->  "WIN_SCREEN";
+                        case LOST ->  "LOSE_SCREEN";
+                    }
+                );
             }
         };
         
@@ -418,8 +453,4 @@ public class EncounterScreen extends JPanel {
         }
     }
     
-    private void leaveCombat()
-    {
-        
-    }
 }

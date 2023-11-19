@@ -29,6 +29,14 @@ public class GameState implements Serializable {
     
     private Player player;
     private DungeonTile[][] map;
+    private WinState winState = WinState.PLAYING;
+            
+    public enum WinState
+    {
+        PLAYING, 
+        WON,
+        LOST
+    }
     
     /**
      * Default constructor. Initializes player and map.
@@ -49,6 +57,7 @@ public class GameState implements Serializable {
     {
         this.player = gs.player;
         this.map = gs.map;
+        this.winState = gs.winState;
     }
     
     /**
@@ -158,18 +167,27 @@ public class GameState implements Serializable {
      */
     public void loadScreen()
     {
-        player.loadFix();
-        DungeonTile tile = map[player.x][player.y];
-        if (tile.inEncounter())
-        {
-            // loaded game is actively in combat
-            tile.startEncounter();
-            MainGUI.getInstance().changeScene(tile.getGUI());
-        }
-        else
-        {
-            MainGUI.getInstance().changeScene("DUNGEON_MAP");
-        }
+        //switch (winState)
+        //{
+        //    case PLAYING -> 
+        //    {
+                player.loadFix();
+                DungeonTile tile = map[player.x][player.y]; 
+                if (tile.inEncounter())
+                {
+                    // loaded game is actively in combat
+                    tile.startEncounter();
+                    MainGUI.getInstance().changeScene(tile.getGUI());
+                }
+                else
+                {
+                    MainGUI.getInstance().changeScene("DUNGEON_MAP");
+                }  
+        //    }
+        //    case WON -> MainGUI.getInstance().changeScene("WIN_SCREEN");
+        //    case LOST -> MainGUI.getInstance().changeScene("LOSE_SCREEN");
+        //}
+        
     }
     
     /**
@@ -183,4 +201,26 @@ public class GameState implements Serializable {
      * @return the player
      */
     public Player getPlayer() { return player; }
+    
+    /**
+     * Get whether the current game was won, lost, or ongoing
+     * @return a WinState enum value
+     */
+    public WinState getWinState() { return winState; }
+    
+    /**
+     * Indicate that the current game was won.
+     */
+    public void Win()
+    {
+        winState = WinState.WON;
+    }
+    
+    /**
+     * Indicate that the current game was lost.
+     */
+    public void Lose()
+    {
+        winState = WinState.LOST;
+    }
 }

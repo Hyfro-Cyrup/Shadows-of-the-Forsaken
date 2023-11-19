@@ -19,6 +19,7 @@ public class DungeonTile implements Serializable {
     private transient EncounterEngine engine = null;
     private transient EncounterScreen gui = null;
     private Boolean inEncounter = false;
+    private Boolean exitUnlocked = false;
     
     /**
      * Default constructor. Initializes as unseen with no contents.
@@ -193,5 +194,22 @@ public class DungeonTile implements Serializable {
         return this.gui;
     }
     
+    /**
+     * Indicate that the player has used the key on the ladder('s trapdoor)
+     */
+    public void unlockExit()
+    {
+        exitUnlocked = true;
+    }
+    
+    /**
+     * Determines whether the player has used the key on the exit yet. 
+     * Only valid if this tile contains the ladder
+     * @return True if the player can now exit
+     */
+    public Boolean exitUnlocked()
+    {
+        return exitUnlocked;
+    }
     
 }

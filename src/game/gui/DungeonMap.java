@@ -7,15 +7,8 @@ package game.gui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import game.model.Player;
@@ -88,13 +81,13 @@ public class DungeonMap extends JPanel {
                 {
                    switch (e.getKeyCode()) 
                    {
-                        case KeyEvent.VK_UP -> player.move(0, -1, Tiles);
-                        case KeyEvent.VK_DOWN -> player.move(0, 1, Tiles);
-                        case KeyEvent.VK_LEFT -> {
+                        case KeyEvent.VK_UP, KeyEvent.VK_W -> player.move(0, -1, Tiles);
+                        case KeyEvent.VK_DOWN, KeyEvent.VK_S -> player.move(0, 1, Tiles);
+                        case KeyEvent.VK_LEFT, KeyEvent.VK_A -> {
                             player.move(-1, 0, Tiles);
                             playerFacingLeft = true;
                         }
-                        case KeyEvent.VK_RIGHT -> {
+                        case KeyEvent.VK_RIGHT, KeyEvent.VK_D -> {
                             player.move(1, 0, Tiles);
                             playerFacingLeft = false;
                         }

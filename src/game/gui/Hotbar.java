@@ -128,6 +128,7 @@ public class Hotbar extends JPanel {
         // selection layer = 5
         buttonIcons[5][0] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Investigate.png")));
         buttonIcons[5][1] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Touch.png")));
+        buttonIcons[5][3] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/pause_icon.png")).getScaledInstance(60, 60, Image.SCALE_SMOOTH));
         buttonIcons[5][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/RunAway.png")));
         
     }
@@ -175,8 +176,23 @@ public class Hotbar extends JPanel {
         // selectionLayer == NON_COMBAT
         tooltips[5][0] = "Investigate";
         tooltips[5][1] = "Interact";
+        tooltips[5][3] = "Pause";
         tooltips[5][4] = "Exit";
         
+    }
+    
+    /**
+     * Allow transition to win screen via a button
+     */
+    public void unlockExit()
+    {
+        try {
+            buttonIcons[5][2] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/LadderMapIcon.png")));
+        } catch (IOException ex) {
+            Logger.getLogger(Hotbar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        tooltips[5][2] = "Ascend";
+        repaint();
     }
     
     /**
