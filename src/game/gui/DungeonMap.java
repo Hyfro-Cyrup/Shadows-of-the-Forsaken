@@ -42,10 +42,7 @@ public class DungeonMap extends JPanel {
     private final SceneSwitcher switcher;
     private DungeonTile[][] Tiles;
     private int[] origin;
-    private boolean paused = false;
-    private JButton pauseButton;
-    private JPanel centeredPanel;
-    private JPanel rightPanel;
+    private ScreenPauser screenPauser;
     private GameState gameState;
     
     private BufferedImage tile, combat, key, ladder, playerIcon;
@@ -58,20 +55,17 @@ public class DungeonMap extends JPanel {
     public DungeonMap(SceneSwitcher parent)
     {
         super();
+        this.setLayout(null);
+        
         switcher = parent;
         gameState = GameState.getInstance();
         Tiles = gameState.getMap();
-        Tiles[Tiles.length / 2][Tiles[0].length / 2].markSeen(); 
+        screenPauser = new ScreenPauser(this);
         
         player = gameState.getPlayer();
         player.x = Tiles.length / 2;
         player.y = Tiles[0].length / 2;
         markAdjacentSeen();
-        
-        // make all the buttons
-        this.setLayout(null);
-        makePauseButton();
-        makePauseScreen();
         
         // make all the icons
         try {
@@ -87,10 +81,10 @@ public class DungeonMap extends JPanel {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
                 {
-                    pause();
+                    screenPauser.pause();
                     return;
                 }
-                if (!paused)
+                if (!screenPauser.isPaused())
                 {
                    switch (e.getKeyCode()) 
                    {
@@ -170,21 +164,7 @@ public class DungeonMap extends JPanel {
             }
         }
         drawPlayer(g2d);
-        if (paused)
-        {
-            g2d.setColor(new Color(50, 50, 50, 150));
-            g2d.fillRect(0, 0, getWidth(), getHeight());
-        }
-        var size = centeredPanel.getPreferredSize();
-        int swidth = getWidth();
-        int sheight = getHeight();
-        centeredPanel.setBounds((swidth - size.width) / 2, (sheight - size.height) / 2, size.width, size.height);
-        size = rightPanel.getPreferredSize();
-        rightPanel.setBounds((7*swidth / 10) + ((3*swidth / 10) - 2*size.width) / 2, (sheight - size.height) / 2, 3 * swidth/ 10, size.height);
-        centeredPanel.revalidate();
-        centeredPanel.repaint();
-        rightPanel.revalidate();
-        rightPanel.repaint();
+        screenPauser.draw(g2d);
         
         
     }
@@ -276,94 +256,6 @@ public class DungeonMap extends JPanel {
                 Tiles[n[0]][n[1]].markSeen();
             }
         }
-    }
-    
-    private void pause()
-    {
-        paused = !paused;
-        centeredPanel.setVisible(paused);
-        rightPanel.setVisible(paused);
-        repaint();
-    }
-    
-    private void makePauseButton()
-    {
-        
-        pauseButton = new JButton("");
-        
-        pauseButton.setIcon(new ImageIcon(new ImageIcon(DungeonMap.class.getResource("/resources/pause_icon.png")).getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH)));      
-        pauseButton.setBorderPainted(false);
-        pauseButton.setContentAreaFilled(false); 
-       
-        pauseButton.setBounds(20, 20, 60, 60);
-        
-        pauseButton.addActionListener((ActionEvent e)  -> pause());
-        
-        pauseButton.setFocusable(false);
-        
-        this.add(pauseButton);
-    }
-    
-    private void makePauseScreen()
-    {
-        
-        centeredPanel = new JPanel(new GridLayout(0, 1));
-        
-        rightPanel = new JPanel(new GridLayout(0, 1));
-        
-        
-        JButton goToStart = new JButton("Main Menu");
-        JButton backToGame = new JButton("Back to Game");
-        
-        goToStart.addActionListener((ActionEvent e) -> {
-            switcher.changeScene("START_SCREEN");
-            pause();
-        });
-        backToGame.addActionListener((ActionEvent e) -> pause());
-        
-        for (JButton btn : new JButton[] {goToStart, backToGame})
-        {
-            JPanel bp = new JPanel();
-            bp.add(btn);
-            bp.setOpaque(false);
-            centeredPanel.add(bp);
-        }
-        
-        JButton slot1 = new JButton("Slot 1");
-        JButton slot2 = new JButton("Slot 2");
-        JButton slot3 = new JButton("Slot 3");
-        
-        
-        JLabel label = new JLabel("Save Game");
-        label.setForeground(Color.WHITE);
-        rightPanel.add(label);
-        
-        int i = 1;
-        for (JButton btn : new JButton[]{ slot1, slot2, slot3})
-        {
-            final int j = i;
-            JPanel bp = new JPanel();
-            bp.add(btn);
-            bp.setOpaque(false);
-            rightPanel.add(bp);
-            btn.addActionListener((ActionEvent e) -> GameState.saveGame("save" + String.valueOf(j)));
-            i++;
-        }
-        
-
-        
-        centeredPanel.setOpaque(false);
-        rightPanel.setOpaque(false);
-        
-        centeredPanel.add(Box.createGlue());
-        rightPanel.add(Box.createGlue());
-        
-        centeredPanel.setVisible(false);
-        rightPanel.setVisible(false);
-        
-        this.add(centeredPanel);
-        this.add(rightPanel);
-        
     }
     
     private void makeAllIcons() throws IOException
