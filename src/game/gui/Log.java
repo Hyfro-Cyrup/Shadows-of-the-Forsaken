@@ -5,6 +5,7 @@
 package game.gui;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -47,5 +48,15 @@ public class Log extends JScrollPane {
         JScrollBar vertical = this.getVerticalScrollBar();
         vertical.setValue( vertical.getMaximum() );
         
+    }
+    
+    
+    // Scrollbar was getting positioned wrong at weird times, possibly during repainting
+    @Override
+    protected void paintComponent(Graphics g)
+    {
+        super.paintComponent(g);
+        JScrollBar vertical = this.getVerticalScrollBar();
+        vertical.setValue( vertical.getMaximum() );
     }
 }

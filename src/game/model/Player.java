@@ -70,11 +70,11 @@ public class Player extends Creature {
     public void move(int dx, int dy, DungeonTile[][] map){
         int nx = x + dx;
         int ny = y + dy;
-        DungeonTile tile = map[nx][ny];
         if (-1 < nx && nx < map.length && 
             -1 < ny && ny < map[0].length &&
-            tile != null)
+            map[nx][ny] != null)
         {
+            DungeonTile tile = map[nx][ny];
             x = nx;
             y = ny;
             if (tile.inEncounter())

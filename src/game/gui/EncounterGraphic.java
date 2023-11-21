@@ -123,8 +123,11 @@ public class EncounterGraphic extends JPanel {
             {
                 g.setColor(Color.DARK_GRAY);
                 g.fillRect(left - 1, size + 10 - 1, size + 2, 10 + 2);
+                
+                // Health bar
                 g.setColor(Color.RED);
                 g.fillRect(left + 1, size + 10 + 1, (int) ((double) c.getCurrentHP() * (size - 2) / c.getMaxHP()), 10-2);
+                //g.drawString("" + c.getCurrentHP(), left - 1, size + 10 - 1 + 12 + 11);
             }
         }
         
