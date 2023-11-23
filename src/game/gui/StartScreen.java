@@ -78,6 +78,12 @@ public class StartScreen extends JPanel {
         int newHeight = (int) (scale * bgHeight);
         g.drawImage(backgroundImage, (panelWidth - newWidth) / 2, (panelHeight - newHeight) / 2, newWidth, newHeight, this);
         
+        // Title
+        String title = "Shadows of the Forsaken";
+        int messageLength = title.length();
+        g.setFont(new Font("Arial", Font.BOLD, 40));
+        g.setColor(Color.WHITE);
+        g.drawString(title,(panelWidth / 2) - ((messageLength * 20)  / 2),(panelHeight) / 3);
         
         // Calculate the New Game button's position to center it
         int buttonWidth = 150;
