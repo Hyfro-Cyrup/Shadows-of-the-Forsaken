@@ -239,5 +239,9 @@ public abstract class Creature extends Entity implements Serializable {
      {
          return maxHP;
      }
-     
+    
+     public int[] getStatus()
+     {
+        return conditions; 
+     }
 }
