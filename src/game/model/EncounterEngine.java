@@ -5,6 +5,13 @@
 package game.model;
 
 import game.gui.EncounterScreen;
+import static game.model.SelectionLayer.ATK_ENEMY;
+import static game.model.SelectionLayer.COMBAT;
+import static game.model.SelectionLayer.INSPECT_ENEMY;
+import static game.model.SelectionLayer.MAGICAL;
+import static game.model.SelectionLayer.NON_COMBAT;
+import static game.model.SelectionLayer.PHYSICAL;
+import static game.model.SelectionLayer.POST_COMBAT;
 import java.util.List;
 import javax.swing.SwingUtilities;
 
@@ -131,11 +138,7 @@ public class EncounterEngine {
                 }    
                 
                 if (buttonValue == 2){
-                    for (Enemy e : field){
-                        if (e != null){
-                            gui.outputTranslator(null, e, DamageCode.INSPECT);
-                        }
-                    }
+                    selectionLayer = SelectionLayer.INSPECT_ENEMY;
                 }
                 
                 if (buttonValue == 4){
@@ -180,8 +183,20 @@ public class EncounterEngine {
                     int damage = player.attack(field[buttonValue]);
                     gui.outputTranslator(player, field[buttonValue], damage);
                 }
-
             }
+            
+            case INSPECT_ENEMY -> {
+                if (buttonValue == 4){
+                    // Back Button
+                    selectionLayer = SelectionLayer.COMBAT;
+                    return;
+                }
+                if (buttonValue < 3 && field[buttonValue] != null){
+                    gui.outputTranslator(null,field[buttonValue],DamageCode.INSPECT);
+                    selectionLayer = SelectionLayer.COMBAT;
+                }
+            }
+            
             case POST_COMBAT -> {
                 if (buttonValue == 4){
                     // Action: Leave
@@ -277,6 +292,5 @@ public class EncounterEngine {
         }
         player.defend(); // must look like player took their turn
     }
-    
     
 }
