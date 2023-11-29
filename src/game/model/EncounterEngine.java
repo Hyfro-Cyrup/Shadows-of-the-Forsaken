@@ -59,6 +59,7 @@ public class EncounterEngine {
 
 
             while (true){
+                gui.outputTranslator(player,null,DamageCode.STATUS_EFFECTS);
                 player.beginTurn();
                 selectionLayer = dfault;
                 gui.waitForPlayer();
@@ -79,6 +80,7 @@ public class EncounterEngine {
                         CheckIfDead(i);
                         if (field[i] != null)
                         {
+                            gui.outputTranslator(field[i],null,DamageCode.STATUS_EFFECTS);
                             field[i].beginTurn();
                             int damage = field[i].takeTurn(player);
                             gui.outputTranslator(field[i], player, damage);
