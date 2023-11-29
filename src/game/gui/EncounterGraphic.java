@@ -89,9 +89,9 @@ public class EncounterGraphic extends JPanel {
             Color.BLUE      // Mana color
         };
         int barLengths[] = new int[]{
-            (int) ((double) player.getCurrentHP() * (barWidth - 4) / player.getMaxHP()),
-            (int) ((double) player.getCurrentStamina() * (barWidth - 4) / player.getMaxStamina()),
-            (int) ((double) player.getCurrentMana() * (barWidth - 4) / player.getMaxMana())
+            (int) ((double) Math.max(0, player.getCurrentHP() * (barWidth - 4) / player.getMaxHP())),
+            (int) ((double) Math.max(0, player.getCurrentStamina() * (barWidth - 4) / player.getMaxStamina())),
+            (int) ((double) Math.max(0, player.getCurrentMana() * (barWidth - 4) / player.getMaxMana()))
         };
         String barLabels[] = new String[]{
             "HP " + player.getCurrentHP() + "/" + player.getMaxHP(),
