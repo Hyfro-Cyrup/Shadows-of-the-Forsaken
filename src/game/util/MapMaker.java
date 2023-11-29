@@ -207,6 +207,11 @@ public final class MapMaker {
         return map;
     }
     
+    // Check whether a map meets all parameters
+    // - Minimum tile count
+    // - Key and Ladder both placed
+    // - Minimum distance from key to ladder
+    // - Minimum number of enemies fought between key and ladder
     private static Boolean mapIsValid(DungeonTile[][] map)
     {
         int count = 0;
@@ -262,7 +267,9 @@ public final class MapMaker {
         return true;
     }
     
-    public static int test(DungeonTile[][] map)
+    // Old test function from original A* debugging
+    // Not in use, but here just in case
+    private static int test(DungeonTile[][] map)
     {
         int[] keyPos = null, ladderPos = null;
         for (int i = 0; i < map.length; i++)
