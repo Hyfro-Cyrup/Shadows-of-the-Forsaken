@@ -192,6 +192,8 @@ public class EncounterScreen extends JPanel {
                 logInteraction();
             case DamageCode.GAME_WON -> // player escaped!
                 logWin();
+            case DamageCode.STATUS_EFFECTS -> 
+                logStatus(source);
             default -> // source hit
                 logAttack(source, target, damage);
         }
@@ -226,7 +228,7 @@ public class EncounterScreen extends JPanel {
             {
                 
                 log.append("\nYou attacked the " + target.getName() + " with your " +  atk + ".\n" + 
-                    "It dealt " + damage + " damage!\n");
+                    "You dealt " + damage + " damage!\n");
                 if (killed)
                 {
                     log.append("You killed it!\n");
@@ -389,6 +391,46 @@ public class EncounterScreen extends JPanel {
         {
             log.append("\nDaylight fills your eyes...");
         });
+    }
+
+        /**
+     * Appends status effects (bleeding, burning, poisoned, etc. - into the log) 
+     */
+    private void logStatus(Creature source){
+        for (int i = 0;i<7;i++){
+            if (source.getStatus()[i]!=0){
+                if (source == player){
+                    log.append("\nYou are "+translateStatus(i)+" ("+source.getStatus()[i]+")");
+                }
+                else{
+                    log.append("\n"+source.getName()+" is "+translateStatus(i)+" ("+source.getStatus()[i]+")");
+                }
+            }
+        }
+    }
+
+    /**
+     * Takes in the index of the current element of the Condition Array being read and returns appropriate string 
+     */
+    private String translateStatus(int index){
+        String conditionWord; 
+            switch (index) {
+            case 1 -> 
+                conditionWord = "Burning";
+            case 2 -> 
+                conditionWord = "Poisoned";
+            case 3 -> 
+                conditionWord = "Frozened";
+            case 4 -> 
+                conditionWord = "Stunned";
+            case 5 -> 
+                conditionWord = "Doomed";
+            case 6 -> 
+                conditionWord = "Condemned";
+            default -> 
+                conditionWord = "Bleeding";
+            }
+        return conditionWord;
     }
     
     /**
