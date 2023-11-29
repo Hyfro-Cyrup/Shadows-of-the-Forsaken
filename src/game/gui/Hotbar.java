@@ -55,7 +55,7 @@ public class Hotbar extends JPanel {
                     synchronized (player)
                     {
                         // ternary allows entities to be shown right to left
-                        engine.inputTranslator(engine.getSelectionLayer() == 3 && j < 3 ? 2-j : j);
+                        engine.inputTranslator((engine.getSelectionLayer() == 3 || engine.getSelectionLayer() == 6) && j < 3 ? 2-j : j);
                         player.notify();  
                     }
                     
@@ -89,11 +89,12 @@ public class Hotbar extends JPanel {
     {
         Player player = GameState.getInstance().getPlayer();
         
-        buttonIcons = new ImageIcon[6][5];
+        buttonIcons = new ImageIcon[7][5];
         
         // selection layer = 0
         buttonIcons[0][0] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/AttackIcon.png")));
         buttonIcons[0][1] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Block.png")));
+        buttonIcons[0][2] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/Investigate.png")));
         buttonIcons[0][3] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/pause_icon.png")).getScaledInstance(60, 60, Image.SCALE_SMOOTH));
         buttonIcons[0][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/RunAway.png")));
         
@@ -131,17 +132,28 @@ public class Hotbar extends JPanel {
         buttonIcons[5][3] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/pause_icon.png")).getScaledInstance(60, 60, Image.SCALE_SMOOTH));
         buttonIcons[5][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/RunAway.png")));
         
+        // selection layer 6 (Inspect) 
+        buttonIcons[6][4] = new ImageIcon(ImageIO.read(this.getClass().getResource("/resources/BackArrow.png")));
+        i = 2;
+        for (var e : tile.getContents())
+        {
+            // TODO: resize
+            buttonIcons[6][i] = new ImageIcon(ImageIO.read(this.getClass().getResource(e.getSpriteReference())));
+            i--;
+        }
+        
     }
     // initialize the whole tooltips array
     // structure: Buttons[i].setToolTipText(buttonIcons[engine.getSelectionLayer()][i]);
     private void makeAllTooltips()
     {
         Player player = GameState.getInstance().getPlayer();
-        tooltips = new String[6][5];
+        tooltips = new String[7][5];
         
         // selectionLayer == COMBAT
         tooltips[0][0] = "Attack";
         tooltips[0][1] = "Defend";
+        tooltips[0][2] = "Inspect";
         tooltips[0][3] = "Pause";
         tooltips[0][4] = "Flee";
         
