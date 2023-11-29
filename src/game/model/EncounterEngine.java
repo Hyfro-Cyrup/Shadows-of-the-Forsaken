@@ -5,6 +5,13 @@
 package game.model;
 
 import game.gui.EncounterScreen;
+import static game.model.SelectionLayer.ATK_ENEMY;
+import static game.model.SelectionLayer.COMBAT;
+import static game.model.SelectionLayer.INSPECT_ENEMY;
+import static game.model.SelectionLayer.MAGICAL;
+import static game.model.SelectionLayer.NON_COMBAT;
+import static game.model.SelectionLayer.PHYSICAL;
+import static game.model.SelectionLayer.POST_COMBAT;
 import java.util.List;
 import javax.swing.SwingUtilities;
 
@@ -59,6 +66,7 @@ public class EncounterEngine {
 
 
             while (true){
+                gui.outputTranslator(player,null,DamageCode.STATUS_EFFECTS);
                 player.beginTurn();
                 selectionLayer = dfault;
                 gui.waitForPlayer();
@@ -79,6 +87,7 @@ public class EncounterEngine {
                         CheckIfDead(i);
                         if (field[i] != null)
                         {
+                            gui.outputTranslator(field[i],null,DamageCode.STATUS_EFFECTS);
                             field[i].beginTurn();
                             int damage = field[i].takeTurn(player);
                             gui.outputTranslator(field[i], player, damage);
@@ -128,6 +137,10 @@ public class EncounterEngine {
                     return;
                 }    
                 
+                if (buttonValue == 2){
+                    selectionLayer = SelectionLayer.INSPECT_ENEMY;
+                }
+                
                 if (buttonValue == 4){
                     // Action: Flee
                     player.runAway(combatOver());
@@ -159,7 +172,7 @@ public class EncounterEngine {
                     return;
                 }
             }
-            case ENEMY -> {
+            case ATK_ENEMY -> {
                 if (buttonValue == 4){
                     // Back Button
                     selectionLayer = selectionLayer.getPrev();
@@ -170,8 +183,20 @@ public class EncounterEngine {
                     int damage = player.attack(field[buttonValue]);
                     gui.outputTranslator(player, field[buttonValue], damage);
                 }
-
             }
+            
+            case INSPECT_ENEMY -> {
+                if (buttonValue == 4){
+                    // Back Button
+                    selectionLayer = SelectionLayer.COMBAT;
+                    return;
+                }
+                if (buttonValue < 3 && field[buttonValue] != null){
+                    gui.outputTranslator(null,field[buttonValue],DamageCode.INSPECT);
+                    selectionLayer = SelectionLayer.COMBAT;
+                }
+            }
+            
             case POST_COMBAT -> {
                 if (buttonValue == 4){
                     // Action: Leave
@@ -267,6 +292,5 @@ public class EncounterEngine {
         }
         player.defend(); // must look like player took their turn
     }
-    
     
 }

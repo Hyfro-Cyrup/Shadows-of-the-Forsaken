@@ -79,7 +79,7 @@ public abstract class Creature extends Entity implements Serializable {
     * End the defending condition 
     */
     public void beginTurn(){
-        currentHP += hpRegen*(1%(conditions[1]+1))*(1+isDefending);
+        currentHP = Math.min(maxHP,currentHP+hpRegen*(1-(1%(conditions[1]+1)))*(1+isDefending));
 
         isDefending = 0; 
     }
@@ -163,7 +163,7 @@ public abstract class Creature extends Entity implements Serializable {
     }
 
     /**
-     * Burning effect. A creature takes damage equal to its current Burn value (condition[0])
+     * Burning effect. A creature takes damage equal to its current Burn value (condition[1])
      * Burned value is then reduce by 1. Occurs at the end of a creature's turn 
      * If a creature has any value of Burn greater than 0, then it receives no health regen. 
      */
@@ -173,7 +173,7 @@ public abstract class Creature extends Entity implements Serializable {
     }
 
     /**
-     * Poisoned effect. A creature takes damage equal to its current Poison value (condition[0])
+     * Poisoned effect. A creature takes damage equal to its current Poison value (condition[2])
      * Poison value is then reduce by 1. Occurs at the end of a creature's turn 
      * Poison also reduces strength by an amount equal to its value. 
      */
@@ -240,4 +240,47 @@ public abstract class Creature extends Entity implements Serializable {
          return maxHP;
      }
      
+     /**
+      * Get the max amount of hp regen
+      * @return hpRegen
+      */
+     public int getRegen()
+     {
+         return hpRegen;
+     }
+     
+     /**
+      * Get the strength stat
+      * @return strength
+      */
+     public int getStrength(){
+         return strength;
+     }
+    
+     
+     /**
+      * Get the soul stat
+      * @return soul
+      */
+     public int getSoul(){
+         return soul;
+     }
+     
+     /**
+      * Get the array representing a creature's damage resistences 
+      * @return resist 
+      */
+     public float[] getResistences(){
+         return resist;
+     }
+     
+     
+     /**
+      * Get the array of status effects
+      * @return conditions 
+      */
+     public int[] getStatus()
+     {
+        return conditions; 
+     }
 }

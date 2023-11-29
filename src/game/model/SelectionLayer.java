@@ -1,4 +1,4 @@
-/*
+ /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Enum.java to edit this template
  */
@@ -13,9 +13,10 @@ public enum SelectionLayer {
     COMBAT,
     PHYSICAL,
     MAGICAL,
-    ENEMY,
+    ATK_ENEMY,
     POST_COMBAT,
-    NON_COMBAT;
+    NON_COMBAT,
+    INSPECT_ENEMY;
     
     /**
      * Get the next option in order. 
