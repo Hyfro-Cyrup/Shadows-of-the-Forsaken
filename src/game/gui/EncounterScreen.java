@@ -41,6 +41,8 @@ public class EncounterScreen extends JPanel {
     private final ScreenPauser screenPauser;
     private final JPanel innerPanel;
     
+    private final boolean[] showStatusToolTips; 
+    
     /**
      * Create new EncounterScreen. Initializes Hotbar, log, and graphics area from the DungeonTile information
      * @param tile  The DungeonTile this encounter was built from
@@ -49,7 +51,7 @@ public class EncounterScreen extends JPanel {
     {
         // initialize the JPanel
         super();
-        
+        showStatusToolTips = new boolean[]{true, true, true, true, true, true, true}; 
         switcher = MainGUI.getInstance();
         
         // get encounter data
@@ -77,7 +79,7 @@ public class EncounterScreen extends JPanel {
         
         screenPauser = new ScreenPauser(this, hotbar.getButton(3), () -> {
             int s = engine.getSelectionLayer();
-            return (!(s == 1 || s == 2 || s == 3));
+            return (!(s == 1 || s == 2 || s == 3 || s == 6));
         });
         
         // make the graphic
@@ -194,6 +196,8 @@ public class EncounterScreen extends JPanel {
                 logWin();
             case DamageCode.STATUS_EFFECTS -> 
                 logStatus(source);
+             case DamageCode.INSPECT -> 
+                logInspect(target);
             default -> // source hit
                 logAttack(source, target, damage);
         }
@@ -405,6 +409,10 @@ public class EncounterScreen extends JPanel {
                 else{
                     log.append("\n"+source.getName()+" is "+translateStatus(i)+" ("+source.getStatus()[i]+")");
                 }
+                if (showStatusToolTips[i]){
+                    log.append("\n["+toolTips(i)+"]\n");
+                    showStatusToolTips[i] = false; 
+                }
             }
         }
     }
@@ -432,6 +440,86 @@ public class EncounterScreen extends JPanel {
             }
         return conditionWord;
     }
+    
+        /**
+     * Takes in the index of the current element of the Condition Array being read and returns appropriate string 
+     */
+    private String toolTips(int index){
+        String tooltip; 
+            switch (index) {
+            case 1 -> 
+                tooltip = "Burning: Inflicts X Damage each turn and decreases by 1. Burning creatures cannot regenerate hp";
+            case 2 -> 
+                tooltip = "Poisoned: Inflicts X damage each turn and decreases strength by 1. Decreases by 1 at the end of a creature's turn ";
+            case 3 -> 
+                tooltip = "Frozened: Reduces strength by X. When a creature is hit, it takes X damage and loses all Frozen values";
+            case 4 -> 
+                tooltip = "Stunned: Reduces strength by X. Decreases by 1 at the end of a creature's turn";
+            case 5 -> 
+                tooltip = "Doomed: Creature takes X damage each time they get hit";
+            case 6 -> 
+                tooltip = "Condemned Creature takes X damage each time they attack";
+            default -> 
+                tooltip = "Bleeding: Inflicts X damage each turn and decreases by 1";
+            }
+        return tooltip;
+    }
+    
+    private void logInspect(Creature target){
+        log.append("\nYou inspect the "+ target.getName() + "!");
+        log.append("\nMax HP: "+ target.getMaxHP());
+        log.append("\nRegen: "+ target.getRegen());
+        log.append("\nStrength: "+ target.getStrength());
+        log.append("\nSoul (Magic Power): "+ target.getSoul());
+        
+        boolean none = true; 
+        log.append("\n\nResistences: ");
+            for (int i = 0;i<7;i++){
+                if (target.getResistences()[i]>0){
+                    none = false;
+                    log.append("\n"+translateDamage(i)+": "+ ((int) (target.getResistences()[i]*100))+"%");
+                }
+            }
+            
+        if (none){
+            log.append("\nNone\n");
+        }
+        
+        none = true; 
+        log.append("\n\nVunerablities: ");
+            for (int i = 0;i<7;i++){
+                if (target.getResistences()[i]<0){
+                    none = false; 
+                    log.append(translateDamage(i)+": "+ ((int) (target.getResistences()[i]*100))+"%");
+                }
+            }
+            
+        if (none){
+            log.append("\nNone\n");
+        }  
+    }
+    
+        private String translateDamage(int index){
+        String conditionWord; 
+            switch (index) {
+            case 1 -> 
+                conditionWord = "Fire";
+            case 2 -> 
+                conditionWord = "Poison";
+            case 3 -> 
+                conditionWord = "Frost";
+            case 4 -> 
+                conditionWord = "Lightning";
+            case 5 -> 
+                conditionWord = "Death";
+            case 6 -> 
+                conditionWord = "Light";
+            default -> 
+                conditionWord = "Physical";
+            }
+        return conditionWord;
+    }
+    
     
     /**
      * Runs the combat encounter in the background, allowing for waiting
@@ -496,3 +584,4 @@ public class EncounterScreen extends JPanel {
     }
     
 }
+
