@@ -18,6 +18,7 @@ public class DamageCode
     public static final int INVESTIGATED        = -5;
     public static final int TOUCHED     = -6;
     public static final int GAME_WON    = -7;
+    public static final int STATUS_EFFECTS = -8;
     
     private DamageCode(){}
 }
