@@ -79,7 +79,7 @@ public abstract class Creature extends Entity implements Serializable {
     * End the defending condition 
     */
     public void beginTurn(){
-        currentHP += hpRegen*(1%(conditions[1]+1))*(1+isDefending);
+        currentHP += hpRegen*(1-(1%(conditions[1]+1)))*(2*isDefending);
 
         isDefending = 0; 
     }
