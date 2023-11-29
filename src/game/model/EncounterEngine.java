@@ -130,6 +130,14 @@ public class EncounterEngine {
                     return;
                 }    
                 
+                if (buttonValue == 2){
+                    for (Enemy e : field){
+                        if (e != null){
+                            gui.outputTranslator(null, e, DamageCode.INSPECT);
+                        }
+                    }
+                }
+                
                 if (buttonValue == 4){
                     // Action: Flee
                     player.runAway(combatOver());
@@ -161,7 +169,7 @@ public class EncounterEngine {
                     return;
                 }
             }
-            case ENEMY -> {
+            case ATK_ENEMY -> {
                 if (buttonValue == 4){
                     // Back Button
                     selectionLayer = selectionLayer.getPrev();
