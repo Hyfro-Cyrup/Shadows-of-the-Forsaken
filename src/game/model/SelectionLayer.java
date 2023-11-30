@@ -10,12 +10,34 @@ package game.model;
  * Easier to remember than an int
  */
 public enum SelectionLayer {
+
+    /**
+     * Base combat selection
+     */
     COMBAT,
+    /**
+     * Select physical attack
+     */
     PHYSICAL,
+    /**
+     * Select magical attack
+     */
     MAGICAL,
+    /**
+     * Select which enemy to attack
+     */
     ATK_ENEMY,
+    /**
+     * Combat is over
+     */
     POST_COMBAT,
+    /**
+     * This isn't a combat encounter
+     */
     NON_COMBAT,
+    /**
+     * Select which enemy to inspect
+     */
     INSPECT_ENEMY;
     
     /**

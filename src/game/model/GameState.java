@@ -31,17 +31,29 @@ public class GameState implements Serializable {
     private DungeonTile[][] map;
     private WinState winState = WinState.PLAYING;
             
+    /**
+     * Tracks the 3 possible win-states: playing, won, and lost
+     */
     public enum WinState
     {
+        /**
+         * The player is still playing the game as normal
+         */
         PLAYING, 
+        /**
+         * The player has won the game
+         */
         WON,
+        /**
+         * The player has lost the game
+         */
         LOST
     }
     
     /**
      * Default constructor. Initializes player and map.
      */
-    public GameState()
+    private GameState()
     {
         player = new Player();
         map = MapMaker.newMap();

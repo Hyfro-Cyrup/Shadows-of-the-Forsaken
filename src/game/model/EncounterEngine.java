@@ -16,18 +16,20 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 /**
- *
- * @author Son Nguyen
+ *  A consolidation of all logic related to running a combat or non-combat encounter. 
  */
 public class EncounterEngine {
     private Enemy field[] = new Enemy[3]; 
     private SelectionLayer selectionLayer;
     private final Player player;
-    private String eventLog; 
     private EncounterScreen gui;
-    private DungeonTile tile;
+    private final DungeonTile tile;
     
-    public EncounterEngine(DungeonTile tile)
+    /**
+     * Create the engine to run a single encounter
+     * @param tile The DungeonTile this encounter lives in. 
+     */
+    EncounterEngine(DungeonTile tile)
     {
     this.player = GameState.getInstance().getPlayer();
     this.tile = tile;
@@ -43,6 +45,11 @@ public class EncounterEngine {
         this.gui = gui;
     }
     
+    /**
+     * Execute the logic for the encounter
+     * Run this in a background thread, lest it be blocking
+     * @param contents 
+     */
     public void runEncounter(List<Entity> contents){
         try
         {
@@ -120,6 +127,10 @@ public class EncounterEngine {
         }
     }
     
+    /**
+     * Handle button inputs from the GUI
+     * @param buttonValue the index of the button that was pressed
+     */
     public void inputTranslator(int buttonValue){    
         switch (selectionLayer) 
         {
@@ -241,10 +252,18 @@ public class EncounterEngine {
         }
     }
     
+    /**
+     * Get the phase of user input that is currently active
+     * @return an int
+     */
     public int getSelectionLayer(){
         return selectionLayer.ordinal(); 
     }
    
+    /**
+     * Determine whether a combat encounter is over
+     * @return True if the player can move on now.
+     */
     public boolean combatOver(){
         if (player.currentHP <=0){
             return true;
@@ -259,6 +278,7 @@ public class EncounterEngine {
         return true;
     }
     
+ 
     private void CheckIfDead(int enemyNumber){
         if (field[enemyNumber] != null && field[enemyNumber].currentHP<=0){
             field[enemyNumber] = null; 

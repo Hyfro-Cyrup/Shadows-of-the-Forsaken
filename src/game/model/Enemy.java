@@ -5,15 +5,14 @@
 package game.model;
 
 /**
- *
- * @author Son Nguyen
+ * Type of entity with attacks, stats, and decisions. The opposition. 
  */
 public class Enemy extends Creature {
     
     private final double[] decisionMatrix; 
     private Attack selectedAttack; 
             
-     /**
+    /**
      * Construct an Enemy with specified parameters
      * 
      * @param name The name of the entity
@@ -26,7 +25,7 @@ public class Enemy extends Creature {
      * @param moveset Array of Attacks the creature can take
      * @param resistances  Array of damage resistances for each damage type
      */
-    public Enemy(String name, String desc, String spriteFileName,int hp, int str, int soul, 
+    Enemy(String name, String desc, String spriteFileName,int hp, int str, int soul, 
             int regen, Attack[] moveset, float[] resistances)
     {
         super(name, desc, spriteFileName, hp, str, soul, regen, moveset, resistances);
@@ -48,43 +47,14 @@ public class Enemy extends Creature {
         this.hpRegen, this.attackArray, this.resist);
     }
     
-    
+    /**
+     * Does the decision-making for an Enemy and executes the chosen action
+     * Assumes the decisionMatrix sums to 1
+     * @param player reference to the player for damage purposes
+     * @return the damage dealt or DamageCode
+     */
     public int takeTurn(Player player){
         double Rand = Math.random();
-        /*double sumProb = decisionMatrix[0]+decisionMatrix[1]+decisionMatrix[2]
-                +decisionMatrix[3]+decisionMatrix[4]; 
-        
-        double range1 = decisionMatrix[0]/sumProb;
-        double range2 = range1+decisionMatrix[1]/sumProb;
-        double range3 = range2+decisionMatrix[2]/sumProb;
-        double range4 = range3+decisionMatrix[3]/sumProb;
-        
-        if (Rand<(range1)){
-            this.defend();
-        }
-        
-        else if ((range1<=Rand) && (Rand<range2)){
-            selectedAttack = attackArray[0];
-            this.attack(player);
-        }
-        
-        else if ((range2<=Rand) && (Rand<range3)){
-            selectedAttack = attackArray[1];
-            this.attack(player);
-        }
-        
-        else if ((range3<=Rand) && (Rand<range4)){
-            selectedAttack = attackArray[2];
-            this.attack(player);
-        }
-   
-        else if (Rand>=range4){
-            selectedAttack = attackArray[3];
-            this.attack(player);
-        }*/
-        
-        // I didn't want to fully uproot Son's hard work, but need a better version
-        // that works with variable length array, though it does assume that it's normalized
         double prob = 0.0;
         for (int i = 0; i < decisionMatrix.length - 1; i++)
         {
@@ -108,7 +78,12 @@ public class Enemy extends Creature {
         return this.attack(player);
     }
 
-    
+    /**
+     * Executes an attack against a target (the player). 
+     * Assumes selectedAttack is not null because takeTurn has been called. 
+     * @param target the Creature to attack
+     * @return the damage dealt
+     */
     @Override     
     public int attack(Creature target){
         int accuracyRand = (int)(Math.random() * 100);
@@ -150,6 +125,11 @@ public class Enemy extends Creature {
         return selectedAttack.getName() + " attack";
     }
     
+    /*  predefined enemies  */
+    
+    /**
+     * Predefined enemy with basic stats and attacks
+     */
     public static final Enemy SKELETON = new Enemy("Skeleton", 
             "Boney guy", "/resources/Skeleton.png",
             30, 2, 0, 1, new Attack[]{

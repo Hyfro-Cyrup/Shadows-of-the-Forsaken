@@ -36,7 +36,7 @@ public class Attack implements Serializable{
     private final Boolean massAttack; 
     
     /**
-     * Construct a Attack Class to act as a 'move' in the moveset of creatures.Allows for interchangeable movesets 
+     * Construct a Attack object to act as a 'move' in the moveset of creatures. Allows for interchangeable movesets 
      * 
      * @param name - name of the attack 
      * @param info - description of the attack 
@@ -72,42 +72,83 @@ public class Attack implements Serializable{
     
     
 // Getter Methods 
+    /**
+     * Get the name of the attack
+     * @return a String
+     */
     public String getName(){
         return Name;
     }
 
+    /**
+     * Get the filepath to the Attack's icon
+     * @return a String
+     */
     public String getSpriteReference(){
         return spriteReference;
     }
     
+    /**
+     * Get the description of the attack
+     * @return a String
+     */
     public String getInfo(){
         return infoText;
     }
     
+    /**
+     * Get the accuracy of the attack
+     * @return an integer between 0 and 100
+     */
     public int getAccuracy(){
         return accuracy; 
     }
     
+    /**
+     * Get the chance of a critical hit
+     * @return an integer between 0 and 100
+     */
     public int getCritChance(){
         return critChance;
     }
     
+    /**
+     * Get how many times the attack can make a strike
+     * @return an integer, probably 1
+     */
     public int getHits(){
         return hits; 
     }
     
+    /**
+     * Get the conditions that this attack inflicts
+     * @return an int array
+     */
     public int[] getAfflictions(){
         return afflictionArray;
     }
     
+    /**
+     * Get whether the attack is physical or magical
+     * @return 1 if magical, 0 if not
+     */
     public int IsMagic(){
         return mightOrMagic; 
     }
  
+    /**
+     * Get the mana or stamina cost of the attack
+     * @return an int
+     */
     public int getCost(){
         return Cost; 
     }
-    
+   
+    /**
+     * Get the damage done by the attack for a given damage. New value each time.
+     * @param type The integer corresponding to the damage type you want
+     * @return an int
+     */
     public int getDamage(int type){
         int range = damageArrayMax[type]-damageArrayMin[type];
         int damage = (int) (Math.random() * range)+damageArrayMin[type];
@@ -116,23 +157,36 @@ public class Attack implements Serializable{
     
     /*  Named attacks because these are complicated to construct    */
     
-    // TODO: change these filepaths out for real ones
     // Physical
+    /**
+     * Predefined physical attack with medium damage and accuracy
+     */
     public static final Attack SLASH = new Attack(
             "Slash", "medium damage and accuracy", "/resources/SlashIcon.png", 0, 2, 
             new int[]{1, 0, 0, 0, 0, 0, 0}, new int[]{6, 0, 0, 0, 0, 0, 0}, 
             new int[]{0, 0, 0, 0, 0, 0, 0}, 80, 5, 1, false
     );
+    
+    /**
+     * Predefined physical attack with high damage, low accuracy
+     */
     public static final Attack CLEAVE = new Attack(
             "Cleave", "high damage, low accuracy", "/resources/CleaveIcon.png", 0, 4, 
             new int[]{2, 0, 0, 0, 0, 0, 0}, new int[]{8, 0, 0, 0, 0, 0, 0}, 
             new int[]{0, 0, 0, 0, 0, 0, 0}, 70, 5, 1, false
     );
+    /**
+     * Predefined physical attack with low damage, high accuracy
+     */
     public static final Attack QUICK_STRIKE = new Attack(
             "Quick Strike", "low damage, high accuracy", "/resources/QuickStrikeIcon.png", 0, 2, 
             new int[]{1, 0, 0, 0, 0, 0, 0}, new int[]{4, 0, 0, 0, 0, 0, 0}, 
             new int[]{0, 0, 0, 0, 0, 0, 0}, 100, 5, 1, false
     );
+    
+    /**
+     * Predefined physical attack with low damage, stuns enemies
+     */
     public static final Attack SHIELD_BASH = new Attack(
             "Shield Bash", "low damage, stuns enemies", "/resources/SheildBashIcon.png", 0, 3, 
             new int[]{1, 0, 0, 0, 0, 0, 0}, new int[]{6, 0, 0, 0, 0, 0, 0}, 
@@ -141,24 +195,40 @@ public class Attack implements Serializable{
     );
     
     // Magical
+    
+    /**
+     * Predefined magical attack that increases accuracy
+     */
     public static final Attack TRUE_STRIKE = new Attack(
             "True Strike", "increases accuracy", "/resources/TrueStrikeIcon.png", 1, 3, 
             new int[]{0, 0, 0, 0, 0, 0, 0}, new int[]{0, 0, 0, 0, 0, 0, 0}, 
             new int[]{0, 0, 0, 0, 0, 0, 0}, 50, 20, 1, false
     );
+    
+    /**
+     * Predefined magical attack with fire damage and burn condition
+     */
     public static final Attack FLAME = new Attack(
             "Flame", "fire damage and burn", "/resources/FlameIcon.png", 1, 3, 
             new int[]{0, 1, 0, 0, 0, 0, 0}, new int[]{0, 4, 0, 0, 0, 0, 0}, 
             new int[]{0, 2, 0, 0, 0, 0, 0}, // 2 Burn
             0, 0, 1, false
     );
+    
+    /**
+     * Predefined magical attack with high necrotic damage and high mana cost
+     */
     public static final Attack DEATH = new Attack(
             "Death", "high necrotic damage at a price", "/resources/DeathIcon.png", 1, 6, 
             new int[]{0, 0, 0, 0, 0, 4, 0}, new int[]{0, 0, 0, 0, 0, 8, 0}, 
             new int[]{0, 0, 0, 0, 0, 0, 0}, 0, 10, 1, false
     );
+    
+    /**
+     * Predefined magical attack with toxic damage and poison condition
+     */
     public static final Attack POISON_SPRAY = new Attack(
-            "Poison Spray", "toxic damage and shock", "/resources/PoisonSprayIcon.png", 1, 4, 
+            "Poison Spray", "toxic damage and poison", "/resources/PoisonSprayIcon.png", 1, 4, 
             new int[]{0, 0, 2, 0, 0, 0, 0}, new int[]{0, 0, 4, 0, 0, 0, 0}, 
             new int[]{0, 0, 2, 0, 0, 0, 0}, // 2 Poison
             0, 0, 1, false

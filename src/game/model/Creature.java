@@ -7,35 +7,51 @@ package game.model;
 import java.io.Serializable;
 
 /**
- *
- * @author Son Nguyen
- * 
  * Creature class which is a superclass that encompasses Enemy and Player within the Encounter Framework. 
  * Class name is somewhat self explanatory in its role.
+ * 
  */
 public abstract class Creature extends Entity implements Serializable {
-    // max health of the creature
+    /**
+     * max health of the creature
+     */
     protected int maxHP;
-    //current health of the creature
+    /**
+     * current health of the creature
+     */
     protected int currentHP;
-    //how much health a creature regains at the start of its turns 
+    /**
+     * how much health a creature regains at the start of its turns 
+     */
     protected int hpRegen; 
-    //integer that amplifies the damage of a physical attack 
+    /**
+     * integer that amplifies the damage of a physical attack 
+     */
     protected int strength;
-    //integer that amplifies damage of a magical attack 
+    /**
+     * integer that amplifies damage of a magical attack 
+     */
     protected int soul;
-    //Array which represents the attacks of the the creature 
+    /**
+     * Array which represents the attacks of the the creature 
+     */
     protected Attack[] attackArray; 
-    //array that represents the damage resistances of a creature 
+    /**
+     * array that represents the damage resistances of a creature 
+     */
     protected float[] resist;
-    //array that represents the value of a creature's conditions (bleeding, burning, etc.) 
+    /**
+     * array that represents the value of a creature's conditions (bleeding, burning, etc.) 
+     */
     protected int[] conditions = new int[7]; 
-    //int that represents if a creature is Defending. 0 if not, 1 if it is. 
+    /**
+     * int that represents if a creature is Defending. 0 if not, 1 if it is. 
+     */
     protected int isDefending = 0; 
     
     /**
-     * Construct a creature superclass to represent a killable entity in the game. Subclasses will be players, and the enemies 
-     * Note: Need to make this an abstract class. Should not need to be referenced directly. 
+     * Construct a creature from specified parameters
+     * 
      * @param name The name of the entity
      * @param desc A short description to be shown
      * @param spriteFileName String filepath to the image of the entity
@@ -46,7 +62,7 @@ public abstract class Creature extends Entity implements Serializable {
      * @param moveset Array of Attacks the creature can take
      * @param resistances  Array of damage resistances for each damage type
      */
-    public Creature(String name, String desc, String spriteFileName,int hp, int str, int soul, 
+    Creature(String name, String desc, String spriteFileName,int hp, int str, int soul, 
             int regen, Attack[] moveset, float[] resistances){
         super(name, desc, spriteFileName);
         
@@ -58,10 +74,16 @@ public abstract class Creature extends Entity implements Serializable {
         resist = resistances; 
     }
     
-    public Creature(String name, String desc, String spriteFileName)
+    /**
+     * Construct a Creature with mostly default parameters
+     * 
+     * @param name The name of the entity
+     * @param desc A short description to be shown
+     * @param spriteFileName String filepath to the image of the entity
+     */
+    Creature(String name, String desc, String spriteFileName)
     {
         super(name, desc, spriteFileName);
-        //TODO: default values?
     }
 
 
