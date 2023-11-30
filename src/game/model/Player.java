@@ -5,15 +5,20 @@
 package game.model;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A creature that the player controls and has an inventory.
  */
 public class Player extends Creature {
     private Boolean hasExitKey;
-    private List<Entity> Inventory;
-    public int x, y;
+    /**
+     * The Player's x-coordinate in the map
+     */
+    public int x,
+    /**
+     * The Player's y-coordinate in the map
+     */
+    y;
     
     private final Attack[] arcanaArray; 
     
@@ -43,7 +48,6 @@ public class Player extends Creature {
     {
         super("The Player", "The FOOOLISH KNIGHT", "/resources/CombatPlayer.png");
         hasExitKey = false;
-        Inventory = new ArrayList<>();
         x = 0;
         y = 0;
         maxStamina = currentStamina = 10;
@@ -154,7 +158,7 @@ public class Player extends Creature {
     }
     
     
-    @Override 
+    
     /**
     * Attack a target creature with the currently selected Technique and Arcana 
     * If the attack hits, deal damage and apply conditions.
@@ -162,6 +166,7 @@ public class Player extends Creature {
     * are below the threshold. 
     * @param target - creature that is being targeted by the player 
     */
+    @Override 
     public int attack(Creature target){
         int accuracyRand = (int)(Math.random() * 100);
 

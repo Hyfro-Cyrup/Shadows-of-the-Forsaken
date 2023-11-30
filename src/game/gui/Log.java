@@ -51,7 +51,10 @@ public class Log extends JScrollPane {
     }
     
     
-    // Scrollbar was getting positioned wrong at weird times, possibly during repainting
+    /**
+     * Override paintComponent for custom rendering
+     * Scroll bar was getting positioned wrong at weird times, possibly during repainting
+     */
     @Override
     protected void paintComponent(Graphics g)
     {

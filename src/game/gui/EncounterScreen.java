@@ -4,7 +4,6 @@
  */
 package game.gui;
 
-import game.model.Attack;
 import game.model.Creature;
 import game.model.DamageCode;
 import game.model.DungeonTile;
@@ -499,26 +498,26 @@ public class EncounterScreen extends JPanel {
         }  
     }
     
-        private String translateDamage(int index){
-        String conditionWord; 
-            switch (index) {
-            case 1 -> 
-                conditionWord = "Fire";
-            case 2 -> 
-                conditionWord = "Poison";
-            case 3 -> 
-                conditionWord = "Frost";
-            case 4 -> 
-                conditionWord = "Lightning";
-            case 5 -> 
-                conditionWord = "Death";
-            case 6 -> 
-                conditionWord = "Light";
-            default -> 
-                conditionWord = "Physical";
-            }
-        return conditionWord;
-    }
+    private String translateDamage(int index){
+    String conditionWord; 
+        switch (index) {
+        case 1 -> 
+            conditionWord = "Fire";
+        case 2 -> 
+            conditionWord = "Poison";
+        case 3 -> 
+            conditionWord = "Frost";
+        case 4 -> 
+            conditionWord = "Lightning";
+        case 5 -> 
+            conditionWord = "Death";
+        case 6 -> 
+            conditionWord = "Light";
+        default -> 
+            conditionWord = "Physical";
+        }
+    return conditionWord;
+}
     
     
     /**
